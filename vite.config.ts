@@ -13,6 +13,11 @@ export default defineConfig((_) => {
     return {
         root: srcDir,
         publicDir: publicDir,
+        resolve: {
+            alias: {
+                '@': srcDir,
+            },
+        },
         server: { port: 3000 },
         preview: { port: 3000 },
         build: {
