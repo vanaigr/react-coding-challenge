@@ -1,0 +1,17 @@
+{
+    "extends": "./tsconfig.json",
+    "include": ["src"],
+    "compilerOptions": {
+        "lib": ["ES2020", "DOM", "DOM.Iterable"],
+        "module": "ESNext",
+        "target": "es6",
+        "moduleResolution": "bundler",
+        "useDefineForClassFields": true,
+        "strict": false,
+        "noEmit": true,
+        "noImplicitAny": true,
+        "jsx": "react-jsx",
+        "incremental": true,
+        "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo"
+    }
+}
