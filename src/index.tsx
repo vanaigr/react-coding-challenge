@@ -4,10 +4,11 @@ import './index.css'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 
 import EquipmentRecord from './routes/equipmentRecord'
+import EquipmentTable from './routes/equipmentTable'
 
 const router = createBrowserRouter([
     { path: '/', element: <div>dashboard</div> },
-    { path: '/equipment', element: <div>equipment table</div> },
+    { path: '/equipment', element: <EquipmentTable/> },
     { path: '/equipment/:id', element: <EquipmentRecord/> },
     { path: '/maintenance', element: <div>maintenance table</div> },
     { path: '/maintenance/:id', element: <div>maintenance record</div> },

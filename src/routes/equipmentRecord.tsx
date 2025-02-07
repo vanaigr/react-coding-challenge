@@ -2,7 +2,13 @@ import * as R from 'react'
 import * as Z from 'zustand'
 import { z } from 'zod'
 
-import { dateValidation } from '@/util/date'
+import {
+    validation,
+    statuses,
+    departments,
+    type RawEquipmentRecord,
+    type ValidatedEquipmentRecord,
+} from '@/data/equipmentRecord'
 
 type InputProps = {
     title: string,
@@ -60,29 +66,13 @@ function Select({ title, options, errors, ...rest }: SelectProps) {
     </label>
 }
 
-const departments = ['Machining', 'Assembly', 'Packaging', 'Shipping'] as const
-const statuses = ['Operational', 'Down', 'Maintenance', 'Retired'] as const
-
-const equipmentRecordValidation = z.object({
-    name: z.string().min(3, 'Must be at least 3 characters long'),
-    location: z.string().nonempty('Must not be empty'),
-    department: z.string().pipe(z.enum(departments)),
-    model: z.string().nonempty('Must not be empty'),
-    serialNumber: z.string().regex(/^[\p{L}\p{N}]+$/u, 'Must be alphanumeric'),
-    installDate: z.string().pipe(dateValidation),
-    status: z.string().pipe(z.enum(statuses)),
-})
-
-export type Input = z.input<typeof equipmentRecordValidation>
-export type EquipmentRecord = z.infer<typeof equipmentRecordValidation>
-
 export type FormData = {
-    input: Input,
-    result: z.SafeParseReturnType<Input, EquipmentRecord>,
+    input: RawEquipmentRecord,
+    result: z.SafeParseReturnType<RawEquipmentRecord, ValidatedEquipmentRecord>,
 }
 
-export function createFormData(input: Input): FormData {
-    const result = equipmentRecordValidation.safeParse(input)
+export function createFormData(input: RawEquipmentRecord): FormData {
+    const result = validation.safeParse(input)
     return { input, result }
 }
 
@@ -100,14 +90,14 @@ export default function() {
     }))[0]
 
     const { input, result } = store()
-    const update = (newValues: Partial<Input>) => {
+    const update = (newValues: Partial<RawEquipmentRecord>) => {
         store.setState(state => {
             return createFormData({ ...state.input, ...newValues })
         }, true)
     }
     const error = result.error?.format()
 
-    const mkInputProps = (name: keyof Input) => {
+    const mkInputProps = (name: keyof RawEquipmentRecord) => {
         return {
             defaultValue: input[name],
             onChange: (
