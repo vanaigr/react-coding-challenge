@@ -2,13 +2,24 @@ import * as R from 'react'
 import * as Z from 'zustand'
 import { z } from 'zod'
 
+import { dateValidation } from '@/util/date'
 import {
-    validation,
     statuses,
     departments,
-    type RawEquipmentRecord,
-    type ValidatedEquipmentRecord,
 } from '@/data/equipmentRecord'
+
+const validation = z.object({
+    name: z.string().min(3, 'Must be at least 3 characters long'),
+    location: z.string().nonempty('Must not be empty'),
+    department: z.string().pipe(z.enum(departments)),
+    model: z.string().nonempty('Must not be empty'),
+    serialNumber: z.string().regex(/^[\p{L}\p{N}]+$/u, 'Must be alphanumeric'),
+    installDate: z.string().pipe(dateValidation),
+    status: z.string().pipe(z.enum(statuses)),
+})
+
+type RawEquipmentData = z.input<typeof validation>
+type ValidatedEquipmentData = z.infer<typeof validation>
 
 type InputProps = {
     title: string,
@@ -67,11 +78,11 @@ function Select({ title, options, errors, ...rest }: SelectProps) {
 }
 
 export type FormData = {
-    input: RawEquipmentRecord,
-    result: z.SafeParseReturnType<RawEquipmentRecord, ValidatedEquipmentRecord>,
+    input: RawEquipmentData,
+    result: z.SafeParseReturnType<RawEquipmentData, ValidatedEquipmentData>,
 }
 
-export function createFormData(input: RawEquipmentRecord): FormData {
+export function createFormData(input: RawEquipmentData): FormData {
     const result = validation.safeParse(input)
     return { input, result }
 }
@@ -90,14 +101,14 @@ export default function() {
     }))[0]
 
     const { input, result } = store()
-    const update = (newValues: Partial<RawEquipmentRecord>) => {
+    const update = (newValues: Partial<RawEquipmentData>) => {
         store.setState(state => {
             return createFormData({ ...state.input, ...newValues })
         }, true)
     }
     const error = result.error?.format()
 
-    const mkInputProps = (name: keyof RawEquipmentRecord) => {
+    const mkInputProps = (name: keyof RawEquipmentData) => {
         return {
             defaultValue: input[name],
             onChange: (
