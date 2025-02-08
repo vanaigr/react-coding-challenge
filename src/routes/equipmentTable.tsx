@@ -20,87 +20,168 @@ const statusColors = {
     Retired: 'bg-blue-200',
 } satisfies Colors<typeof statuses>
 
-type CellProps<T, Element> = R.PropsWithChildren<{}>
+type CellProps<Element> = R.PropsWithChildren<{}>
     & R.DetailedHTMLProps<R.HTMLAttributes<Element>, Element>
 
-function Cell<T extends RT.CellContext<Equipment, unknown>>(
-    { className, children, ...rest }: CellProps<T, HTMLDivElement>
-) {
-    return <div className={'px-3 py-3 ' + (className ?? '')} {...rest}>
+const cellClass = 'px-3 py-3'
+function Cell({ className, children, ...rest }: CellProps<HTMLDivElement>) {
+    return <div className={cellClass + ' ' + (className ?? '')} {...rest}>
         {children}
     </div>
 }
 
+function Header({ children }: R.PropsWithChildren<{}>) {
+    return <div className='px-3 py-3 upper font-bold text-gray-700'>
+        {children}
+    </div>
+}
+
+type InputProps = R.DetailedHTMLProps<R.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
+function CellCheckbox(props: InputProps) {
+    // td doesn't allow to stretch items inside of it
+    // so we have to use `position: absolute; inset: 0`.
+    // We also need an extra element for minimum size.
+    return <>
+        <div className={cellClass}><div className='size-3'/></div>
+        <label
+            className={
+                cellClass + ' block max-w-full max-h-full'
+                    + ' absolute inset-0 flex items-center justify-center'
+            }
+        >
+            <input type="checkbox" className='size-3' {...props}/>
+        </label>
+    </>
+
+}
+
 const columns = [
     helper.accessor('id', {
-        header: 'Id',
-        cell: v => <Cell>{v.getValue()}</Cell>
+        header: () => <Header>Id</Header>,
+        cell: v => <Cell className='break-all'>{v.getValue()}</Cell>
     }),
     helper.accessor('name', {
-        header: 'Name',
+        header: () => <Header>Name</Header>,
         cell: v => <Cell>{v.getValue()}</Cell>
     }),
     helper.accessor('location', {
-        header: 'Location',
+        header: () => <Header>Location</Header>,
         cell: v => <Cell>{v.getValue()}</Cell>
     }),
     helper.accessor('department', {
-        header: 'Department',
+        header: () => <Header>Department</Header>,
         cell: v => <Cell>{v.getValue()}</Cell>
     }),
     helper.accessor('model', {
-        header: 'Model',
+        header: () => <Header>Model</Header>,
         cell: v => <Cell>{v.getValue()}</Cell>
     }),
     helper.accessor('serialNumber', {
-        header: 'Serial number',
-        cell: v => <Cell>{v.getValue()}</Cell>
+        header: () => <Header>Serial number</Header>,
+        cell: v => <Cell className='break-all'>
+            {v.getValue()}
+        </Cell>
     }),
     helper.accessor('installDate', {
-        header: 'Install date',
+        header: () => <Header>Install date</Header>,
         cell: v => <Cell>{componentsToString(v.getValue())}</Cell>
     }),
     helper.accessor('status', {
-        header: 'Status',
+        header: () => <Header>Status</Header>,
         cell: v => <Cell>{v.getValue()}</Cell>
+    }),
+    helper.display({
+        id: 'actions',
+        header: ({ table }) => {
+            return <CellCheckbox
+                checked={table.getIsAllRowsSelected()}
+                ref={it => {
+                    if(it == null) return
+                    // https://stackoverflow.com/a/73790704
+                    it.indeterminate = table.getIsSomeRowsSelected()
+                }}
+                onChange={table.getToggleAllRowsSelectedHandler()}
+            />
+        },
+        cell: ({ row }) => {
+            return <CellCheckbox
+                checked={row.getIsSelected()}
+                disabled={!row.getCanSelect()}
+                onChange={row.getToggleSelectedHandler()}
+            />
+        }
     }),
 ]
 
+type State = {
+    data: Array<Equipment>,
+    selected: RT.RowSelectionState,
+}
+
 export default function() {
     const store = R.useState(() => {
-        return Z.create<Array<Equipment>>(() => exampleData)
+        return Z.create<State>(() => ({ data: exampleData, selected: {} }))
     })[0]
-    const data = store()
+
+    const state = store()
 
     const table = RT.useReactTable({
-        data,
+        data: state.data,
         columns,
-        getCoreRowModel: RT.getCoreRowModel()
+        state: {
+            rowSelection: state.selected,
+        },
+        onRowSelectionChange: updater => {
+            if(typeof updater === 'function') {
+                store.setState(it => ({ selected: updater(it.selected) }))
+            }
+            else {
+                store.setState({ selected: updater })
+            }
+        },
+        getCoreRowModel: RT.getCoreRowModel(),
+        enableRowSelection: true,
     })
-    table.getTotalSize()
 
-    return <div className='relative overflow-x-auto rounded-lg text-sm m-4'>
-        <table className='w-full w-min-sm'>
+    return <Table table={table}/>
+}
+
+function Table({ table }: { table: RT.Table<Equipment> }) {
+    return <div className='overflow-auto rounded-lg text-sm m-4 max-w-7xl mx-auto'>
+        <table className='w-full'>
             <thead>
                 {table.getHeaderGroups().map(group => (
-                    <tr key={group.id} className='bg-gray-300'>
+                    <tr key={group.id}>
+                        <td className='pl-1'/>
                         {group.headers.map(header => (
-                            <td key={header.id} className='px-3 py-3 upper font-bold text-gray-700'>
-                                {header.column.columnDef.header?.toString()}
+                            <td key={header.id} className='relative'>
+                                {RT.flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext()
+                                )}
                             </td>
                         ))}
+                        <td className='pr-1'/>
                     </tr>
                 ))}
             </thead>
             <tbody>
                 {table.getRowModel().rows.map(row => {
                     const status = row.getValue<Equipment['status']>('status')
-                    return <tr key={row.id} className={statusColors[status] + ' border-t border-t-gray-600'}>
+                    return <tr
+                        key={row.id}
+                        className={statusColors[status] + ' border-t border-t-gray-600'}
+                    >
+                        <td className='pl-1'/>
                         {row.getVisibleCells().map(cell => (
-                            <td key={cell.id}>
-                                {RT.flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            <td key={cell.id} className='relative'>
+                                {RT.flexRender(
+                                    cell.column.columnDef.cell,
+                                    cell.getContext()
+                                )}
                             </td>
                         ))}
+                        <td className='pr-1'/>
                     </tr>
                 })}
             </tbody>
