@@ -43,7 +43,6 @@ function Cell({ className, children, ...rest }: CellProps<HTMLDivElement>) {
 }
 
 type HeaderProps<T> = R.PropsWithChildren<{
-    filter?: R.ReactElement,
     ctx: RT.HeaderContext<Equipment, T>,
 }>
 
@@ -51,52 +50,45 @@ const sortClasses = new Map()
 sortClasses.set(false, ' text-gray-500')
 sortClasses.set(true, ' text-black')
 
-function Header<T>({ ctx, children, filter }: HeaderProps<T>) {
+const headerClass = 'px-3 pt-3'
+function Header<T>({ ctx, children }: HeaderProps<T>) {
     const sorted = ctx.column.getIsSorted()
 
-    return <div className='flex flex-col'>
-        <button
-            type='button'
-            className={
-                'px-3 py-3 upper font-bold text-gray-700 flex items-center gap-2'
-                + ' cursor-pointer'
-            }
-            onClick={ctx.column.getToggleSortingHandler()}
-        >
-            <div className='grow text-left'>
+    return <button
+        type='button'
+        className={
+            headerClass
+                + ' upper font-bold text-gray-700 flex items-center gap-2'
+                + ' cursor-pointer grow'
+        }
+        onClick={ctx.column.getToggleSortingHandler()}
+    >
+        <div className='grow text-left'>
             {children}
+        </div>
+        {ctx.column.getCanSort() &&
+            <div className='text-[0.5em] leading-none flex flex-col'>
+                <span className={sortClasses.get(sorted === 'asc')}>▲</span>
+                <span className={sortClasses.get(sorted === 'desc')}>▼</span>
             </div>
-            {ctx.column.getCanSort() &&
-                <div className='text-[0.5em] leading-none flex flex-col'>
-                    <span className={sortClasses.get(sorted === 'asc')}>▲</span>
-                    <span className={sortClasses.get(sorted === 'desc')}>▼</span>
-                </div>
-            }
-        </button>
-        {filter}
-    </div>
+        }
+    </button>
 }
 
 type InputProps = R.DetailedHTMLProps<R.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
 function CellCheckbox(props: InputProps) {
-    // td doesn't allow to stretch items inside of it
-    // so we have to use `position: absolute; inset: 0`.
-    // We also need an extra element for minimum size.
-    return <>
-        <div className={cellClass}><div className='size-3'/></div>
-        <label
-            className={
-                cellClass + ' block max-w-full max-h-full'
-                    + ' absolute inset-0 flex items-center justify-center'
-            }
-        >
-            <input type="checkbox" className='size-3' {...props}/>
-        </label>
-    </>
+    return <label
+        className={
+            (props.className ?? '')
+            + ' grow flex items-center justify-center'
+        }
+    >
+        <input type="checkbox" className='size-3' {...props}/>
+    </label>
 }
 
 function textFilter<T extends string>(ctx: RT.HeaderContext<Equipment, T>) {
-    return <label className='flex pb-3 px-3'>
+    return <label className='flex py-2 px-3 grow items-start'>
         <input
             className='grow w-0'
             placeholder='Search'
@@ -107,17 +99,19 @@ function textFilter<T extends string>(ctx: RT.HeaderContext<Equipment, T>) {
 }
 
 function mkSelectFilter<T extends string>(values: readonly string[]) {
-    const options = values.map(it => (<option key={it} value={it}>{it}</option>))
+    const options = values.map(it => {
+        return <option className='text-black' key={it} value={it}>{it}</option>
+    })
 
     return (ctx: RT.HeaderContext<Equipment, T>) => {
         const v = values[values.indexOf(ctx.column.getFilterValue() as string)] ?? ''
-        return <label className='flex pb-3 px-3'>
+        return <label className='flex py-2 px-3 grow items-start'>
             <select
                 className={'grow w-0' + (v === '' ? ' text-gray-500' : '')}
                 value={v}
                 onChange={it => ctx.column.setFilterValue(it.target.value)}
             >
-                <option value='' className='text-gray-500'>All</option>
+                <option value='' className='text-black'>All</option>
                 {options}
             </select>
         </label>
@@ -232,6 +226,7 @@ const columns = [
         id: 'actions',
         header: ({ table }) => {
             return <CellCheckbox
+                className={headerClass}
                 checked={table.getIsAllRowsSelected()}
                 ref={it => {
                     if(it == null) return
@@ -243,6 +238,7 @@ const columns = [
         },
         cell: ({ row }) => {
             return <CellCheckbox
+                className={cellClass}
                 checked={row.getIsSelected()}
                 disabled={!row.getCanSelect()}
                 onChange={row.getToggleSelectedHandler()}
@@ -335,7 +331,7 @@ function Control({ store }: { store: Z.UseBoundStore<Z.StoreApi<State>> }) {
             >
                 <option value=''>Select a status</option>
                 {statuses.map(it => (
-                    <option value={it}>{it}</option>
+                    <option key={it} value={it}>{it}</option>
                 ))}
             </select>
         </div>
@@ -343,59 +339,50 @@ function Control({ store }: { store: Z.UseBoundStore<Z.StoreApi<State>> }) {
 }
 
 function Table({ table }: { table: RT.Table<Equipment> }) {
-    return <div className='overflow-auto rounded-lg text-sm m-4 max-w-7xl mx-auto'>
-        <table className='w-full'>
-            <thead>
-                {table.getHeaderGroups().map(group => (
-                    <R.Fragment key={group.id}>
-                        <tr>
-                            <td className='pl-1'/>
-                            {group.headers.map(header => (
-                                <td key={header.id} className='relative'>
-                                    {RT.flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext()
-                                    )}
-                                </td>
-                            ))}
-                            <td className='pr-1'/>
-                        </tr>
-                        <tr>
-                            <td className='pl-1'/>
-                            {group.headers.map(header => (
-                                <td key={header.id} className='relative'>
-                                    {RT.flexRender(
-                                        header.column.columnDef.meta?.filter,
-                                        header.getContext()
-                                    )}
-                                </td>
-                            ))}
-                            <td className='pr-1'/>
-                        </tr>
-                    </R.Fragment>
-                ))}
-            </thead>
-            <tbody>
-                {table.getRowModel().rows.map(row => {
-                    const status = row.getValue<Equipment['status']>('status')
-                    return <tr
-                        key={row.id}
-                        className={statusColors[status] + ' border-t border-t-gray-600'}
+    const cellBorder = 'border-t border-t-gray-600'
+    const hGroup = table.getHeaderGroups()[0]
+
+    return <div
+        className='text-sm m-4 max-w-7xl mx-auto'
+    >
+        <div
+            className={
+                'w-full grid px-1'
+                + ` grid-cols-[repeat(${hGroup.headers.length},auto)]`
+            }
+        >
+            {hGroup.headers.map(header => (
+                <span key={header.id} className='flex'>
+                    {RT.flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                    )}
+                </span>
+            ))}
+            {hGroup.headers.map(header => (
+                <span key={header.id} className='flex border-b border-b-gray-600'>
+                    {RT.flexRender(
+                        header.column.columnDef.meta?.filter,
+                        header.getContext()
+                    )}
+                </span>
+            ))}
+            {table.getRowModel().rows.map((row, i) => {
+                const status = row.getValue<Equipment['status']>('status')
+                const style = statusColors[status] + ' ' + (i ? cellBorder : '')
+                return row.getVisibleCells().map(cell => {
+                    return <span
+                        key={cell.id}
+                        className={style + ' flex '}
                     >
-                        <td className='pl-1'/>
-                        {row.getVisibleCells().map(cell => (
-                            <td key={cell.id} className='relative'>
-                                {RT.flexRender(
-                                    cell.column.columnDef.cell,
-                                    cell.getContext()
-                                )}
-                            </td>
-                        ))}
-                        <td className='pr-1'/>
-                    </tr>
-                })}
-            </tbody>
-        </table>
+                        {RT.flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                        )}
+                    </span>
+                })
+            })}
+        </div>
     </div>
 }
 
