@@ -143,7 +143,63 @@ export default function() {
         enableRowSelection: true,
     })
 
-    return <Table table={table}/>
+    return <div>
+        <Control store={store}/>
+        <Table table={table}/>
+    </div>
+}
+
+function Control(
+    { store, table }: { store: Z.UseBoundStore<Z.StoreApi<State>>, table: RT.Table<Equipment> }
+) {
+    const { selected, data } = store()
+
+    let count = 0
+    let commonStatus: Equipment['status'] | '' | null = null
+    for(const k in selected) {
+        count++
+        if(selected[k]) {
+            const v = data[k as any].status
+            if(commonStatus == null) {
+                commonStatus = v
+            }
+            else if(v !== commonStatus) {
+                commonStatus = ''
+            }
+        }
+    }
+    commonStatus = commonStatus ?? ''
+
+
+    return <div className='flex text-sm m-4 px-5 py-3 max-w-7xl mx-auto rounded-full bg-indigo-100'>
+        <div className='grow'>Selected: {count}</div>
+        <div className='flex gap-4'>
+            <span>Change status:</span>
+            <select
+                value={commonStatus}
+                onChange={it => {
+                    const newStatus = it.target.value as (Equipment['status'] | '')
+                    if(newStatus === '') return
+
+                    const newData: typeof data = []
+                    for(let i = 0; i < data.length; i++) {
+                        let record = data[i]
+                        if(selected[i]) {
+                            record = { ...record, status: newStatus }
+                        }
+                        newData[i] = record
+                    }
+
+                    store.setState({ data: newData })
+                }}
+            >
+                <option value=''>Select a status</option>
+                {statuses.map(it => (
+                    <option value={it}>{it}</option>
+                ))}
+            </select>
+        </div>
+    </div>
 }
 
 function Table({ table }: { table: RT.Table<Equipment> }) {
