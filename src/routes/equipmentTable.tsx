@@ -170,13 +170,15 @@ function Control(
     }
     commonStatus = commonStatus ?? ''
 
+    const disabled = count == 0
 
     return <div className='flex text-sm m-4 px-5 py-3 max-w-7xl mx-auto rounded-full bg-indigo-100'>
         <div className='grow'>Selected: {count}</div>
-        <div className='flex gap-4'>
+        <div className={'flex gap-4' + (disabled ? ' text-gray-600' : '') }>
             <span>Change status:</span>
             <select
                 value={commonStatus}
+                disabled={disabled}
                 onChange={it => {
                     const newStatus = it.target.value as (Equipment['status'] | '')
                     if(newStatus === '') return
