@@ -30,10 +30,32 @@ function Cell({ className, children, ...rest }: CellProps<HTMLDivElement>) {
     </div>
 }
 
-function Header({ children }: R.PropsWithChildren<{}>) {
-    return <div className='px-3 py-3 upper font-bold text-gray-700'>
+type HeaderProps<T> = R.PropsWithChildren<{ ctx: RT.HeaderContext<Equipment, T> }>
+
+const sortClasses = new Map()
+sortClasses.set(false, ' text-gray-500')
+sortClasses.set(true, ' text-black')
+
+function Header<T>({ ctx, children }: HeaderProps<T>) {
+    const sorted = ctx.column.getIsSorted()
+
+    return <button
+        type='button'
+        className={'px-3 py-3 upper font-bold text-gray-700 flex items-center gap-2'}
+        onClick={ctx.column.getToggleSortingHandler()}
+    >
         {children}
-    </div>
+        {ctx.column.getCanSort() &&
+            <div className='text-[0.5em] leading-none flex flex-col'>
+                <span
+                    className={sortClasses.get(sorted === 'asc')}
+                >▲</span>
+                <span
+                    className={sortClasses.get(sorted === 'desc')}
+                >▼</span>
+            </div>
+        }
+    </button>
 }
 
 type InputProps = R.DetailedHTMLProps<R.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
@@ -57,37 +79,49 @@ function CellCheckbox(props: InputProps) {
 
 const columns = [
     helper.accessor('id', {
-        header: () => <Header>Id</Header>,
+        header: (v) => {
+            return <Header ctx={v}>Id</Header>
+        },
         cell: v => <Cell className='break-all'>{v.getValue()}</Cell>
     }),
     helper.accessor('name', {
-        header: () => <Header>Name</Header>,
+        header: (v) => <Header ctx={v}>Name</Header>,
         cell: v => <Cell>{v.getValue()}</Cell>
     }),
     helper.accessor('location', {
-        header: () => <Header>Location</Header>,
+        header: (v) => <Header ctx={v}>Location</Header>,
         cell: v => <Cell>{v.getValue()}</Cell>
     }),
     helper.accessor('department', {
-        header: () => <Header>Department</Header>,
+        header: (v) => <Header ctx={v}>Department</Header>,
         cell: v => <Cell>{v.getValue()}</Cell>
     }),
     helper.accessor('model', {
-        header: () => <Header>Model</Header>,
+        header: (v) => <Header ctx={v}>Model</Header>,
         cell: v => <Cell>{v.getValue()}</Cell>
     }),
     helper.accessor('serialNumber', {
-        header: () => <Header>Serial number</Header>,
+        header: (v) => <Header ctx={v}>Serial number</Header>,
         cell: v => <Cell className='break-all'>
             {v.getValue()}
         </Cell>
     }),
     helper.accessor('installDate', {
-        header: () => <Header>Install date</Header>,
-        cell: v => <Cell>{componentsToString(v.getValue())}</Cell>
+        header: (v) => <Header ctx={v}>Install date</Header>,
+        cell: v => <Cell>{componentsToString(v.getValue())}</Cell>,
+        sortingFn: (rowA, rowB, id) => {
+            const a = rowA.getValue(id) as DateComponents
+            const b = rowB.getValue(id) as DateComponents
+
+            let diff = 0
+            for(let i = 0; diff == 0 && i < 3; i++) {
+                diff = a[i] - b[i]
+            }
+            return diff
+        },
     }),
     helper.accessor('status', {
-        header: () => <Header>Status</Header>,
+        header: (v) => <Header ctx={v}>Status</Header>,
         cell: v => <Cell>{v.getValue()}</Cell>
     }),
     helper.display({
@@ -140,6 +174,7 @@ export default function() {
             }
         },
         getCoreRowModel: RT.getCoreRowModel(),
+        getSortedRowModel: RT.getSortedRowModel(),
         enableRowSelection: true,
     })
 
@@ -149,9 +184,7 @@ export default function() {
     </div>
 }
 
-function Control(
-    { store, table }: { store: Z.UseBoundStore<Z.StoreApi<State>>, table: RT.Table<Equipment> }
-) {
+function Control({ store }: { store: Z.UseBoundStore<Z.StoreApi<State>> }) {
     const { selected, data } = store()
 
     let count = 0
@@ -310,7 +343,7 @@ const exampleData: Array<Equipment> = [
     },
     {
         id: 'cm09483098m',
-        'name': ' name 7',
+        'name': 'name 7',
         'location': 'South Emilyberg',
         'department': 'Assembly',
         'status': 'Maintenance',
