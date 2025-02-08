@@ -32,6 +32,20 @@ export function dateLocalToComponents(date: Date): DateComponents | null {
     ]
 }
 
+export function cmp(a: DateComponents, b: DateComponents) {
+    let diff = 0
+    for(let i = 0; diff == 0 && i < 3; i++) {
+        diff = a[i] - b[i]
+    }
+    return diff
+}
+
+export function toISODate(it: DateComponents) {
+    return ('' + it[0]).padStart(4, '0')
+        + '-' + ('' + it[1]).padStart(2, '0')
+        + '-' + ('' + it[2]).padStart(2, '0')
+}
+
 export const dateValidation = z.string()
     .transform((it, ctx) => {
         const components = strDateToComponents(it)

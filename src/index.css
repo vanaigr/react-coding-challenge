@@ -20,3 +20,17 @@ body {
     display: flex;
     flex-direction: column;
 }
+
+.placeholder-date-input {
+    & > span {
+        visibility: hidden;
+    }
+    &:has(> input:valid[data-empty='true']:not(:focus):not(:focus-within):not(:focus-visible)) {
+        & > input {
+            opacity: 0;
+        }
+        & > span {
+            visibility: visible;
+        }
+    }
+}

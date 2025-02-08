@@ -2,12 +2,24 @@ import * as R from 'react'
 import * as Z from 'zustand'
 import * as RT from '@tanstack/react-table'
 
-import { Equipment, statuses } from '@/data/equipmentRecord'
-import type { DateComponents } from '@/util/date'
+import { Equipment, departments, statuses } from '@/data/equipmentRecord'
+import {
+    cmp as dateCmp,
+    toISODate,
+    strDateToComponents,
+    type DateComponents,
+} from '@/util/date'
+import DateInput from '@/components/dateInput'
 
 function componentsToString(v: DateComponents) {
     const format = new Intl.DateTimeFormat()
     return format.format(new Date(v[0], v[1] - 1, v[2]))
+}
+
+declare module '@tanstack/react-table' {
+    interface ColumnMeta<TData extends RT.RowData, TValue> {
+        filter: (ctx: RT.HeaderContext<Equipment, TValue>) => R.ReactElement
+    }
 }
 
 const helper = RT.createColumnHelper<Equipment>()
@@ -30,32 +42,39 @@ function Cell({ className, children, ...rest }: CellProps<HTMLDivElement>) {
     </div>
 }
 
-type HeaderProps<T> = R.PropsWithChildren<{ ctx: RT.HeaderContext<Equipment, T> }>
+type HeaderProps<T> = R.PropsWithChildren<{
+    filter?: R.ReactElement,
+    ctx: RT.HeaderContext<Equipment, T>,
+}>
 
 const sortClasses = new Map()
 sortClasses.set(false, ' text-gray-500')
 sortClasses.set(true, ' text-black')
 
-function Header<T>({ ctx, children }: HeaderProps<T>) {
+function Header<T>({ ctx, children, filter }: HeaderProps<T>) {
     const sorted = ctx.column.getIsSorted()
 
-    return <button
-        type='button'
-        className={'px-3 py-3 upper font-bold text-gray-700 flex items-center gap-2'}
-        onClick={ctx.column.getToggleSortingHandler()}
-    >
-        {children}
-        {ctx.column.getCanSort() &&
-            <div className='text-[0.5em] leading-none flex flex-col'>
-                <span
-                    className={sortClasses.get(sorted === 'asc')}
-                >▲</span>
-                <span
-                    className={sortClasses.get(sorted === 'desc')}
-                >▼</span>
+    return <div className='flex flex-col'>
+        <button
+            type='button'
+            className={
+                'px-3 py-3 upper font-bold text-gray-700 flex items-center gap-2'
+                + ' cursor-pointer'
+            }
+            onClick={ctx.column.getToggleSortingHandler()}
+        >
+            <div className='grow text-left'>
+            {children}
             </div>
-        }
-    </button>
+            {ctx.column.getCanSort() &&
+                <div className='text-[0.5em] leading-none flex flex-col'>
+                    <span className={sortClasses.get(sorted === 'asc')}>▲</span>
+                    <span className={sortClasses.get(sorted === 'desc')}>▼</span>
+                </div>
+            }
+        </button>
+        {filter}
+    </div>
 }
 
 type InputProps = R.DetailedHTMLProps<R.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
@@ -74,37 +93,74 @@ function CellCheckbox(props: InputProps) {
             <input type="checkbox" className='size-3' {...props}/>
         </label>
     </>
+}
 
+function textFilter<T extends string>(ctx: RT.HeaderContext<Equipment, T>) {
+    return <label className='flex pb-3 px-3'>
+        <input
+            className='grow w-0'
+            placeholder='Search'
+            value={ctx.column.getFilterValue() as string ?? ''}
+            onChange={it => ctx.column.setFilterValue(it.target.value)}
+        />
+    </label>
+}
+
+function mkSelectFilter<T extends string>(values: readonly string[]) {
+    const options = values.map(it => (<option key={it} value={it}>{it}</option>))
+
+    return (ctx: RT.HeaderContext<Equipment, T>) => {
+        const v = values[values.indexOf(ctx.column.getFilterValue() as string)] ?? ''
+        return <label className='flex pb-3 px-3'>
+            <select
+                className={'grow w-0' + (v === '' ? ' text-gray-500' : '')}
+                value={v}
+                onChange={it => ctx.column.setFilterValue(it.target.value)}
+            >
+                <option value='' className='text-gray-500'>All</option>
+                {options}
+            </select>
+        </label>
+    }
+}
+
+type DateFilter = {
+    first: DateComponents | null,
+    last: DateComponents | null,
 }
 
 const columns = [
     helper.accessor('id', {
-        header: (v) => {
-            return <Header ctx={v}>Id</Header>
-        },
-        cell: v => <Cell className='break-all'>{v.getValue()}</Cell>
+        header: v => <Header ctx={v}>Id</Header>,
+        cell: v => <Cell className='break-all'>{v.getValue()}</Cell>,
+        meta: { filter: textFilter },
     }),
     helper.accessor('name', {
         header: (v) => <Header ctx={v}>Name</Header>,
-        cell: v => <Cell>{v.getValue()}</Cell>
+        cell: v => <Cell>{v.getValue()}</Cell>,
+        meta: { filter: textFilter },
     }),
     helper.accessor('location', {
         header: (v) => <Header ctx={v}>Location</Header>,
-        cell: v => <Cell>{v.getValue()}</Cell>
+        cell: v => <Cell>{v.getValue()}</Cell>,
+        meta: { filter: textFilter },
     }),
     helper.accessor('department', {
         header: (v) => <Header ctx={v}>Department</Header>,
-        cell: v => <Cell>{v.getValue()}</Cell>
+        cell: v => <Cell>{v.getValue()}</Cell>,
+        meta: { filter: mkSelectFilter(departments) },
     }),
     helper.accessor('model', {
         header: (v) => <Header ctx={v}>Model</Header>,
-        cell: v => <Cell>{v.getValue()}</Cell>
+        cell: v => <Cell>{v.getValue()}</Cell>,
+        meta: { filter: textFilter },
     }),
     helper.accessor('serialNumber', {
         header: (v) => <Header ctx={v}>Serial number</Header>,
         cell: v => <Cell className='break-all'>
             {v.getValue()}
-        </Cell>
+        </Cell>,
+        meta: { filter: textFilter },
     }),
     helper.accessor('installDate', {
         header: (v) => <Header ctx={v}>Install date</Header>,
@@ -112,17 +168,65 @@ const columns = [
         sortingFn: (rowA, rowB, id) => {
             const a = rowA.getValue(id) as DateComponents
             const b = rowB.getValue(id) as DateComponents
+            return dateCmp(a, b)
+        },
+        filterFn: (row, id, filter) => {
+            const f = filter as DateFilter | undefined
+            if(f == null) return true
 
-            let diff = 0
-            for(let i = 0; diff == 0 && i < 3; i++) {
-                diff = a[i] - b[i]
+            const a = row.getValue(id) as DateComponents
+            if(f.first != null) {
+                if(dateCmp(a, f.first) < 0) return false
             }
-            return diff
+            if(f.last != null) {
+                if(dateCmp(a, f.last) > 0) return false
+            }
+
+            return true
+        },
+        meta: {
+            filter: ctx => {
+                const v = ctx.column.getFilterValue() as DateFilter | undefined
+                let firstV = ''
+                let lastV = ''
+                if(v != null && v.first != null) {
+                    firstV = toISODate(v.first)
+                }
+                if(v != null && v.last != null) {
+                    lastV = toISODate(v.last)
+                }
+
+                return <div className='flex pb-3 px-3 flex-col'>
+                    <div className='flex flex-col'>
+                        <DateInput
+                            defaultValue={firstV}
+                            className={firstV === '' ? 'text-gray-500' : ''}
+                            onChange={it => {
+                                const cs = strDateToComponents(it.target.value)
+                                ctx.column.setFilterValue({ ...v, first: cs })
+                            }}
+                            placeholder='First'
+                        />
+                    </div>
+                    <div className='flex flex-col'>
+                        <DateInput
+                            placeholder='Last'
+                            className={lastV === '' ? 'text-gray-500' : ''}
+                            defaultValue={lastV}
+                            onChange={it => {
+                                const cs = strDateToComponents(it.target.value)
+                                ctx.column.setFilterValue({ ...v, last: cs })
+                            }}
+                        />
+                    </div>
+                </div>
+            },
         },
     }),
     helper.accessor('status', {
         header: (v) => <Header ctx={v}>Status</Header>,
-        cell: v => <Cell>{v.getValue()}</Cell>
+        cell: v => <Cell>{v.getValue()}</Cell>,
+        meta: { filter: mkSelectFilter(statuses) },
     }),
     helper.display({
         id: 'actions',
@@ -152,7 +256,7 @@ type State = {
     selected: RT.RowSelectionState,
 }
 
-export default function() {
+export default function Component() {
     const store = R.useState(() => {
         return Z.create<State>(() => ({ data: exampleData, selected: {} }))
     })[0]
@@ -173,6 +277,7 @@ export default function() {
                 store.setState({ selected: updater })
             }
         },
+        getFilteredRowModel: RT.getFilteredRowModel(),
         getCoreRowModel: RT.getCoreRowModel(),
         getSortedRowModel: RT.getSortedRowModel(),
         enableRowSelection: true,
@@ -242,18 +347,32 @@ function Table({ table }: { table: RT.Table<Equipment> }) {
         <table className='w-full'>
             <thead>
                 {table.getHeaderGroups().map(group => (
-                    <tr key={group.id}>
-                        <td className='pl-1'/>
-                        {group.headers.map(header => (
-                            <td key={header.id} className='relative'>
-                                {RT.flexRender(
-                                    header.column.columnDef.header,
-                                    header.getContext()
-                                )}
-                            </td>
-                        ))}
-                        <td className='pr-1'/>
-                    </tr>
+                    <R.Fragment key={group.id}>
+                        <tr>
+                            <td className='pl-1'/>
+                            {group.headers.map(header => (
+                                <td key={header.id} className='relative'>
+                                    {RT.flexRender(
+                                        header.column.columnDef.header,
+                                        header.getContext()
+                                    )}
+                                </td>
+                            ))}
+                            <td className='pr-1'/>
+                        </tr>
+                        <tr>
+                            <td className='pl-1'/>
+                            {group.headers.map(header => (
+                                <td key={header.id} className='relative'>
+                                    {RT.flexRender(
+                                        header.column.columnDef.meta?.filter,
+                                        header.getContext()
+                                    )}
+                                </td>
+                            ))}
+                            <td className='pr-1'/>
+                        </tr>
+                    </R.Fragment>
                 ))}
             </thead>
             <tbody>
