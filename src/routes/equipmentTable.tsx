@@ -2,7 +2,7 @@ import * as R from 'react'
 import * as Z from 'zustand'
 import * as RT from '@tanstack/react-table'
 
-import { Equipment, departments, statuses } from '@/data/equipmentRecord'
+import { Equipment, departments, statuses } from '@/data/records'
 import {
     cmp as dateCmp,
     toISODate,

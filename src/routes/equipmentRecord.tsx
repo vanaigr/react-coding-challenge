@@ -3,10 +3,7 @@ import * as Z from 'zustand'
 import { z } from 'zod'
 
 import { dateValidation } from '@/util/date'
-import {
-    statuses,
-    departments,
-} from '@/data/equipmentRecord'
+import { statuses, departments } from '@/data/records'
 
 const validation = z.object({
     name: z.string().min(3, 'Must be at least 3 characters long'),
