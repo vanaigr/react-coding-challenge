@@ -20,6 +20,17 @@ export function Cell({ className, children, ...rest }: CellProps<HTMLDivElement>
     </div>
 }
 
+export type TextCellProps = { className?: string, value: string }
+export function TextCell({ className, value }: TextCellProps) {
+    return <div
+        className={(className ?? '') + ' flex ' + cellClass}
+        title={value}
+    >
+        <span className='grow line-clamp-3'>
+            {value}
+        </span>
+    </div>
+}
 
 type HeaderProps<D, V> = R.PropsWithChildren<{
     ctx: RT.HeaderContext<D, V>,
@@ -98,7 +109,7 @@ export function headerCheckbox<D, V>(ctx: RT.HeaderContext<D, V>) {
 }
 
 
-export function textFilter<D, T extends string>(ctx: RT.HeaderContext<D, T>) {
+export function textFilter<D, T extends string | string[]>(ctx: RT.HeaderContext<D, T>) {
     return <label className='flex py-2 px-3 grow items-start'>
         <input
             className='grow w-20'
@@ -192,4 +203,87 @@ export function dateFilter<D, T extends DateComponents>(ctx: RT.HeaderContext<D,
             />
         </div>
     </div>
+}
+
+
+// there's inNumberRange, but docs aren't clear about types
+
+export type NumbersFilter = {
+    first: number | null,
+    last: number | null,
+}
+
+export function numberSortingFn<T>(rowA: RT.Row<T>, rowB: RT.Row<T>, id: string) {
+    const a = rowA.getValue(id) as number
+    const b = rowB.getValue(id) as number
+    return a - b
+}
+
+export function numberFilterFn<T>(row: RT.Row<T>, id: string, filter: any) {
+    const f = filter as NumbersFilter | undefined
+    if(f == null) return true
+
+    const a = row.getValue(id) as number
+    if(f.first != null) {
+        if(a < f.first) return false
+    }
+    if(f.last != null) {
+        if(a > f.last) return false
+    }
+
+    return true
+}
+
+export function numberFilter<D, T extends number>(ctx: RT.HeaderContext<D, T>) {
+    const v = ctx.column.getFilterValue() as NumbersFilter | undefined
+    let firstV = ''
+    let lastV = ''
+    if(v != null && v.first != null) {
+        firstV = '' + v.first
+    }
+    if(v != null && v.last != null) {
+        lastV = '' + v.last
+    }
+
+    return <div className='grow flex pb-3 px-3 flex-col'>
+        <div className='grow flex'>
+            <input
+                type='number'
+                defaultValue={firstV}
+                className={'w-10 grow ' + (firstV === '' ? 'text-gray-500' : '')}
+                onChange={it => {
+                    const cs = parseFloat(it.target.value)
+                    ctx.column.setFilterValue({ ...v, first: cs })
+                }}
+                placeholder='First'
+            />
+        </div>
+        <div className='grow flex'>
+            <input
+                type='number'
+                placeholder='Last'
+                className={'w-10 grow ' + (lastV === '' ? 'text-gray-500' : '')}
+                defaultValue={lastV}
+                onChange={it => {
+                    const cs = parseFloat(it.target.value)
+                    ctx.column.setFilterValue({ ...v, last: cs })
+                }}
+            />
+        </div>
+    </div>
+}
+
+// includes if the for any item in the array, item.includes(filter)
+export function stringArrFilterFn<T>(row: RT.Row<T>, id: string, filter: any) {
+    let f = filter as string | undefined
+    if(f == null) return true
+    f = f.toLowerCase()
+
+    const arr = row.getValue(id) as string[]
+    for(let i = 0; i < arr.length; i++) {
+        // This should be case folded for e.g. Greek ς, but TC39 doesn't care?
+        if(arr[i].toLowerCase().includes(f)) return true
+    }
+
+    return false
 }

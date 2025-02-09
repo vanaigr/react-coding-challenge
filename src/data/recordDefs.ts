@@ -32,7 +32,7 @@ export const completionStatuses = ['Complete', 'Incomplete', 'Pending Parts'] as
 
 export interface MaintenanceRecord {
     id: string,
-    equipmentId: string,
+    equipmentId: Equipment['id'],
     date: DateComponents,
     type: ValuesUnion<typeof types>,
     technician: string,

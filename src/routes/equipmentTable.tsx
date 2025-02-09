@@ -192,17 +192,19 @@ function Table({ table }: { table: RT.Table<Equipment> }) {
             {table.getRowModel().rows.map((row, i) => {
                 const status = row.getValue<Equipment['status']>('status')
                 const style = statusColors[status] + ' ' + (i ? cellBorder : '')
-                return row.getVisibleCells().map(cell => {
-                    return <span
-                        key={cell.id}
-                        className={style + ' flex '}
-                    >
-                        {RT.flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                        )}
-                    </span>
-                })
+                return <R.Fragment key={row.id}>
+                    {row.getVisibleCells().map(cell => {
+                        return <span
+                            key={cell.id}
+                            className={style + ' flex '}
+                        >
+                            {RT.flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                            )}
+                        </span>
+                    })}
+                </R.Fragment>
             })}
         </div>
     </div>
