@@ -254,8 +254,16 @@ export default function Component() {
     const data = Z.useStore(store)
     const [selected, setSelected] = R.useState<Selected>({})
 
+    // Tanstack Table docs suggest useMemo, but React doesn't
+    // guarantee it won't be recomputed every time.
+    const listRef = R.useRef<{ data: typeof data, list: Equipment[] }>(null)
+    if(listRef.current == null || listRef.current.data !== data) {
+        listRef.current = { data, list: [...data.values()] }
+    }
+    const list = listRef.current.list
+
     const table = RT.useReactTable({
-        data,
+        data: list,
         columns,
         state: { rowSelection: selected },
         onRowSelectionChange: setSelected,
@@ -266,13 +274,12 @@ export default function Component() {
     })
 
     return <div>
-        <Control selected={selected}/>
+        <Control data={list} selected={selected}/>
         <Table table={table}/>
     </div>
 }
 
-function Control({ selected }: { selected: Selected }) {
-    const data = Z.useStore(store)
+function Control({ data, selected }: { data: Equipment[], selected: Selected }) {
 
     let count = 0
     let commonStatus: Equipment['status'] | '' | null = null
@@ -303,16 +310,16 @@ function Control({ selected }: { selected: Selected }) {
                     const newStatus = it.target.value as (Equipment['status'] | '')
                     if(newStatus === '') return
 
-                    const newData: typeof data = []
+                    const newData: Map<Equipment['id'], Equipment> = new Map()
                     for(let i = 0; i < data.length; i++) {
                         let record = data[i]
                         if(selected[i]) {
                             record = { ...record, status: newStatus }
                         }
-                        newData[i] = record
+                        newData.set(record.id, record)
                     }
 
-                    store.setState(newData)
+                    store.setState(newData, true)
                 }}
             >
                 <option value=''>Select a status</option>

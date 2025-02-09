@@ -25,8 +25,7 @@ export default function Component() {
     const ids = []
     const names = []
     const titles = []
-    for(let i = 0; i < equipment.length; i++) {
-        const it = equipment[i]
+    for(const it of equipment.values()) {
         ids.push(it.id)
         names.push('' + it.id + ' ("' + it.name + '")')
         titles.push(
@@ -107,7 +106,7 @@ export default function Component() {
                     errors={error?.completionStatus?._errors}
                 />
                 <EditableList
-                    title='Parts Replaced'
+                    title='Parts replaced'
                     defaultValue={input.partsReplaced}
                     onChange={list => update({ partsReplaced: list })}
                     errors={error?.partsReplaced?._errors}

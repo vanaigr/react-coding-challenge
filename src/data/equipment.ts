@@ -105,4 +105,7 @@ const exampleData: Array<Equipment> = [
     },
 ]
 
-export const store = Z.createStore<Array<Equipment>>(() => exampleData)
+const map = new Map()
+exampleData.forEach(it => map.set(it.id, it))
+
+export const store = Z.createStore<Map<Equipment['id'], Equipment>>(() => map)
