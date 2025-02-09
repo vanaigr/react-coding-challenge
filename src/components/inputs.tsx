@@ -1,13 +1,14 @@
 import * as R from 'react'
 
+const inputContC = 'flex flex-col items-stretch'
+const inputC = 'border border-indigo-400 rounded-md'
+    + ' focus:outline-indigo-400 text-lg h-12 w-0 grow'
+
+
 type InputProps = {
     title: string,
     errors?: string[],
 } & R.DetailedHTMLProps<R.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
-
-const inputContC = 'flex flex-col items-stretch'
-const inputC = 'border border-indigo-400 rounded-md'
-    + ' focus:outline-indigo-400 w-xs h-xs text-lg h-12'
 
 export function Input({ title, errors, ...rest }: InputProps) {
     const isError = errors != null && errors.length > 0
@@ -16,10 +17,12 @@ export function Input({ title, errors, ...rest }: InputProps) {
 
     return <label className={inputContC}>
         <span className='font-sans mb-1'>{title}</span>
-        <input
-            className={inputC + ' px-4' + errorStyle}
-            {...rest}
-        />
+        <span className='flex'>
+            <input
+                className={inputC + ' px-4' + errorStyle}
+                {...rest}
+            />
+        </span>
         <span
             className='whitespace-nowrap overflow-hidden text-ellipsis w-xs'
             title={errorText}
@@ -29,24 +32,38 @@ export function Input({ title, errors, ...rest }: InputProps) {
     </label>
 }
 
+
 type SelectProps = {
     title: string,
     options: readonly string[],
+    optionNames?: readonly string[],
+    optionTitles?: readonly string[],
     errors?: string[],
 } & R.DetailedHTMLProps<R.SelectHTMLAttributes<HTMLSelectElement>, HTMLSelectElement>
 
-export function Select({ title, options, errors, ...rest }: SelectProps) {
+export function Select({
+    title,
+    options,
+    optionTitles,
+    optionNames,
+    errors,
+    ...rest
+}: SelectProps) {
     const isError = errors != null && errors.length > 0
     const errorStyle = !isError ? '' : ' border-red-600 focus:outline-red-400'
     const errorText = !isError ? '' : errors.join('. ')
 
     return <label className={inputContC}>
         <span className='font-sans mb-1'>{title}</span>
-        <select className={inputC + ' px-3' + errorStyle} {...rest}>
-            {options.map(v => (
-                <option key={v} value={v}>{v}</option>
-            ))}
-        </select>
+        <span className='flex'>
+            <select className={inputC + ' px-3' + errorStyle} {...rest}>
+                {options.map((v, i) => (
+                    <option title={optionTitles?.[i]} key={v} value={v}>
+                        {optionNames?.[i] ?? v}
+                    </option>
+                ))}
+            </select>
+        </span>
         <span
             className='whitespace-nowrap overflow-hidden text-ellipsis w-xs'
             title={errorText}
@@ -54,4 +71,132 @@ export function Select({ title, options, errors, ...rest }: SelectProps) {
             {errorText}
         </span>
     </label>
+}
+
+
+type EditableListProps = {
+    title: string,
+    defaultValue: string[],
+    onChange: (value: string[]) => void,
+    errors?: string[],
+}
+
+export function EditableList({ title, defaultValue, onChange, errors }: EditableListProps) {
+    const [items, setItems] = R.useState(defaultValue)
+    const [itemsMeta, setItemsMeta] = R.useState(() => {
+        const ids = defaultValue.map((_, i) => i)
+        const newId = defaultValue.length
+        return { ids, newId }
+    })
+
+    const isError = errors != null && errors.length > 0
+    const errorStyle = !isError ? '' : ' border-red-600 focus:outline-red-400'
+    const errorText = !isError ? '' : errors.join('. ')
+
+    return <div className={inputContC}>
+        <span className='font-sans mb-1'>{title}</span>
+        <div className={'flex flex-col border border-indigo-400 rounded-md' + errorStyle}>
+            <div className={'border-indigo-400 border-b' + errorStyle}>
+                <NewItem
+                    key={itemsMeta.newId}
+                    defaultValue=''
+                    onAdd={value => {
+                        const newItems = items.slice()
+                        newItems.push(value)
+
+                        const newIds = itemsMeta.ids.slice()
+                        const newNewId = itemsMeta.newId + 1
+                        newIds.push(itemsMeta.newId)
+
+                        setItems(newItems)
+                        setItemsMeta({ ids: newIds, newId: newNewId })
+                        onChange(newItems)
+                    }}
+                />
+            </div>
+            <div
+                className={
+                    'flex flex-col-reverse py-1.5'
+                }
+            >
+                {items.map((it, i) => <Item
+                    key={itemsMeta.ids[i]}
+                    defaultValue={it}
+                    onChange={ev => {
+                        const newItems = items.slice()
+                        newItems[i] = ev.target.value
+                        setItems(newItems)
+                        onChange(newItems)
+                    }}
+                    onDelete={() => {
+                        const newItems = items.slice()
+                        newItems.splice(i, 1)
+                        const newIds = itemsMeta.ids.slice()
+                        newIds.splice(i, 1)
+
+                        setItems(newItems)
+                        setItemsMeta({ ...itemsMeta, ids: newIds })
+                        onChange(newItems)
+                    }}
+                />)}
+            </div>
+        </div>
+        <span
+            className='whitespace-nowrap overflow-hidden text-ellipsis w-xs'
+            title={errorText}
+        >
+            {errorText}
+        </span>
+    </div>
+}
+
+type ItemProps = {
+    defaultValue: string,
+    onChange: R.ChangeEventHandler<HTMLInputElement>,
+    onDelete: () => void,
+}
+
+function Item({ defaultValue, onChange, onDelete }: ItemProps) {
+    return <div className='flex items-center gap-3 px-3'>
+        <label className='flex grow py-1.5'>
+            <input
+                className='grow'
+                type='text'
+                defaultValue={defaultValue}
+                onChange={onChange}
+            />
+        </label>
+        <button
+            type='button'
+            className={'material-symbols-outlined cursor-pointer py-1.5'}
+            onClick={onDelete}
+        >delete</button>
+    </div>
+}
+
+type NewItemProps = { defaultValue: string, onAdd: (value: string) => void }
+
+function NewItem({ defaultValue, onAdd }: NewItemProps) {
+    const [value, setValue] = R.useState('')
+    const disabled = value === ''
+
+    return <div className='flex items-center gap-3'>
+        <label className='flex grow pl-3 py-3'>
+            <input
+                className='grow'
+                type='text'
+                defaultValue={defaultValue}
+                onChange={it => setValue(it.target.value)}
+            />
+        </label>
+        <button
+            type='button'
+            className={
+                'material-symbols-outlined pr-3 py-3'
+                + (disabled ? ' text-gray-500' : ' cursor-pointer')
+            }
+            disabled={disabled}
+            onClick={() => onAdd(value)}
+        >add</button>
+    </div>
 }
