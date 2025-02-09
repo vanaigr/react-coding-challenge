@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 import { cmp as dateCmp, dateValidation, dateLocalToComponents } from '@/util/date'
-import { statuses, departments } from '@/data/records'
+import { statuses, departments } from '@/data/recordDefs'
 
 // This is in a separate module because react hot reloading can hot reload
 // if a given file exports only components

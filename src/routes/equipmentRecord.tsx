@@ -1,7 +1,7 @@
 import * as R from 'react'
 import * as Z from 'zustand'
 
-import { statuses, departments } from '@/data/records'
+import { statuses, departments } from '@/data/recordDefs'
 import { type Raw, type FormData, createFormData } from '@/data/equipmentForm'
 import { Input, Select } from '@/components/inputs'
 
@@ -40,12 +40,7 @@ export default function Component() {
 
     return <div className='grow flex items-center'>
         <form className='flex flex-col p-4 mx-auto'>
-            <div
-                className={
-                    'grid grid-cols-[auto] md:grid-cols-2 items-stretch gap-4'
-                    + ' md:gap-x-8'
-                }
-            >
+            <div className='grid grid-cols-[auto] md:grid-cols-2 items-stretch gap-4 md:gap-x-8'>
                 <Input
                     title='Name'
                     type='text'
