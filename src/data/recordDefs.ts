@@ -23,12 +23,15 @@ export const completionStatuses = ['Complete', 'Incomplete', 'Pending Parts'] as
 export interface MaintenanceRecord {
     id: string,
     equipmentId: string,
-    date: Date,
+    date: DateComponents,
     type: ValuesUnion<typeof types>,
     technician: string,
     hoursSpent: number,
     description: string,
-    partsReplaced?: string[],
+    // TODO: should this be `string[]` or `string[] | undefined`.
+    // I don't think there's any semantic difference
+    // between empty array and no array in this case.
+    partsReplaced: string[],
     priority: ValuesUnion<typeof priorities>,
     completionStatus: ValuesUnion<typeof completionStatuses>,
 }
