@@ -93,13 +93,36 @@ export function EditableList({ title, defaultValue, onChange, errors }: Editable
     const errorStyle = !isError ? '' : ' border-red-600 focus:outline-red-400'
     const errorText = !isError ? '' : errors.join('. ')
 
+    const itemComponents = []
+    for(let i = items.length - 1; i != -1; i--) {
+        const it = items[i]
+        itemComponents.push(<Item
+            key={itemsMeta.ids[i]}
+            defaultValue={it}
+            onChange={ev => {
+                const newItems = items.slice()
+                newItems[i] = ev.target.value
+                setItems(newItems)
+                onChange(newItems)
+            }}
+            onDelete={() => {
+                const newItems = items.slice()
+                newItems.splice(i, 1)
+                const newIds = itemsMeta.ids.slice()
+                newIds.splice(i, 1)
+
+                setItems(newItems)
+                setItemsMeta({ ...itemsMeta, ids: newIds })
+                onChange(newItems)
+            }}
+        />)
+    }
+
     return <div className={inputContC}>
         <span className='font-sans mb-1'>{title}</span>
         <div className={'flex flex-col border border-indigo-400 rounded-md' + errorStyle}>
             <div className={'border-indigo-400 border-b' + errorStyle}>
                 <NewItem
-                    key={itemsMeta.newId}
-                    defaultValue=''
                     onAdd={value => {
                         const newItems = items.slice()
                         newItems.push(value)
@@ -114,31 +137,8 @@ export function EditableList({ title, defaultValue, onChange, errors }: Editable
                     }}
                 />
             </div>
-            <div
-                className={
-                    'flex flex-col-reverse py-1.5'
-                }
-            >
-                {items.map((it, i) => <Item
-                    key={itemsMeta.ids[i]}
-                    defaultValue={it}
-                    onChange={ev => {
-                        const newItems = items.slice()
-                        newItems[i] = ev.target.value
-                        setItems(newItems)
-                        onChange(newItems)
-                    }}
-                    onDelete={() => {
-                        const newItems = items.slice()
-                        newItems.splice(i, 1)
-                        const newIds = itemsMeta.ids.slice()
-                        newIds.splice(i, 1)
-
-                        setItems(newItems)
-                        setItemsMeta({ ...itemsMeta, ids: newIds })
-                        onChange(newItems)
-                    }}
-                />)}
+            <div className='flex flex-col py-1.5'>
+                {itemComponents}
             </div>
         </div>
         <span
@@ -176,17 +176,25 @@ function Item({ defaultValue, onChange, onDelete }: ItemProps) {
 
 type NewItemProps = { defaultValue: string, onAdd: (value: string) => void }
 
-function NewItem({ defaultValue, onAdd }: NewItemProps) {
+function NewItem({ onAdd }: NewItemProps) {
     const [value, setValue] = R.useState('')
     const disabled = value === ''
+    const ref = R.useRef<HTMLInputElement>(null)
 
     return <div className='flex items-center gap-3'>
         <label className='flex grow pl-3 py-3'>
             <input
+                ref={ref}
                 className='grow'
                 type='text'
-                defaultValue={defaultValue}
                 onChange={it => setValue(it.target.value)}
+                onKeyDown={it => {
+                    if(it.key === 'Enter' && !disabled) {
+                        onAdd(value)
+                        setValue('')
+                        if(ref.current) ref.current.value = ''
+                    }
+                }}
             />
         </label>
         <button
@@ -196,7 +204,11 @@ function NewItem({ defaultValue, onAdd }: NewItemProps) {
                 + (disabled ? ' text-gray-500' : ' cursor-pointer')
             }
             disabled={disabled}
-            onClick={() => onAdd(value)}
+            onClick={() => {
+                onAdd(value)
+                setValue('')
+                if(ref.current) ref.current.value = ''
+            }}
         >add</button>
     </div>
 }

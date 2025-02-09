@@ -39,7 +39,7 @@ export default function Component() {
     }
 
     return <div className='grow flex items-center'>
-        <form className='flex flex-col p-4 mx-auto'>
+        <form className='flex flex-col p-4 mx-auto' onSubmit={it => it.preventDefault()}>
             <div className='grid grid-cols-[auto] md:grid-cols-2 items-stretch gap-4 md:gap-x-8'>
                 <Input
                     title='Name'

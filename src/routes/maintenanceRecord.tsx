@@ -58,7 +58,7 @@ export default function Component() {
     }
 
     return <div className='grow flex items-center'>
-        <form className='flex flex-col p-4 mx-auto'>
+        <form className='flex flex-col p-4 mx-auto' onSubmit={ev => ev.preventDefault()}>
             <div
                 className={
                     'grid grid-cols-[auto] md:grid-cols-2 items-stretch gap-4'
