@@ -46,6 +46,11 @@ export function toISODate(it: DateComponents) {
         + '-' + ('' + it[2]).padStart(2, '0')
 }
 
+export function componentsToString(v: DateComponents) {
+    const format = new Intl.DateTimeFormat()
+    return format.format(new Date(v[0], v[1] - 1, v[2]))
+}
+
 export const dateValidation = z.string()
     .transform((it, ctx) => {
         const components = strDateToComponents(it)

@@ -2,20 +2,16 @@ import * as R from 'react'
 import * as Z from 'zustand'
 import * as RT from '@tanstack/react-table'
 
-import { Equipment, departments, statuses } from '@/data/recordDefs'
+import { type Equipment, departments, statuses } from '@/data/recordDefs'
 import {
     cmp as dateCmp,
     toISODate,
     strDateToComponents,
+    componentsToString,
     type DateComponents,
 } from '@/util/date'
 import DateInput from '@/components/dateInput'
 import { store } from '@/data/equipment'
-
-function componentsToString(v: DateComponents) {
-    const format = new Intl.DateTimeFormat()
-    return format.format(new Date(v[0], v[1] - 1, v[2]))
-}
 
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RT.RowData, TValue> {
