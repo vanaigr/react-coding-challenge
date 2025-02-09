@@ -335,15 +335,12 @@ function Table({ table }: { table: RT.Table<Equipment> }) {
     const cellBorder = 'border-t border-t-gray-600'
     const hGroup = table.getHeaderGroups()[0]
 
-    return <div
-        className='text-sm m-4 max-w-7xl mx-auto'
-    >
-        <div
-            className={
-                'w-full grid px-1'
-                + ` grid-cols-[repeat(${hGroup.headers.length},auto)]`
-            }
-        >
+    // In tailwind, it would be `grid-cols-[repeat(${hGroup.headers.length},auto)]`
+    // but it doesn't work _sometimes_, maybe '@tailwindcss/vite' issue.
+    const gridStyle = { gridTemplateColumns: `repeat(${hGroup.headers.length}, auto)` }
+
+    return <div className='text-sm m-4 max-w-7xl mx-auto'>
+        <div style={gridStyle} className='w-full grid px-1'>
             {hGroup.headers.map(header => (
                 <span key={header.id} className='flex'>
                     {RT.flexRender(
