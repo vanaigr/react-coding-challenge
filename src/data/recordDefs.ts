@@ -15,6 +15,17 @@ export interface Equipment {
     status: ValuesUnion<typeof statuses>,
 }
 
+export const equipmentFieldNames: Record<keyof Equipment, string> = {
+    id: 'Id',
+    name: 'Name',
+    location: 'Location',
+    department: 'department',
+    model: 'Model',
+    serialNumber: 'Serial number',
+    installDate: 'Install date',
+    status: 'Status',
+}
+
 export const types = ['Preventive', 'Repair', 'Emergency'] as const
 export const priorities = ['Low', 'Medium', 'High'] as const
 export const completionStatuses = ['Complete', 'Incomplete', 'Pending Parts'] as const
@@ -33,4 +44,17 @@ export interface MaintenanceRecord {
     partsReplaced: string[],
     priority: ValuesUnion<typeof priorities>,
     completionStatus: ValuesUnion<typeof completionStatuses>,
+}
+
+export const maintenanceFieldNames: Record<keyof MaintenanceRecord, string> = {
+    id: 'Id',
+    equipmentId: 'Equipment id',
+    date: 'Date',
+    type: 'Type',
+    technician: 'Technician',
+    hoursSpent: 'Hours spent',
+    description: 'Description',
+    partsReplaced: 'Parts replaced',
+    priority: 'Priority',
+    completionStatus: 'Completion status',
 }

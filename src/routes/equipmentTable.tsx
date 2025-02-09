@@ -2,7 +2,7 @@ import * as R from 'react'
 import * as Z from 'zustand'
 import * as RT from '@tanstack/react-table'
 
-import { type Equipment, departments, statuses } from '@/data/recordDefs'
+import { type Equipment, departments, statuses, equipmentFieldNames } from '@/data/recordDefs'
 import { componentsToString } from '@/util/date'
 import { store } from '@/data/equipment'
 
@@ -36,46 +36,46 @@ const statusColors = {
 
 const columns = [
     helper.accessor('id', {
-        header: mkHeader('Id'),
+        header: mkHeader(equipmentFieldNames.id),
         cell: v => <Cell className='break-all'>{v.getValue()}</Cell>,
         meta: { filter: textFilter },
     }),
     helper.accessor('name', {
-        header: mkHeader('Name'),
+        header: mkHeader(equipmentFieldNames.name),
         cell: v => <Cell>{v.getValue()}</Cell>,
         meta: { filter: textFilter },
     }),
     helper.accessor('location', {
-        header: mkHeader('Location'),
+        header: mkHeader(equipmentFieldNames.location),
         cell: v => <Cell>{v.getValue()}</Cell>,
         meta: { filter: textFilter },
     }),
     helper.accessor('department', {
-        header: mkHeader('Department'),
+        header: mkHeader(equipmentFieldNames.department),
         cell: v => <Cell>{v.getValue()}</Cell>,
         meta: { filter: mkSelectFilter(departments) },
     }),
     helper.accessor('model', {
-        header: mkHeader('Model'),
+        header: mkHeader(equipmentFieldNames.model),
         cell: v => <Cell>{v.getValue()}</Cell>,
         meta: { filter: textFilter },
     }),
     helper.accessor('serialNumber', {
-        header: mkHeader('Serial number'),
+        header: mkHeader(equipmentFieldNames.serialNumber),
         cell: v => <Cell className='break-all'>
             {v.getValue()}
         </Cell>,
         meta: { filter: textFilter },
     }),
     helper.accessor('installDate', {
-        header: mkHeader('Install date'),
+        header: mkHeader(equipmentFieldNames.installDate),
         cell: v => <Cell>{componentsToString(v.getValue())}</Cell>,
         sortingFn: dateSortingFn,
         filterFn: dateFilterFn,
         meta: { filter: dateFilter },
     }),
     helper.accessor('status', {
-        header: mkHeader('Status'),
+        header: mkHeader(equipmentFieldNames.status),
         cell: v => <Cell>{v.getValue()}</Cell>,
         meta: { filter: mkSelectFilter(statuses) },
     }),

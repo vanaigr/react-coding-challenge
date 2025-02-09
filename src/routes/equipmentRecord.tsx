@@ -1,7 +1,7 @@
 import * as R from 'react'
 import * as Z from 'zustand'
 
-import { statuses, departments } from '@/data/recordDefs'
+import { equipmentFieldNames, statuses, departments } from '@/data/recordDefs'
 import { type Raw, type FormData, createFormData } from '@/data/equipmentForm'
 import { Input, Select } from '@/components/inputs'
 
@@ -30,51 +30,51 @@ export default function Component() {
         <form className='flex flex-col p-4 mx-auto' onSubmit={it => it.preventDefault()}>
             <div className='grid items-stretch gap-4 grid-cols-[auto] md:grid-cols-2 md:gap-x-8 lg:grid-cols-3'>
                 <Input
-                    title='Name'
                     type='text'
+                    title={equipmentFieldNames.name}
                     defaultValue={input.name}
                     onChange={it => update({ name: it.target.value })}
                     errors={error?.name?._errors}
                 />
                 <Input
-                    title='Location'
                     type='text'
                     autoComplete='street-address'
+                    title={equipmentFieldNames.location}
                     defaultValue={input.location}
                     onChange={it => update({ location: it.target.value })}
                     errors={error?.location?._errors}
                 />
                 <Select
-                    title='Department'
                     options={departments}
+                    title={equipmentFieldNames.department}
                     defaultValue={input.department}
                     onChange={it => update({ department: it })}
                     errors={error?.department?._errors}
                 />
                 <Input
-                    title='Model'
                     type='text'
+                    title={equipmentFieldNames.model}
                     defaultValue={input.model}
                     onChange={it => update({ model: it.target.value })}
                     errors={error?.model?._errors}
                 />
                 <Input
-                    title='Serial number'
                     type='text'
+                    title={equipmentFieldNames.serialNumber}
                     defaultValue={input.serialNumber}
                     onChange={it => update({ serialNumber: it.target.value })}
                     errors={error?.serialNumber?._errors}
                 />
                 <Input
-                    title='Install date'
                     type='date'
+                    title={equipmentFieldNames.installDate}
                     defaultValue={input.installDate}
                     onChange={it => update({ installDate: it.target.value })}
                     errors={error?.installDate?._errors}
                 />
                 <Select
-                    title='status'
                     options={statuses}
+                    title={equipmentFieldNames.status}
                     defaultValue={input.status}
                     onChange={it => update({ status: it })}
                     errors={error?.status?._errors}
