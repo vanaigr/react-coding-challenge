@@ -2,7 +2,11 @@ import * as R from 'react'
 import * as Z from 'zustand'
 import { z } from 'zod'
 
-import { dateValidation } from '@/util/date'
+import {
+    cmp as dateCmp,
+    dateValidation,
+    dateLocalToComponents,
+} from '@/util/date'
 import { statuses, departments } from '@/data/records'
 
 const validation = z.object({
@@ -11,7 +15,11 @@ const validation = z.object({
     department: z.string().pipe(z.enum(departments)),
     model: z.string().nonempty('Must not be empty'),
     serialNumber: z.string().regex(/^[\p{L}\p{N}]+$/u, 'Must be alphanumeric'),
-    installDate: z.string().pipe(dateValidation),
+    installDate: z.string().pipe(dateValidation).refine(it => {
+        const today = dateLocalToComponents(new Date())!
+        // TODO: is "past date" exclusive?
+        return dateCmp(it, today) <= 0
+    }, 'Must be past date'),
     status: z.string().pipe(z.enum(statuses)),
 })
 
@@ -84,7 +92,7 @@ export function createFormData(input: RawEquipmentData): FormData {
     return { input, result }
 }
 
-export default function() {
+export default function Component() {
     const store = R.useState(() => Z.create<FormData>(() => {
         return createFormData({
             name: '',
