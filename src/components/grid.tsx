@@ -101,7 +101,7 @@ export function headerCheckbox<D, V>(ctx: RT.HeaderContext<D, V>) {
 export function textFilter<D, T extends string>(ctx: RT.HeaderContext<D, T>) {
     return <label className='flex py-2 px-3 grow items-start'>
         <input
-            className='grow w-0'
+            className='grow w-20'
             placeholder='Search'
             value={ctx.column.getFilterValue() as string ?? ''}
             onChange={it => ctx.column.setFilterValue(it.target.value)}
@@ -119,7 +119,7 @@ export function mkSelectFilter<D, T extends string>(values: readonly string[]) {
         const v = values[values.indexOf(ctx.column.getFilterValue() as string)] ?? ''
         return <label className='flex py-2 px-3 grow items-start'>
             <select
-                className={'grow w-0' + (v === '' ? ' text-gray-500' : '')}
+                className={'grow w-20' + (v === '' ? ' text-gray-500' : '')}
                 value={v}
                 onChange={it => ctx.column.setFilterValue(it.target.value)}
             >
@@ -168,11 +168,11 @@ export function dateFilter<D, T extends DateComponents>(ctx: RT.HeaderContext<D,
         lastV = toISODate(v.last)
     }
 
-    return <div className='flex pb-3 px-3 flex-col'>
-        <div className='flex flex-col'>
+    return <div className='grow flex pb-3 px-3 flex-col'>
+        <div className='grow flex'>
             <DateInput
                 defaultValue={firstV}
-                className={firstV === '' ? 'text-gray-500' : ''}
+                className={'w-30 grow ' + (firstV === '' ? 'text-gray-500' : '')}
                 onChange={it => {
                     const cs = strDateToComponents(it.target.value)
                     ctx.column.setFilterValue({ ...v, first: cs })
@@ -180,10 +180,10 @@ export function dateFilter<D, T extends DateComponents>(ctx: RT.HeaderContext<D,
                 placeholder='First'
             />
         </div>
-        <div className='flex flex-col'>
+        <div className='grow flex'>
             <DateInput
                 placeholder='Last'
-                className={lastV === '' ? 'text-gray-500' : ''}
+                className={'w-30 grow ' + (lastV === '' ? 'text-gray-500' : '')}
                 defaultValue={lastV}
                 onChange={it => {
                     const cs = strDateToComponents(it.target.value)

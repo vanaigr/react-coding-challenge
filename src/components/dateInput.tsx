@@ -8,7 +8,7 @@ export type DateInputProps
     = R.DetailedHTMLProps<R.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
 
 export default function(props: DateInputProps) {
-    return <span className={props.className + ' placeholder-date-input relative'}>
+    return <span className={props.className + ' placeholder-date-input relative flex'}>
         <input
             {...props}
             ref={it => {
@@ -19,7 +19,7 @@ export default function(props: DateInputProps) {
                     it.setAttribute('data-empty', '' + (it.value === ''))
                 }
             }}
-            className='w-full h-full grow p-0'
+            className='w-0 h-full grow p-0'
             type='date'
         />
         <span
