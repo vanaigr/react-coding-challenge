@@ -3,15 +3,20 @@ import * as Z from 'zustand'
 import * as RT from '@tanstack/react-table'
 
 import { type Equipment, departments, statuses } from '@/data/recordDefs'
-import {
-    cmp as dateCmp,
-    toISODate,
-    strDateToComponents,
-    componentsToString,
-    type DateComponents,
-} from '@/util/date'
-import DateInput from '@/components/dateInput'
+import { componentsToString } from '@/util/date'
 import { store } from '@/data/equipment'
+
+import {
+    Cell,
+    mkHeader,
+    headerCheckbox,
+    cellCheckbox,
+    textFilter,
+    mkSelectFilter,
+    dateSortingFn,
+    dateFilterFn,
+    dateFilter,
+} from '@/components/grid'
 
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RT.RowData, TValue> {
@@ -29,218 +34,55 @@ const statusColors = {
     Retired: 'bg-blue-200',
 } satisfies Colors<typeof statuses>
 
-type CellProps<Element> = R.PropsWithChildren<{}>
-    & R.DetailedHTMLProps<R.HTMLAttributes<Element>, Element>
-
-const cellClass = 'px-3 py-3'
-function Cell({ className, children, ...rest }: CellProps<HTMLDivElement>) {
-    return <div className={cellClass + ' ' + (className ?? '')} {...rest}>
-        {children}
-    </div>
-}
-
-type HeaderProps<T> = R.PropsWithChildren<{
-    ctx: RT.HeaderContext<Equipment, T>,
-}>
-
-const sortClasses = new Map()
-sortClasses.set(false, ' text-gray-500')
-sortClasses.set(true, ' text-black')
-
-const headerClass = 'px-3 pt-3'
-function Header<T>({ ctx, children }: HeaderProps<T>) {
-    const sorted = ctx.column.getIsSorted()
-
-    return <button
-        type='button'
-        className={
-            headerClass
-                + ' upper font-bold text-gray-700 flex items-center gap-2'
-                + ' cursor-pointer grow'
-        }
-        onClick={ctx.column.getToggleSortingHandler()}
-    >
-        <div className='grow text-left'>
-            {children}
-        </div>
-        {ctx.column.getCanSort() &&
-            <div className='text-[0.5em] leading-none flex flex-col'>
-                <span className={sortClasses.get(sorted === 'asc')}>▲</span>
-                <span className={sortClasses.get(sorted === 'desc')}>▼</span>
-            </div>
-        }
-    </button>
-}
-
-type InputProps = R.DetailedHTMLProps<R.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
-function CellCheckbox(props: InputProps) {
-    return <label
-        className={
-            (props.className ?? '')
-            + ' grow flex items-center justify-center'
-        }
-    >
-        <input type="checkbox" className='size-3' {...props}/>
-    </label>
-}
-
-function textFilter<T extends string>(ctx: RT.HeaderContext<Equipment, T>) {
-    return <label className='flex py-2 px-3 grow items-start'>
-        <input
-            className='grow w-0'
-            placeholder='Search'
-            value={ctx.column.getFilterValue() as string ?? ''}
-            onChange={it => ctx.column.setFilterValue(it.target.value)}
-        />
-    </label>
-}
-
-function mkSelectFilter<T extends string>(values: readonly string[]) {
-    const options = values.map(it => {
-        return <option className='text-black' key={it} value={it}>{it}</option>
-    })
-
-    return (ctx: RT.HeaderContext<Equipment, T>) => {
-        const v = values[values.indexOf(ctx.column.getFilterValue() as string)] ?? ''
-        return <label className='flex py-2 px-3 grow items-start'>
-            <select
-                className={'grow w-0' + (v === '' ? ' text-gray-500' : '')}
-                value={v}
-                onChange={it => ctx.column.setFilterValue(it.target.value)}
-            >
-                <option value='' className='text-black'>All</option>
-                {options}
-            </select>
-        </label>
-    }
-}
-
-type DateFilter = {
-    first: DateComponents | null,
-    last: DateComponents | null,
-}
-
 const columns = [
     helper.accessor('id', {
-        header: v => <Header ctx={v}>Id</Header>,
+        header: mkHeader('Id'),
         cell: v => <Cell className='break-all'>{v.getValue()}</Cell>,
         meta: { filter: textFilter },
     }),
     helper.accessor('name', {
-        header: (v) => <Header ctx={v}>Name</Header>,
+        header: mkHeader('Name'),
         cell: v => <Cell>{v.getValue()}</Cell>,
         meta: { filter: textFilter },
     }),
     helper.accessor('location', {
-        header: (v) => <Header ctx={v}>Location</Header>,
+        header: mkHeader('Location'),
         cell: v => <Cell>{v.getValue()}</Cell>,
         meta: { filter: textFilter },
     }),
     helper.accessor('department', {
-        header: (v) => <Header ctx={v}>Department</Header>,
+        header: mkHeader('Department'),
         cell: v => <Cell>{v.getValue()}</Cell>,
         meta: { filter: mkSelectFilter(departments) },
     }),
     helper.accessor('model', {
-        header: (v) => <Header ctx={v}>Model</Header>,
+        header: mkHeader('Model'),
         cell: v => <Cell>{v.getValue()}</Cell>,
         meta: { filter: textFilter },
     }),
     helper.accessor('serialNumber', {
-        header: (v) => <Header ctx={v}>Serial number</Header>,
+        header: mkHeader('Serial number'),
         cell: v => <Cell className='break-all'>
             {v.getValue()}
         </Cell>,
         meta: { filter: textFilter },
     }),
     helper.accessor('installDate', {
-        header: (v) => <Header ctx={v}>Install date</Header>,
+        header: mkHeader('Install date'),
         cell: v => <Cell>{componentsToString(v.getValue())}</Cell>,
-        sortingFn: (rowA, rowB, id) => {
-            const a = rowA.getValue(id) as DateComponents
-            const b = rowB.getValue(id) as DateComponents
-            return dateCmp(a, b)
-        },
-        filterFn: (row, id, filter) => {
-            const f = filter as DateFilter | undefined
-            if(f == null) return true
-
-            const a = row.getValue(id) as DateComponents
-            if(f.first != null) {
-                if(dateCmp(a, f.first) < 0) return false
-            }
-            if(f.last != null) {
-                if(dateCmp(a, f.last) > 0) return false
-            }
-
-            return true
-        },
-        meta: {
-            filter: ctx => {
-                const v = ctx.column.getFilterValue() as DateFilter | undefined
-                let firstV = ''
-                let lastV = ''
-                if(v != null && v.first != null) {
-                    firstV = toISODate(v.first)
-                }
-                if(v != null && v.last != null) {
-                    lastV = toISODate(v.last)
-                }
-
-                return <div className='flex pb-3 px-3 flex-col'>
-                    <div className='flex flex-col'>
-                        <DateInput
-                            defaultValue={firstV}
-                            className={firstV === '' ? 'text-gray-500' : ''}
-                            onChange={it => {
-                                const cs = strDateToComponents(it.target.value)
-                                ctx.column.setFilterValue({ ...v, first: cs })
-                            }}
-                            placeholder='First'
-                        />
-                    </div>
-                    <div className='flex flex-col'>
-                        <DateInput
-                            placeholder='Last'
-                            className={lastV === '' ? 'text-gray-500' : ''}
-                            defaultValue={lastV}
-                            onChange={it => {
-                                const cs = strDateToComponents(it.target.value)
-                                ctx.column.setFilterValue({ ...v, last: cs })
-                            }}
-                        />
-                    </div>
-                </div>
-            },
-        },
+        sortingFn: dateSortingFn,
+        filterFn: dateFilterFn,
+        meta: { filter: dateFilter },
     }),
     helper.accessor('status', {
-        header: (v) => <Header ctx={v}>Status</Header>,
+        header: mkHeader('Status'),
         cell: v => <Cell>{v.getValue()}</Cell>,
         meta: { filter: mkSelectFilter(statuses) },
     }),
     helper.display({
         id: 'actions',
-        header: ({ table }) => {
-            return <CellCheckbox
-                className={headerClass}
-                checked={table.getIsAllRowsSelected()}
-                ref={it => {
-                    if(it == null) return
-                    // https://stackoverflow.com/a/73790704
-                    it.indeterminate = table.getIsSomeRowsSelected()
-                }}
-                onChange={table.getToggleAllRowsSelectedHandler()}
-            />
-        },
-        cell: ({ row }) => {
-            return <CellCheckbox
-                className={cellClass}
-                checked={row.getIsSelected()}
-                disabled={!row.getCanSelect()}
-                onChange={row.getToggleSelectedHandler()}
-            />
-        }
+        header: headerCheckbox,
+        cell: cellCheckbox,
     }),
 ]
 
