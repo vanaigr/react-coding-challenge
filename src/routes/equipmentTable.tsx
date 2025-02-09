@@ -18,12 +18,6 @@ import {
     dateFilter,
 } from '@/components/grid'
 
-declare module '@tanstack/react-table' {
-    interface ColumnMeta<TData extends RT.RowData, TValue> {
-        filter: (ctx: RT.HeaderContext<Equipment, TValue>) => R.ReactElement
-    }
-}
-
 const helper = RT.createColumnHelper<Equipment>()
 
 type Colors<T extends readonly string[]> = { [K in T[number]]: string }
