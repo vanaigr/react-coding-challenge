@@ -26,56 +26,58 @@ export default function Component() {
     }
     const error = result.error?.format()
 
-    const mkInputProps = (name: keyof Raw) => {
-        return {
-            defaultValue: input[name],
-            onChange: (
-                it: R.ChangeEvent<HTMLInputElement> | R.ChangeEvent<HTMLSelectElement>
-            ) => {
-                update({ [name]: it.target.value })
-            },
-            errors: error?.[name]?._errors,
-        }
-    }
-
     return <div className='grow flex items-center'>
         <form className='flex flex-col p-4 mx-auto' onSubmit={it => it.preventDefault()}>
             <div className='grid items-stretch gap-4 grid-cols-[auto] md:grid-cols-2 md:gap-x-8 lg:grid-cols-3'>
                 <Input
                     title='Name'
                     type='text'
-                    {...mkInputProps('name')}
+                    defaultValue={input.name}
+                    onChange={it => update({ name: it.target.value })}
+                    errors={error?.name?._errors}
                 />
                 <Input
                     title='Location'
                     type='text'
                     autoComplete='street-address'
-                    {...mkInputProps('location')}
+                    defaultValue={input.location}
+                    onChange={it => update({ location: it.target.value })}
+                    errors={error?.location?._errors}
                 />
                 <Select
                     title='Department'
                     options={departments}
-                    {...mkInputProps('department')}
+                    defaultValue={input.department}
+                    onChange={it => update({ department: it })}
+                    errors={error?.department?._errors}
                 />
                 <Input
                     title='Model'
                     type='text'
-                    {...mkInputProps('model')}
+                    defaultValue={input.model}
+                    onChange={it => update({ model: it.target.value })}
+                    errors={error?.model?._errors}
                 />
                 <Input
                     title='Serial number'
                     type='text'
-                    {...mkInputProps('serialNumber')}
+                    defaultValue={input.serialNumber}
+                    onChange={it => update({ serialNumber: it.target.value })}
+                    errors={error?.serialNumber?._errors}
                 />
                 <Input
                     title='Install date'
                     type='date'
-                    {...mkInputProps('installDate')}
+                    defaultValue={input.installDate}
+                    onChange={it => update({ installDate: it.target.value })}
+                    errors={error?.installDate?._errors}
                 />
                 <Select
                     title='status'
                     options={statuses}
-                    {...mkInputProps('status')}
+                    defaultValue={input.status}
+                    onChange={it => update({ status: it })}
+                    errors={error?.status?._errors}
                 />
             </div>
             <div className='flex mt-6 md:mt-10 justify-end'>

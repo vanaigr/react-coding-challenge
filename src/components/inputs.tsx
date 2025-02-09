@@ -1,5 +1,7 @@
 import * as R from 'react'
 
+import type { ValuesUnion } from '@/util/types'
+
 const inputContC = ' flex flex-col items-stretch'
 const borderC = ' border border-indigo-400 rounded-md focus-within:outline-2 focus-within:outline-indigo-400'
 const errorBorderC = ' border-red-600 focus-within:outline-red-400'
@@ -33,23 +35,24 @@ export function Input({ title, errors, ...rest }: InputProps) {
     </label>
 }
 
-
-type SelectProps = {
+type SelectProps<T extends readonly string[]> = {
     title: string,
-    options: readonly string[],
+    options: T,
     optionNames?: readonly string[],
     optionTitles?: readonly string[],
     errors?: string[],
-} & R.DetailedHTMLProps<R.SelectHTMLAttributes<HTMLSelectElement>, HTMLSelectElement>
+    onChange?: (value: ValuesUnion<T>, event: R.ChangeEvent<HTMLSelectElement>) => void,
+} & Omit<R.DetailedHTMLProps<R.SelectHTMLAttributes<HTMLSelectElement>, HTMLSelectElement>, 'onChange'>
 
-export function Select({
+export function Select<T extends readonly string[]>({
     title,
     options,
     optionTitles,
     optionNames,
     errors,
+    onChange,
     ...rest
-}: SelectProps) {
+}: SelectProps<T>) {
     const isError = errors != null && errors.length > 0
     const errorStyle = !isError ? '' : errorBorderC
     const errorText = !isError ? '' : errors.join('. ')
@@ -57,7 +60,11 @@ export function Select({
     return <label className={inputContC}>
         <span className='font-sans mb-1'>{title}</span>
         <span className={'flex' + borderC + errorStyle}>
-            <select className={inputC + ' px-3'} {...rest}>
+            <select
+                className={inputC + ' px-3'}
+                {...rest}
+                onChange={onChange && ((ev) => onChange(ev.target.value as ValuesUnion<T>, ev))}
+            >
                 {options.map((v, i) => (
                     <option title={optionTitles?.[i]} key={v} value={v}>
                         {optionNames?.[i] ?? v}

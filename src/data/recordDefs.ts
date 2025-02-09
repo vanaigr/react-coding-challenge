@@ -1,9 +1,8 @@
 import { type DateComponents } from '@/util/date'
+import type { ValuesUnion } from '@/util/types'
 
 export const departments = ['Machining', 'Assembly', 'Packaging', 'Shipping'] as const
 export const statuses = ['Operational', 'Down', 'Maintenance', 'Retired'] as const
-
-type ValuesUnion<T extends readonly string[]> = { [K in T[number]]: K }[T[number]]
 
 export interface Equipment {
     id: string,

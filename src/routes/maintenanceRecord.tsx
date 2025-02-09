@@ -13,7 +13,7 @@ export default function Component() {
             date: '',
             type: types[0],
             technician: '',
-            hoursSpent: 1,
+            hoursSpent: '1',
             description: '',
             partsReplaced: [],
             priority: priorities[0],
@@ -45,18 +45,6 @@ export default function Component() {
     }
     const error = result.error?.format()
 
-    const mkInputProps = (name: keyof Raw) => {
-        return {
-            defaultValue: input[name],
-            onChange: (
-                it: R.ChangeEvent<HTMLInputElement> | R.ChangeEvent<HTMLSelectElement>
-            ) => {
-                update({ [name]: it.target.value })
-            },
-            errors: error?.[name]?._errors,
-        }
-    }
-
     return <div className='grow flex items-center'>
         <form className='flex flex-col p-4 mx-auto' onSubmit={ev => ev.preventDefault()}>
             <div className='grid items-stretch gap-4 grid-cols-[auto] md:grid-cols-2 md:gap-x-8 lg:grid-cols-3'>
@@ -65,42 +53,58 @@ export default function Component() {
                     options={ids}
                     optionNames={names}
                     optionTitles={titles}
-                    {...mkInputProps('equipmentId')}
+                    defaultValue={input.equipmentId}
+                    onChange={it => update({ equipmentId: it })}
+                    errors={error?.equipmentId?._errors}
                 />
                 <Input
                     title='Date'
                     type='date'
-                    {...mkInputProps('date')}
+                    defaultValue={input.date}
+                    onChange={it => update({ date: it.target.value })}
+                    errors={error?.date?._errors}
                 />
                 <Select
                     title='Type'
                     options={types}
-                    {...mkInputProps('type')}
+                    defaultValue={input.type}
+                    onChange={it => update({ type: it })}
+                    errors={error?.type?._errors}
                 />
                 <Input
                     title='Technician'
                     type='text'
-                    {...mkInputProps('technician')}
+                    defaultValue={input.technician}
+                    onChange={it => update({ technician: it.target.value })}
+                    errors={error?.technician?._errors}
                 />
                 <Input
                     title='Hours spent'
                     type='number'
-                    {...mkInputProps('hoursSpent')}
+                    defaultValue={input.hoursSpent}
+                    onChange={it => update({ hoursSpent: it.target.value })}
+                    errors={error?.hoursSpent?._errors}
                 />
                 <Input
                     title='Description'
                     type='text'
-                    {...mkInputProps('description')}
+                    defaultValue={input.description}
+                    onChange={it => update({ description: it.target.value })}
+                    errors={error?.description?._errors}
                 />
                 <Select
                     title='Priority'
                     options={priorities}
-                    {...mkInputProps('priority')}
+                    defaultValue={input.priority}
+                    onChange={it => update({ priority: it })}
+                    errors={error?.priority?._errors}
                 />
                 <Select
                     title='Completion status'
                     options={completionStatuses}
-                    {...mkInputProps('completionStatus')}
+                    defaultValue={input.completionStatus}
+                    onChange={it => update({ completionStatus: it })}
+                    errors={error?.completionStatus?._errors}
                 />
                 <EditableList
                     title='Parts Replaced'
