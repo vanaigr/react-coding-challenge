@@ -1,40 +1,9 @@
 import * as R from 'react'
 import * as Z from 'zustand'
-import { z } from 'zod'
 
-import {
-    cmp as dateCmp,
-    dateValidation,
-    dateLocalToComponents,
-} from '@/util/date'
 import { statuses, departments } from '@/data/records'
-
-const validation = z.object({
-    name: z.string().min(3, 'Must be at least 3 characters long'),
-    location: z.string().nonempty('Must not be empty'),
-    department: z.string().pipe(z.enum(departments)),
-    model: z.string().nonempty('Must not be empty'),
-    serialNumber: z.string().regex(/^[\p{L}\p{N}]+$/u, 'Must be alphanumeric'),
-    installDate: z.string().pipe(dateValidation).refine(it => {
-        const today = dateLocalToComponents(new Date())!
-        // TODO: is "past date" exclusive?
-        return dateCmp(it, today) <= 0
-    }, 'Must be past date'),
-    status: z.string().pipe(z.enum(statuses)),
-})
-
-type RawEquipmentData = z.input<typeof validation>
-type ValidatedEquipmentData = z.infer<typeof validation>
-
-export type FormData = {
-    input: RawEquipmentData,
-    result: z.SafeParseReturnType<RawEquipmentData, ValidatedEquipmentData>,
-}
-
-export function createFormData(input: RawEquipmentData): FormData {
-    const result = validation.safeParse(input)
-    return { input, result }
-}
+import { type Raw, type FormData, createFormData } from '@/data/equipmentForm'
+import { Input, Select } from '@/components/inputs'
 
 export default function Component() {
     const store = R.useState(() => Z.create<FormData>(() => {
@@ -50,14 +19,14 @@ export default function Component() {
     }))[0]
 
     const { input, result } = store()
-    const update = (newValues: Partial<RawEquipmentData>) => {
+    const update = (newValues: Partial<Raw>) => {
         store.setState(state => {
             return createFormData({ ...state.input, ...newValues })
         }, true)
     }
     const error = result.error?.format()
 
-    const mkInputProps = (name: keyof RawEquipmentData) => {
+    const mkInputProps = (name: keyof Raw) => {
         return {
             defaultValue: input[name],
             onChange: (
