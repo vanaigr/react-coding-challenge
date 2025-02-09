@@ -1,8 +1,9 @@
 import * as R from 'react'
 
-const inputContC = 'flex flex-col items-stretch'
-const inputC = 'border border-indigo-400 rounded-md'
-    + ' focus:outline-indigo-400 text-lg h-12 w-0 grow'
+const inputContC = ' flex flex-col items-stretch'
+const borderC = ' border border-indigo-400 rounded-md focus-within:outline-2 focus-within:outline-indigo-400'
+const errorBorderC = ' border-red-600 focus-within:outline-red-400'
+const inputC = ' text-lg h-12 w-0 grow border-none outline-none focus:outline-none'
 
 
 type InputProps = {
@@ -12,14 +13,14 @@ type InputProps = {
 
 export function Input({ title, errors, ...rest }: InputProps) {
     const isError = errors != null && errors.length > 0
-    const errorStyle = !isError ? '' : ' border-red-600 focus:outline-red-400'
+    const errorStyle = !isError ? '' : errorBorderC
     const errorText = !isError ? '' : errors.join('. ')
 
     return <label className={inputContC}>
         <span className='font-sans mb-1'>{title}</span>
-        <span className='flex'>
+        <span className={'flex' + borderC + errorStyle}>
             <input
-                className={inputC + ' px-4' + errorStyle}
+                className={inputC + ' px-4'}
                 {...rest}
             />
         </span>
@@ -50,13 +51,13 @@ export function Select({
     ...rest
 }: SelectProps) {
     const isError = errors != null && errors.length > 0
-    const errorStyle = !isError ? '' : ' border-red-600 focus:outline-red-400'
+    const errorStyle = !isError ? '' : errorBorderC
     const errorText = !isError ? '' : errors.join('. ')
 
     return <label className={inputContC}>
         <span className='font-sans mb-1'>{title}</span>
-        <span className='flex'>
-            <select className={inputC + ' px-3' + errorStyle} {...rest}>
+        <span className={'flex' + borderC + errorStyle}>
+            <select className={inputC + ' px-3'} {...rest}>
                 {options.map((v, i) => (
                     <option title={optionTitles?.[i]} key={v} value={v}>
                         {optionNames?.[i] ?? v}
@@ -90,7 +91,7 @@ export function EditableList({ title, defaultValue, onChange, errors }: Editable
     })
 
     const isError = errors != null && errors.length > 0
-    const errorStyle = !isError ? '' : ' border-red-600 focus:outline-red-400'
+    const errorStyle = !isError ? '' : ' border-red-600'
     const errorText = !isError ? '' : errors.join('. ')
 
     const itemComponents = []
@@ -117,11 +118,12 @@ export function EditableList({ title, defaultValue, onChange, errors }: Editable
             }}
         />)
     }
+    const showItems = itemComponents.length > 0
 
     return <div className={inputContC}>
         <span className='font-sans mb-1'>{title}</span>
         <div className={'flex flex-col border border-indigo-400 rounded-md' + errorStyle}>
-            <div className={'border-indigo-400 border-b' + errorStyle}>
+            <div className={showItems ? 'border-b border-indigo-400' + errorStyle : ''}>
                 <NewItem
                     onAdd={value => {
                         const newItems = items.slice()
@@ -137,9 +139,11 @@ export function EditableList({ title, defaultValue, onChange, errors }: Editable
                     }}
                 />
             </div>
-            <div className='flex flex-col py-1.5'>
-                {itemComponents}
-            </div>
+            {showItems &&
+                <div className='flex flex-col py-1.5'>
+                    {itemComponents}
+                </div>
+            }
         </div>
         <span
             className='whitespace-nowrap overflow-hidden text-ellipsis w-xs'
@@ -174,15 +178,15 @@ function Item({ defaultValue, onChange, onDelete }: ItemProps) {
     </div>
 }
 
-type NewItemProps = { defaultValue: string, onAdd: (value: string) => void }
+type NewItemProps = { onAdd: (value: string) => void }
 
 function NewItem({ onAdd }: NewItemProps) {
     const [value, setValue] = R.useState('')
     const disabled = value === ''
     const ref = R.useRef<HTMLInputElement>(null)
 
-    return <div className='flex items-center gap-3'>
-        <label className='flex grow pl-3 py-3'>
+    return <div className='h-12 flex items-center gap-3 box-border'>
+        <label className='flex grow items-center pl-3'>
             <input
                 ref={ref}
                 className='grow'
@@ -200,7 +204,7 @@ function NewItem({ onAdd }: NewItemProps) {
         <button
             type='button'
             className={
-                'material-symbols-outlined pr-3 py-3'
+                'material-symbols-outlined pr-3'
                 + (disabled ? ' text-gray-500' : ' cursor-pointer')
             }
             disabled={disabled}
