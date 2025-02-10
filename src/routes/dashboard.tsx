@@ -16,7 +16,11 @@ const departmentColor: Record<Statuses, string> = {
 }
 
 export default function Component() {
-    return <RecentMaintenance/>
+    return <div className='grid grid-cols-1 md:grid-cols-2 gap-8 mx-auto'>
+        <EquipmentChart/>
+        <DepartmentChart/>
+        <RecentMaintenance/>
+    </div>
 }
 
 function RecentMaintenance() {
@@ -81,7 +85,7 @@ function DepartmentChart() {
 
     const title = 'Maintenance hours by department'
     return <div className='flex flex-col items-center'>
-        <span className='text-xl font-bold text-gray-800 mb-2'>{title}</span>
+        <span className='text-xl font-bold text-gray-800 mb-4'>{title}</span>
         <RC.BarChart width={500} height={250} data={data} title={title}>
             <RC.CartesianGrid strokeDasharray='3 3'/>
             <RC.XAxis dataKey='name'/>
@@ -119,7 +123,7 @@ function EquipmentChart() {
 
     const title = 'Equipment status breakdown'
     return <div className='flex flex-col items-center'>
-        <span className='text-xl font-bold text-gray-800 mb-2'>{title}</span>
+        <span className='text-xl font-bold text-gray-800 mb-4'>{title}</span>
         <RC.PieChart width={500} height={250} title={title}>
             <RC.Pie label={it => it.name} data={data} dataKey='value'>
                 {data.map((it, i) => <RC.Cell key={i} fill={departmentColor[it.status]}/>)}
