@@ -6,6 +6,7 @@ import colors from 'tailwindcss/colors'
 import { statuses, departments, type Statuses, type Departments } from '@/data/recordDefs'
 import { store as equipmentStore } from '@/data/equipment'
 import { store as maintenanceStore } from '@/data/maintenance'
+import { cmp as dateCmp, componentsToString, dateLocalToComponents } from '@/util/date'
 
 const departmentColor: Record<Statuses, string> = {
     Operational: colors.green[600],
@@ -15,7 +16,45 @@ const departmentColor: Record<Statuses, string> = {
 }
 
 export default function Component() {
-    return <DepartmentChart/>
+    return <RecentMaintenance/>
+}
+
+function RecentMaintenance() {
+    const maintenance = [...Z.useStore(maintenanceStore).values()]
+    const equipment = Z.useStore(equipmentStore)
+    maintenance.sort((a, b) => -dateCmp(a.date, b.date))
+
+    const cutoff = dateLocalToComponents(new Date())!
+    cutoff[0]--
+
+    const components = []
+    for(let i = 0; i < Math.min(10, maintenance.length); i++) {
+        const m = maintenance[i]
+        const e = equipment.get(m.equipmentId)!
+        if(dateCmp(m.date, cutoff) < 0) break
+
+        if(components.length !== 0) {
+            components.push(<div className='col-span-full border-t border-gray-600'/>)
+        }
+        components.push(<R.Fragment key={m.id}>
+            <span/>
+            <span>{m.type} maintenance</span>
+            <span>at {e.department}</span>
+            <span>on {componentsToString(m.date)}</span>
+            <span>-</span>
+            <span>{m.completionStatus}</span>
+            <span>after {m.hoursSpent} hrs</span>
+            <span/>
+        </R.Fragment>)
+    }
+
+    const title = 'Recent maintenance activities'
+    return <div className='flex flex-col items-center'>
+        <span className='text-xl font-bold text-gray-800 mb-4'>{title}</span>
+        <div className='text-sm grid gap-x-2 gap-y-3' style={{ gridTemplateColumns: 'repeat(8, auto)' }}>
+            {components}
+        </div>
+    </div>
 }
 
 function DepartmentChart() {
@@ -42,7 +81,7 @@ function DepartmentChart() {
 
     const title = 'Maintenance hours by department'
     return <div className='flex flex-col items-center'>
-        <span className='text-xl font-bold text-gray-800'>{title}</span>
+        <span className='text-xl font-bold text-gray-800 mb-2'>{title}</span>
         <RC.BarChart width={500} height={250} data={data} title={title}>
             <RC.CartesianGrid strokeDasharray='3 3'/>
             <RC.XAxis dataKey='name'/>
@@ -80,7 +119,7 @@ function EquipmentChart() {
 
     const title = 'Equipment status breakdown'
     return <div className='flex flex-col items-center'>
-        <span className='text-xl font-bold text-gray-800'>{title}</span>
+        <span className='text-xl font-bold text-gray-800 mb-2'>{title}</span>
         <RC.PieChart width={500} height={250} title={title}>
             <RC.Pie label={it => it.name} data={data} dataKey='value'>
                 {data.map((it, i) => <RC.Cell key={i} fill={departmentColor[it.status]}/>)}
