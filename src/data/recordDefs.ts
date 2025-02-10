@@ -5,12 +5,13 @@ export const departments = ['Machining', 'Assembly', 'Packaging', 'Shipping'] as
 export const statuses = ['Operational', 'Down', 'Maintenance', 'Retired'] as const
 
 export type Statuses = ValuesUnion<typeof statuses>
+export type Departments = ValuesUnion<typeof departments>
 
 export interface Equipment {
     id: string,
     name: string,
     location: string,
-    department: ValuesUnion<typeof departments>,
+    department: Departments,
     model: string,
     serialNumber: string,
     installDate: DateComponents,

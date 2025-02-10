@@ -1,12 +1,11 @@
 import * as Z from 'zustand'
-import { useShallow as ZuseShallow } from 'zustand/shallow'
 import * as R from 'react'
 import * as RC from 'recharts'
 import colors from 'tailwindcss/colors'
 
-import type { ValuesUnion } from '@/util/types'
-import { statuses, type Statuses } from '@/data/recordDefs'
+import { statuses, departments, type Statuses, type Departments } from '@/data/recordDefs'
 import { store as equipmentStore } from '@/data/equipment'
+import { store as maintenanceStore } from '@/data/maintenance'
 
 const departmentColor: Record<Statuses, string> = {
     Operational: colors.green[600],
@@ -16,20 +15,55 @@ const departmentColor: Record<Statuses, string> = {
 }
 
 export default function Component() {
-    const statusCounts = Z.useStore(equipmentStore, ZuseShallow(it => {
-        const statusCounts: Partial<Record<Statuses, number>> = {}
+    return <DepartmentChart/>
+}
 
-        for(const v of it.values()) {
-            const s = statusCounts[v.status]
-            if(s == null) statusCounts[v.status] = 1
-            else statusCounts[v.status] = s + 1
-        }
+function DepartmentChart() {
+    const equipment = Z.useStore(equipmentStore)
+    const maintenance = Z.useStore(maintenanceStore)
 
-        return statusCounts
-    }))
+    const departmentHours: Partial<Record<Departments, number>> = {}
 
+    for(const m of maintenance.values()) {
+        const e = equipment.get(m.equipmentId)
+        if(e == null) continue
+
+        const totalHours = departmentHours[e.department]
+        if(totalHours == null) departmentHours[e.department] = m.hoursSpent
+        else departmentHours[e.department] = totalHours + m.hoursSpent
+    }
+
+    const data: Array<{ name: string, value: number }> = []
+    for(let i = 0; i < departments.length; i++) {
+        const hours = departmentHours[departments[i]]
+        if(hours == null) continue
+        data.push({ name: departments[i], value: hours })
+    }
+
+    const title = 'Maintenance hours by department'
+    return <div className='flex flex-col items-center'>
+        <span className='text-xl font-bold text-gray-800'>{title}</span>
+        <RC.BarChart width={500} height={250} data={data} title={title}>
+            <RC.CartesianGrid strokeDasharray='3 3'/>
+            <RC.XAxis dataKey='name'/>
+            <RC.YAxis/>
+            <RC.Bar dataKey='value' fill={colors.purple[300]} label={{ fill: colors.purple[900] }}/>
+        </RC.BarChart>
+    </div>
+}
+
+function EquipmentChart() {
+    const equipment = Z.useStore(equipmentStore)
+
+    const statusCounts: Partial<Record<Statuses, number>> = {}
     let total = 0
-    for(const k in statusCounts) total += statusCounts[k as Statuses]!
+
+    for(const v of equipment.values()) {
+        const s = statusCounts[v.status]
+        if(s == null) statusCounts[v.status] = 1
+        else statusCounts[v.status] = s + 1
+        total++
+    }
 
     const data: Array<{ status: Statuses, name: string, value: number }> = []
     for(let i = 0; i < statuses.length; i++) {
