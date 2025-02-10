@@ -11,22 +11,40 @@ export default function Header({ path, name }: HeaderProps) {
 
     const pathComponents: Array<R.ReactElement> = []
     if(root) {
-        pathComponents.push(<span className={'material-symbols-outlined' + pathC}>home</span>)
+        pathComponents.push(
+            <span key='home-d' className={'material-symbols-outlined' + pathC}>home</span>
+        )
     }
     else {
-        pathComponents.push(<RN.Link to={'/'} className={'material-symbols-outlined' + pathC}>home</RN.Link>)
+        pathComponents.push(
+            <RN.Link key='home' to={'/'} className={'material-symbols-outlined' + pathC}>
+                home
+            </RN.Link>
+        )
 
         if(path != null) {
             for(let i = 0; i < path.length; i++) {
                 const it = path[i]
-                pathComponents.push(<span className='text-gray-600 material-symbols-outlined'>{'chevron_right'}</span>)
-                pathComponents.push(<RN.Link className={pathC} to={it.url}>{it.name}</RN.Link>)
+                pathComponents.push(
+                    <span key={i + '-d'} className='text-gray-600 material-symbols-outlined'>
+                        {'chevron_right'}
+                    </span>
+                )
+                pathComponents.push(
+                    <RN.Link key={i} className={pathC} to={it.url}>{it.name}</RN.Link>
+                )
             }
         }
 
         if(name != null) {
-            pathComponents.push(<span className='text-gray-600 material-symbols-outlined'>{'chevron_right'}</span>)
-            pathComponents.push(<span className={pathC}>{name}</span>)
+            pathComponents.push(
+                <span key='name-d' className='text-gray-600 material-symbols-outlined'>
+                    {'chevron_right'}
+                </span>
+            )
+            pathComponents.push(
+                <span key='name' className={pathC}>{name}</span>
+            )
         }
     }
 
