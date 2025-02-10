@@ -7,12 +7,12 @@ import { types, priorities, completionStatuses } from '@/data/recordDefs'
 
 export const validation = z.object({
     // This should check if it is one of the id's we know, but the
-    // selection will be from a dropdown, so only valid values are
+    // selection will be from a dropdown, so only valid values and '' are
     // possible (without devtools, but this is an internal tool?).
     // Besides, zod doesn't have parsing context. So we can't even pass
     // the allowed values without something like:
     // transform((p, ctx) => if(!p.allowed.includes(p.val)) error else return p.val).
-    equipmentId: z.string(),
+    equipmentId: z.string().nonempty('Reqired'),
     date: z.string().pipe(dateValidation).refine(it => {
         const today = dateLocalToComponents(new Date())!
         return dateCmp(it, today) <= 0

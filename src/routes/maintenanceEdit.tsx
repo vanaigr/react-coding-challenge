@@ -11,6 +11,11 @@ export default function Component() {
     const { id } = RD.useParams()
     if(id == null) return <RD.Navigate to='/404'/>
 
+    return <Inner id={id}/>
+}
+
+function Inner({ id }: { id: string }) {
+    const navigate = RD.useNavigate()
     const [store, setStore] = R.useState<Z.StoreApi<FormData> | null | 'error'>(null)
 
     R.useEffect(() => {
@@ -42,5 +47,21 @@ export default function Component() {
 
     if(store == null) return
 
-    return <Page store={store} name={id}/>
+    return <Page
+        store={store}
+        name={id}
+        submitName='Update'
+        onSubmit={() => {
+            const state = store.getState()
+            if(!state.result.success) return false
+
+            const newMaintenance = new Map(mStore.getState())
+
+            newMaintenance.set(id, { ...state.result.data, id })
+            mStore.setState(newMaintenance, true)
+
+            navigate(-1)
+            return true
+        }}
+    />
 }
