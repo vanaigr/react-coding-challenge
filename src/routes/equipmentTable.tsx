@@ -174,7 +174,7 @@ function Table({ table }: { table: RT.Table<Equipment> }) {
     return <div className='text-sm m-4 max-w-7xl mx-auto'>
         <div style={gridStyle} className='w-full grid px-1'>
             {hGroup.headers.map(header => (
-                <span key={header.id} className='flex'>
+                <span key={header.id} className='flex px-3 pt-3'>
                     {RT.flexRender(
                         header.column.columnDef.header,
                         header.getContext()
@@ -182,7 +182,10 @@ function Table({ table }: { table: RT.Table<Equipment> }) {
                 </span>
             ))}
             {hGroup.headers.map(header => (
-                <span key={header.id} className='flex border-b border-b-gray-600'>
+                <span
+                    key={header.id}
+                    className='flex border-b border-b-gray-600 px-3 pt-2 pb-3'
+                >
                     {RT.flexRender(
                         header.column.columnDef.meta?.filter,
                         header.getContext()
@@ -196,7 +199,7 @@ function Table({ table }: { table: RT.Table<Equipment> }) {
                     {row.getVisibleCells().map(cell => {
                         return <span
                             key={cell.id}
-                            className={style + ' flex '}
+                            className={style + ' flex px-3 py-2'}
                         >
                             {RT.flexRender(
                                 cell.column.columnDef.cell,

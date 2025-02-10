@@ -39,13 +39,29 @@ const columns = [
         meta: { filter: textFilter },
     }),
     helper.accessor('maintenance.equipmentId', {
+        id: 'equipment-id',
         header: mkHeader(maintenanceFieldNames.equipmentId),
         cell: v => <TextCell className='break-all' value={v.getValue()}/>,
-        meta: { filter: textFilter },
+        getGroupingValue: v => v.maintenance.equipmentId,
+        meta: { filter: v => {
+            return <div className='grow flex flex-col'>
+                {textFilter(v)}
+                <label className='pt-2'>
+                    <input
+                        type='button'
+                        value={v.column.getIsGrouped() ? 'Ungroup' : 'Group'}
+                        onClick={v.column.getToggleGroupingHandler()}
+                    />
+                </label>
+            </div>
+        } },
     }),
     helper.accessor('equipment.name', {
+        id: 'equipment-name',
         header: mkHeader('Equipment name'),
         cell: v => <TextCell value={v.getValue()}/>,
+        aggregatedCell: v => <TextCell value={v.getValue()}/>,
+        aggregationFn: (id, rows) => rows.length == 0 ? '' : rows[0].getValue(id),
         meta: { filter: textFilter },
     }),
     helper.accessor('maintenance.date', {
@@ -123,6 +139,8 @@ export default function Component() {
         onRowSelectionChange: setSelected,
         getFilteredRowModel: RT.getFilteredRowModel(),
         getCoreRowModel: RT.getCoreRowModel(),
+        getExpandedRowModel: RT.getExpandedRowModel(),
+        getGroupedRowModel: RT.getGroupedRowModel(),
         getSortedRowModel: RT.getSortedRowModel(),
         enableRowSelection: true,
     })
@@ -134,6 +152,7 @@ export default function Component() {
 
 function Table({ table }: { table: RT.Table<Entry> }) {
     const cellBorder = 'border-t border-t-gray-600'
+    const cellBorderInsideGroup = 'border-t border-t-gray-400'
     const hGroup = table.getHeaderGroups()[0]
 
     // In tailwind, it would be `grid-cols-[repeat(${hGroup.headers.length},auto)]`
@@ -143,7 +162,7 @@ function Table({ table }: { table: RT.Table<Entry> }) {
     return <div className='text-sm m-4 max-w-[120em] mx-auto'>
         <div style={gridStyle} className='w-full grid px-1'>
             {hGroup.headers.map(header => (
-                <span key={header.id} className='flex'>
+                <span key={header.id} className='flex px-3 pt-3'>
                     {RT.flexRender(
                         header.column.columnDef.header,
                         header.getContext()
@@ -151,7 +170,10 @@ function Table({ table }: { table: RT.Table<Entry> }) {
                 </span>
             ))}
             {hGroup.headers.map(header => (
-                <span key={header.id} className='flex border-b border-b-gray-600'>
+                <span
+                    key={header.id}
+                    className='flex border-b border-b-gray-600 px-3 pt-2 pb-3'
+                >
                     {RT.flexRender(
                         header.column.columnDef.meta?.filter,
                         header.getContext()
@@ -159,20 +181,56 @@ function Table({ table }: { table: RT.Table<Entry> }) {
                 </span>
             ))}
             {table.getRowModel().rows.map((row, i) => {
-                const style = (i ? cellBorder : '')
-                return <R.Fragment key={row.id}>
-                    {row.getVisibleCells().map(cell => {
-                        return <span
+                const cells = row.getVisibleCells().map(cell => {
+                    const border = i > 0
+                    const grouped = table.getState().grouping.length > 0
+
+                    if(cell.getIsGrouped()) {
+                        return <button
                             key={cell.id}
-                            className={style + ' flex '}
+                            className={(border ? cellBorder : '') + ' flex px-3 py-2 gap-2'}
+                            onClick={row.getToggleExpandedHandler()}
                         >
+                            {row.getIsExpanded() ? '▼' : '▶'}
+                            <span>({row.subRows.length})</span>
+                            {RT.flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                            )}
+                        </button>
+                    }
+                    else if(cell.getIsAggregated()) {
+                        return <button
+                            key={cell.id}
+                            className={(border ? cellBorder : '') + ' flex px-3 py-2'}
+                            onClick={row.getToggleExpandedHandler()}
+                        >
+                            {RT.flexRender(
+                                cell.column.columnDef.aggregatedCell,
+                                cell.getContext()
+                            )}
+                        </button>
+                    }
+                    else if(cell.getIsPlaceholder() && cell.column.id === 'equipment-id') {
+                        return <div key={cell.id}/>
+                    }
+
+                    const style = border ? (grouped ? cellBorderInsideGroup : cellBorder) : ''
+
+                    if(cell.getIsPlaceholder() || (grouped && cell.column.id === 'equipment-name')) {
+                        return <div key={cell.id} className={style}/>
+                    }
+                    else {
+                        return <span key={cell.id} className={style + ' flex px-3 py-2'}>
                             {RT.flexRender(
                                 cell.column.columnDef.cell,
                                 cell.getContext()
                             )}
                         </span>
-                    })}
-                </R.Fragment>
+                    }
+                })
+
+                return <R.Fragment key={row.id}>{cells}</R.Fragment>
             })}
         </div>
     </div>

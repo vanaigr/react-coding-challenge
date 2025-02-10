@@ -13,9 +13,8 @@ import DateInput from '@/components/dateInput'
 export type CellProps<Element> = R.PropsWithChildren<{}>
     & R.DetailedHTMLProps<R.HTMLAttributes<Element>, Element>
 
-const cellClass = 'px-3 py-3'
 export function Cell({ className, children, ...rest }: CellProps<HTMLDivElement>) {
-    return <div className={cellClass + ' ' + (className ?? '')} {...rest}>
+    return <div className={(className ?? '')} {...rest}>
         {children}
     </div>
 }
@@ -23,7 +22,7 @@ export function Cell({ className, children, ...rest }: CellProps<HTMLDivElement>
 export type TextCellProps = { className?: string, value: string }
 export function TextCell({ className, value }: TextCellProps) {
     return <div
-        className={(className ?? '') + ' flex ' + cellClass}
+        className={(className ?? '') + ' flex '}
         title={value}
     >
         <span className='grow line-clamp-3'>
@@ -40,15 +39,13 @@ const sortClasses = new Map()
 sortClasses.set(false, ' text-gray-500')
 sortClasses.set(true, ' text-black')
 
-const headerClass = 'px-3 pt-3'
 export function Header<D, V>({ ctx, children }: HeaderProps<D, V>) {
     const sorted = ctx.column.getIsSorted()
 
     return <button
         type='button'
         className={
-            headerClass
-                + ' upper font-bold text-gray-700 flex items-center gap-2'
+            'upper font-bold text-gray-700 flex items-center gap-2'
                 + ' cursor-pointer grow'
         }
         onClick={ctx.column.getToggleSortingHandler()}
@@ -86,7 +83,6 @@ function Checkbox(props: InputProps) {
 export function cellCheckbox<D, V>(ctx: RT.CellContext<D, V>) {
     const row = ctx.row
     return <Checkbox
-        className={cellClass}
         checked={row.getIsSelected()}
         disabled={!row.getCanSelect()}
         onChange={row.getToggleSelectedHandler()}
@@ -97,7 +93,6 @@ export function headerCheckbox<D, V>(ctx: RT.HeaderContext<D, V>) {
     const table = ctx.table
 
     return <Checkbox
-        className={headerClass}
         checked={table.getIsAllRowsSelected()}
         ref={it => {
             if(it == null) return
@@ -110,7 +105,7 @@ export function headerCheckbox<D, V>(ctx: RT.HeaderContext<D, V>) {
 
 
 export function textFilter<D, T extends string | string[]>(ctx: RT.HeaderContext<D, T>) {
-    return <label className='flex py-2 px-3 grow items-start'>
+    return <label className='flex grow items-start'>
         <input
             className='grow w-20'
             placeholder='Search'
@@ -128,7 +123,7 @@ export function mkSelectFilter<D, T extends string>(values: readonly string[]) {
 
     return (ctx: RT.HeaderContext<D, T>) => {
         const v = values[values.indexOf(ctx.column.getFilterValue() as string)] ?? ''
-        return <label className='flex py-2 px-3 grow items-start'>
+        return <label className='flex grow items-start'>
             <select
                 className={'grow w-20' + (v === '' ? ' text-gray-500' : '')}
                 value={v}
@@ -148,6 +143,7 @@ export type DateFilter = {
 }
 
 export function dateSortingFn<T>(rowA: RT.Row<T>, rowB: RT.Row<T>, id: string) {
+    console.log(rowA)
     const a = rowA.getValue(id) as DateComponents
     const b = rowB.getValue(id) as DateComponents
     return dateCmp(a, b)
@@ -179,7 +175,7 @@ export function dateFilter<D, T extends DateComponents>(ctx: RT.HeaderContext<D,
         lastV = toISODate(v.last)
     }
 
-    return <div className='grow flex pb-3 px-3 flex-col'>
+    return <div className='grow flex flex-col'>
         <div className='grow flex'>
             <DateInput
                 defaultValue={firstV}
@@ -245,7 +241,7 @@ export function numberFilter<D, T extends number>(ctx: RT.HeaderContext<D, T>) {
         lastV = '' + v.last
     }
 
-    return <div className='grow flex pb-3 px-3 flex-col'>
+    return <div className='grow flex flex-col'>
         <div className='grow flex'>
             <input
                 type='number'
