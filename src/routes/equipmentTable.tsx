@@ -8,8 +8,9 @@ import { store } from '@/data/equipment'
 import Header from '@/components/header'
 
 import {
-    Cell,
+    TextCell,
     mkHeader,
+    mkOpenButton,
     headerCheckbox,
     cellCheckbox,
     textFilter,
@@ -32,52 +33,55 @@ const statusColors = {
 const columns = [
     helper.accessor('id', {
         header: mkHeader(equipmentFieldNames.id),
-        cell: v => <Cell className='break-all'>{v.getValue()}</Cell>,
+        cell: v => <TextCell className='break-all' value={v.getValue()}/>,
         meta: { filter: textFilter },
     }),
     helper.accessor('name', {
         header: mkHeader(equipmentFieldNames.name),
-        cell: v => <Cell>{v.getValue()}</Cell>,
+        cell: v => <TextCell value={v.getValue()}/>,
         meta: { filter: textFilter },
     }),
     helper.accessor('location', {
         header: mkHeader(equipmentFieldNames.location),
-        cell: v => <Cell>{v.getValue()}</Cell>,
+        cell: v => <TextCell value={v.getValue()}/>,
         meta: { filter: textFilter },
     }),
     helper.accessor('department', {
         header: mkHeader(equipmentFieldNames.department),
-        cell: v => <Cell>{v.getValue()}</Cell>,
+        cell: v => <TextCell value={v.getValue()}/>,
         meta: { filter: mkSelectFilter(departments) },
     }),
     helper.accessor('model', {
         header: mkHeader(equipmentFieldNames.model),
-        cell: v => <Cell>{v.getValue()}</Cell>,
+        cell: v => <TextCell value={v.getValue()}/>,
         meta: { filter: textFilter },
     }),
     helper.accessor('serialNumber', {
         header: mkHeader(equipmentFieldNames.serialNumber),
-        cell: v => <Cell className='break-all'>
-            {v.getValue()}
-        </Cell>,
+        cell: v => <TextCell className='break-all' value={v.getValue()}/>,
         meta: { filter: textFilter },
     }),
     helper.accessor('installDate', {
         header: mkHeader(equipmentFieldNames.installDate),
-        cell: v => <Cell>{componentsToString(v.getValue())}</Cell>,
+        cell: v => <TextCell value={componentsToString(v.getValue())}/>,
         sortingFn: dateSortingFn,
         filterFn: dateFilterFn,
         meta: { filter: dateFilter },
     }),
     helper.accessor('status', {
         header: mkHeader(equipmentFieldNames.status),
-        cell: v => <Cell>{v.getValue()}</Cell>,
+        cell: v => <TextCell value={v.getValue()}/>,
         meta: { filter: mkSelectFilter(statuses) },
     }),
     helper.display({
         id: 'actions',
         header: headerCheckbox,
         cell: cellCheckbox,
+    }),
+    helper.display({
+        id: 'open',
+        header: '',
+        cell: mkOpenButton(it => `/equipment/${it.id}`),
     }),
 ]
 

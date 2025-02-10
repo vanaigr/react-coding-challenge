@@ -1,4 +1,5 @@
 import * as R from 'react'
+import * as RD from 'react-router-dom'
 import * as RT from '@tanstack/react-table'
 
 import {
@@ -13,21 +14,15 @@ import DateInput from '@/components/dateInput'
 export type CellProps<Element> = R.PropsWithChildren<{}>
     & R.DetailedHTMLProps<R.HTMLAttributes<Element>, Element>
 
-export function Cell({ className, children, ...rest }: CellProps<HTMLDivElement>) {
-    return <div className={(className ?? '')} {...rest}>
-        {children}
-    </div>
-}
-
 export type TextCellProps = { className?: string, value: string }
 export function TextCell({ className, value }: TextCellProps) {
     return <div
-        className={(className ?? '') + ' flex '}
+        className={(className ?? '') + ' flex items-center'}
         title={value}
     >
-        <span className='grow line-clamp-3'>
+        <div className='grow line-clamp-3'>
             {value}
-        </span>
+        </div>
     </div>
 }
 
@@ -66,6 +61,18 @@ export function mkHeader<D, V>(children: string) {
     return (ctx: RT.HeaderContext<D, V>) => <Header ctx={ctx}>{children}</Header>
 }
 
+export function mkOpenButton<D, V>(toUrl: (v: D) => string) {
+    return (ctx: RT.CellContext<D, V>) => {
+        const navigate = RD.useNavigate()
+        return <button
+            type='button'
+            className='flex items-center justify-center cursor-pointer grow text-slate-900'
+            onClick={() => navigate(toUrl(ctx.row.original))}
+        >
+            <span className='material-symbols-outlined' style={{ fontSize: '1.2em' }}>open_in_new</span>
+        </button>
+    }
+}
 
 export type InputProps = R.DetailedHTMLProps<R.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
 
