@@ -22,7 +22,7 @@ export const equipmentFieldNames: Record<keyof Equipment, string> = {
     id: 'Id',
     name: 'Name',
     location: 'Location',
-    department: 'department',
+    department: 'Department',
     model: 'Model',
     serialNumber: 'Serial number',
     installDate: 'Install date',

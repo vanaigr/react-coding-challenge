@@ -3,9 +3,11 @@ import * as R from 'react'
 import type { ValuesUnion } from '@/util/types'
 
 const inputContC = ' flex flex-col items-stretch'
-const borderC = ' border border-indigo-400 rounded-md focus-within:outline-2 focus-within:outline-indigo-400'
+const borderC = ' border border-indigo-400 rounded-lg focus-within:outline-2 focus-within:outline-indigo-400'
 const errorBorderC = ' border-red-600 focus-within:outline-red-400'
-const inputC = ' text-lg h-12 w-0 grow border-none outline-none focus:outline-none'
+const errorTextC = ' whitespace-nowrap overflow-hidden text-ellipsis w-xs mt-1'
+const inputC = ' h-10 w-0 grow border-none outline-none focus:outline-none'
+const textC = ' font-sans mb-1'
 
 
 type InputProps = {
@@ -19,15 +21,12 @@ export function Input({ title, errors, ...rest }: InputProps) {
     const errorText = !isError ? '' : errors.join('. ')
 
     return <label className={inputContC}>
-        <span className='font-sans mb-1'>{title}</span>
+        <span className={textC}>{title}</span>
         <span className={'flex' + borderC + errorStyle}>
-            <input
-                className={inputC + ' px-4'}
-                {...rest}
-            />
+            <input className={inputC + ' px-4'} {...rest}/>
         </span>
         <span
-            className='whitespace-nowrap overflow-hidden text-ellipsis w-xs'
+            className={!isError ? '' : errorTextC}
             title={errorText}
         >
             {errorText}
@@ -58,7 +57,7 @@ export function Select<T extends readonly string[]>({
     const errorText = !isError ? '' : errors.join('. ')
 
     return <label className={inputContC}>
-        <span className='font-sans mb-1'>{title}</span>
+        <span className={textC}>{title}</span>
         <span className={'flex' + borderC + errorStyle}>
             <select
                 className={inputC + ' px-3'}
@@ -73,7 +72,7 @@ export function Select<T extends readonly string[]>({
             </select>
         </span>
         <span
-            className='whitespace-nowrap overflow-hidden text-ellipsis w-xs'
+            className={!isError ? '' : errorTextC}
             title={errorText}
         >
             {errorText}
@@ -128,8 +127,8 @@ export function EditableList({ title, defaultValue, onChange, errors }: Editable
     const showItems = itemComponents.length > 0
 
     return <div className={inputContC}>
-        <span className='font-sans mb-1'>{title}</span>
-        <div className={'flex flex-col border border-indigo-400 rounded-md' + errorStyle}>
+        <span className={textC}>{title}</span>
+        <div className={'flex flex-col border border-indigo-400 rounded-lg' + errorStyle}>
             <div className={showItems ? 'border-b border-indigo-400' + errorStyle : ''}>
                 <NewItem
                     onAdd={value => {
@@ -153,7 +152,7 @@ export function EditableList({ title, defaultValue, onChange, errors }: Editable
             }
         </div>
         <span
-            className='whitespace-nowrap overflow-hidden text-ellipsis w-xs'
+            className={!isError ? '' : errorTextC}
             title={errorText}
         >
             {errorText}
@@ -192,7 +191,7 @@ function NewItem({ onAdd }: NewItemProps) {
     const disabled = value === ''
     const ref = R.useRef<HTMLInputElement>(null)
 
-    return <div className='h-12 flex items-center gap-3 box-border'>
+    return <div className='h-10 flex items-center gap-3 box-border'>
         <label className='flex grow items-center pl-3'>
             <input
                 ref={ref}
