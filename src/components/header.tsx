@@ -48,8 +48,8 @@ export default function Header({ path, name }: HeaderProps) {
         }
     }
 
-    return <div className='flex justify-center mb-4'>
-        <div className='max-w-7xl grow border-b border-indigo-200 py-7 px-4 flex gap-6 items-center'>
+    return <div className='flex justify-center mb-4 bg-white border-b border-indigo-200 '>
+        <div className='max-w-7xl grow py-7 px-4 flex gap-6 items-center'>
             <div className='flex gap-2 grow max-w-[50%]'>
                 {pathComponents}
             </div>

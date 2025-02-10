@@ -17,12 +17,12 @@ const departmentColor: Record<Statuses, string> = {
 }
 
 export default function Component() {
-    return <div>
+    return <div className='grow bg-gray-100'>
         <Header/>
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-8 mx-auto'>
+        <div className='grid grid-cols-1 xl:grid-cols-2 gap-2 mx-auto p-2 max-w-[95rem]'>
             <EquipmentChart/>
-            <DepartmentChart/>
             <RecentMaintenance/>
+            <DepartmentChart/>
         </div>
     </div>
 }
@@ -57,8 +57,8 @@ function RecentMaintenance() {
     }
 
     const title = 'Recent maintenance activities'
-    return <div className='flex flex-col items-center'>
-        <span className='text-xl font-bold text-gray-800 mb-4'>{title}</span>
+    return <div className='flex flex-col p-5 pt-4 pb-7 bg-white rounded-md'>
+        <span className='text-sm text-gray-700 mb-6'>{title}</span>
         <div className='text-sm grid gap-x-2 gap-y-3' style={{ gridTemplateColumns: 'repeat(8, auto)' }}>
             {components}
         </div>
@@ -88,8 +88,8 @@ function DepartmentChart() {
     }
 
     const title = 'Maintenance hours by department'
-    return <div className='flex flex-col items-center'>
-        <span className='text-xl font-bold text-gray-800 mb-4'>{title}</span>
+    return <div className='flex flex-col p-5 pt-4 bg-white rounded-md'>
+        <span className='text-sm text-gray-700 mb-6'>{title}</span>
         <RC.BarChart width={500} height={250} data={data} title={title}>
             <RC.CartesianGrid strokeDasharray='3 3'/>
             <RC.XAxis dataKey='name'/>
@@ -126,8 +126,8 @@ function EquipmentChart() {
     }
 
     const title = 'Equipment status breakdown'
-    return <div className='flex flex-col items-center'>
-        <span className='text-xl font-bold text-gray-800 mb-4'>{title}</span>
+    return <div className='flex flex-col p-5 pt-4 bg-white rounded-md'>
+        <span className='text-sm text-gray-700 mb-6'>{title}</span>
         <RC.PieChart width={500} height={250} title={title}>
             <RC.Pie label={it => it.name} data={data} dataKey='value'>
                 {data.map((it, i) => <RC.Cell key={i} fill={departmentColor[it.status]}/>)}
