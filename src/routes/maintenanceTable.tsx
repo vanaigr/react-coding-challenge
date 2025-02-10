@@ -13,19 +13,19 @@ import {
 import { componentsToString } from '@/util/date'
 import { store as maintenanceStore } from '@/data/maintenance'
 import { store as equipmentStore } from '@/data/equipment'
-import Header from '@/components/header'
+import PageHeader from '@/components/header'
 
 import {
     TextCell,
-    mkHeader,
-    textFilter,
-    mkSelectFilter,
+    Header,
+    TextFilter,
+    SelectFilter,
     dateSortingFn,
     dateFilterFn,
-    dateFilter,
+    DateFilter,
     numberSortingFn,
     numberFilterFn,
-    numberFilter,
+    NumberFilter,
     stringArrFilterFn,
 } from '@/components/grid'
 
@@ -33,23 +33,48 @@ type Entry = { maintenance: MaintenanceRecord, equipment: Equipment }
 
 const helper = RT.createColumnHelper<Entry>()
 
+const cellBorder = 'border-t border-t-gray-600'
+const p = ' px-3 py-2'
+const h = ' px-3 pt-3'
+const f = ' px-3 pt-2 pb-3'
+const f_top = ' px-3 pt-2'
+const f_bot = ' px-3 pb-3'
+
 const columns = [
     helper.accessor('maintenance.id', {
-        header: mkHeader(maintenanceFieldNames.id),
-        cell: v => <TextCell className='break-all' value={v.getValue()}/>,
-        meta: { filter: textFilter },
+        header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.id}</Header>,
+        cell: v => <TextCell className={'break-all' + p} value={v.getValue()}/>,
+        meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('maintenance.equipmentId', {
         id: 'equipment-id',
-        header: mkHeader(maintenanceFieldNames.equipmentId),
-        cell: v => <TextCell className='break-all' value={v.getValue()}/>,
+        header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.equipmentId}</Header>,
+        cell: v => {
+            if(v.column.getIsGrouped()) {
+                const row = v.row
+
+                return <button
+                    key={v.cell.id}
+                    className={'flex gap-2 cursor-pointer' + p}
+                    onClick={row.getToggleExpandedHandler()}
+                >
+                    {row.getIsExpanded() ? '▼' : '▶'}
+                    <span>({row.subRows.length})</span>
+                    <TextCell className='break-all' value={v.getValue()}/>
+                </button>
+            }
+            else {
+                return <TextCell className={'break-all' + p} value={v.getValue()}/>
+            }
+        },
         getGroupingValue: v => v.maintenance.equipmentId,
         meta: { filter: v => {
             return <div className='grow flex flex-col'>
-                {textFilter(v)}
-                <label className='pt-2'>
+                <TextFilter ctx={v} className={f_top}/>
+                <label className={'pt-2 grow cursor-pointer' + f_bot}>
                     <input
                         type='button'
+                        className='cursor-pointer'
                         value={v.column.getIsGrouped() ? 'Ungroup' : 'Group'}
                         onClick={v.column.getToggleGroupingHandler()}
                     />
@@ -59,57 +84,57 @@ const columns = [
     }),
     helper.accessor('equipment.name', {
         id: 'equipment-name',
-        header: mkHeader('Equipment name'),
+        header: v => <Header ctx={v} className={h}>Equipment name</Header>,
         cell: v => <TextCell value={v.getValue()}/>,
         aggregatedCell: v => <TextCell value={v.getValue()}/>,
         aggregationFn: (id, rows) => rows.length == 0 ? '' : rows[0].getValue(id),
-        meta: { filter: textFilter },
+        meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('maintenance.date', {
-        header: mkHeader(maintenanceFieldNames.date),
+        header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.date}</Header>,
         cell: v => <TextCell value={componentsToString(v.getValue())}/>,
         sortingFn: dateSortingFn,
         filterFn: dateFilterFn,
-        meta: { filter: dateFilter },
+        meta: { filter: v => <DateFilter ctx={v} className={f}/> },
     }),
     helper.accessor('maintenance.type', {
-        header: mkHeader(maintenanceFieldNames.type),
+        header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.type}</Header>,
         cell: v => <TextCell value={v.getValue()}/>,
-        meta: { filter: mkSelectFilter(types) },
+        meta: { filter: v => <SelectFilter ctx={v} values={types} className={f}/> },
     }),
     helper.accessor('maintenance.technician', {
-        header: mkHeader(maintenanceFieldNames.technician),
+        header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.technician}</Header>,
         cell: v => <TextCell value={v.getValue()}/>,
-        meta: { filter: textFilter },
+        meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('maintenance.hoursSpent', {
-        header: mkHeader(maintenanceFieldNames.hoursSpent),
+        header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.hoursSpent}</Header>,
         cell: v => <TextCell value={'' + v.getValue()}/>,
         sortingFn: numberSortingFn,
         filterFn: numberFilterFn,
-        meta: { filter: numberFilter },
+        meta: { filter: v => <NumberFilter ctx={v} className={f}/> },
     }),
     helper.accessor('maintenance.description', {
-        header: mkHeader(maintenanceFieldNames.description),
+        header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.description}</Header>,
         cell: v => <TextCell value={v.getValue()}/>,
-        meta: { filter: textFilter },
+        meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('maintenance.partsReplaced', {
-        header: mkHeader(maintenanceFieldNames.partsReplaced),
+        header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.partsReplaced}</Header>,
         enableSorting: false,
         cell: v => <TextCell value={v.getValue().join(', ')}/>,
         filterFn: stringArrFilterFn,
-        meta: { filter: textFilter },
+        meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('maintenance.priority', {
-        header: mkHeader(maintenanceFieldNames.priority),
+        header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.priority}</Header>,
         cell: v => <TextCell value={v.getValue()}/>,
-        meta: { filter: mkSelectFilter(priorities) },
+        meta: { filter: v => <SelectFilter ctx={v} values={priorities} className={f}/> },
     }),
     helper.accessor('maintenance.completionStatus', {
-        header: mkHeader(maintenanceFieldNames.completionStatus),
+        header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.completionStatus}</Header>,
         cell: v => <TextCell value={v.getValue()}/>,
-        meta: { filter: mkSelectFilter(completionStatuses) },
+        meta: { filter: v => <SelectFilter ctx={v} values={completionStatuses} className={f}/> },
     }),
 ]
 
@@ -147,13 +172,12 @@ export default function Component() {
     })
 
     return <div>
-        <Header path={[]} name='Maintenance records'/>
+        <PageHeader path={[]} name='Maintenance records'/>
         <Table table={table}/>
     </div>
 }
 
 function Table({ table }: { table: RT.Table<Entry> }) {
-    const cellBorder = 'border-t border-t-gray-600'
     const cellBorderInsideGroup = 'border-t border-t-gray-400'
     const hGroup = table.getHeaderGroups()[0]
 
@@ -162,7 +186,7 @@ function Table({ table }: { table: RT.Table<Entry> }) {
     return <div className='text-sm m-4 mt-10 max-w-[120em] mx-auto'>
         <div style={gridStyle} className='w-full grid px-1'>
             {hGroup.headers.map(header => (
-                <span key={header.id} className='flex px-3 pt-3'>
+                <span key={header.id} className='flex'>
                     {RT.flexRender(
                         header.column.columnDef.header,
                         header.getContext()
@@ -172,7 +196,7 @@ function Table({ table }: { table: RT.Table<Entry> }) {
             {hGroup.headers.map(header => (
                 <span
                     key={header.id}
-                    className='flex border-b border-b-gray-600 px-3 pt-2 pb-3'
+                    className='flex border-b border-b-gray-600'
                 >
                     {RT.flexRender(
                         header.column.columnDef.meta?.filter,
@@ -180,29 +204,27 @@ function Table({ table }: { table: RT.Table<Entry> }) {
                     )}
                 </span>
             ))}
-            {table.getRowModel().rows.map((row, i) => {
+            {table.getRowModel().rows.map(row => {
                 const cells = row.getVisibleCells().map(cell => {
-                    const border = i > 0
-                    const grouped = table.getState().grouping.length > 0
+                    const tableGrouped = table.getState().grouping.length > 0
 
-                    if(cell.getIsGrouped()) {
-                        return <button
-                            key={cell.id}
-                            className={(border ? cellBorder : '') + ' flex px-3 py-2 gap-2'}
-                            onClick={row.getToggleExpandedHandler()}
-                        >
-                            {row.getIsExpanded() ? '▼' : '▶'}
-                            <span>({row.subRows.length})</span>
-                            {RT.flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                            )}
-                        </button>
+                    let style: string
+                    if(row.index > 0) {
+                        if(cell.getIsGrouped() || !tableGrouped || cell.getIsAggregated()) {
+                            style = cellBorder
+                        }
+                        else {
+                            style = cellBorderInsideGroup
+                        }
                     }
-                    else if(cell.getIsAggregated()) {
+                    else {
+                        style = ''
+                    }
+
+                    if(cell.getIsAggregated()) {
                         return <button
                             key={cell.id}
-                            className={(border ? cellBorder : '') + ' flex px-3 py-2'}
+                            className={style + ' flex items-center'}
                             onClick={row.getToggleExpandedHandler()}
                         >
                             {RT.flexRender(
@@ -215,13 +237,11 @@ function Table({ table }: { table: RT.Table<Entry> }) {
                         return <div key={cell.id}/>
                     }
 
-                    const style = border ? (grouped ? cellBorderInsideGroup : cellBorder) : ''
-
-                    if(cell.getIsPlaceholder() || (grouped && cell.column.id === 'equipment-name')) {
+                    if(cell.getIsPlaceholder() || (tableGrouped && cell.column.id === 'equipment-name')) {
                         return <div key={cell.id} className={style}/>
                     }
                     else {
-                        return <span key={cell.id} className={style + ' flex px-3 py-2'}>
+                        return <span key={cell.id} className={style + ' flex'}>
                             {RT.flexRender(
                                 cell.column.columnDef.cell,
                                 cell.getContext()

@@ -28,19 +28,22 @@ export function TextCell({ className, value }: TextCellProps) {
 
 type HeaderProps<D, V> = R.PropsWithChildren<{
     ctx: RT.HeaderContext<D, V>,
+    className?: string,
 }>
 
 const sortClasses = new Map()
 sortClasses.set(false, ' text-gray-500')
 sortClasses.set(true, ' text-black')
 
-export function Header<D, V>({ ctx, children }: HeaderProps<D, V>) {
+export function Header<D, V>({ ctx, children, className }: HeaderProps<D, V>) {
+    className ??= ''
     const sorted = ctx.column.getIsSorted()
 
     return <button
         type='button'
         className={
-            'upper font-bold text-gray-700 flex items-center gap-2'
+            className
+                + ' upper font-bold text-gray-700 flex items-center gap-2'
                 + ' cursor-pointer grow'
         }
         onClick={ctx.column.getToggleSortingHandler()}
@@ -57,49 +60,59 @@ export function Header<D, V>({ ctx, children }: HeaderProps<D, V>) {
     </button>
 }
 
-export function mkHeader<D, V>(children: string) {
-    return (ctx: RT.HeaderContext<D, V>) => <Header ctx={ctx}>{children}</Header>
+export type OpenButtonProps = {
+    url: string,
+    className?: string,
 }
-
-export function mkOpenButton<D, V>(toUrl: (v: D) => string) {
-    return (ctx: RT.CellContext<D, V>) => {
-        const navigate = RD.useNavigate()
-        return <button
-            type='button'
-            className='flex items-center justify-center cursor-pointer grow text-slate-900'
-            onClick={() => navigate(toUrl(ctx.row.original))}
-        >
-            <span className='material-symbols-outlined' style={{ fontSize: '1.2em' }}>open_in_new</span>
-        </button>
-    }
+export function OpenButton(p: OpenButtonProps) {
+    return <RD.Link
+        className={
+            p.className
+            + ' flex items-center justify-center cursor-pointer grow text-slate-900'
+        }
+        to={p.url}
+    >
+        <span
+            className='material-symbols-outlined'
+            style={{ fontSize: '1.2em' }}
+        >open_in_new</span>
+    </RD.Link>
 }
 
 export type InputProps = R.DetailedHTMLProps<R.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
 
 function Checkbox(props: InputProps) {
+    const className = props.className ?? ''
     return <label
-        className={
-            (props.className ?? '')
-            + ' grow flex items-center justify-center'
-        }
+        className={className + ' grow flex items-center justify-center'}
     >
         <input type="checkbox" className='size-3' {...props}/>
     </label>
 }
 
-export function cellCheckbox<D, V>(ctx: RT.CellContext<D, V>) {
-    const row = ctx.row
+export type CellCheckboxProps<D, V> = {
+    ctx: RT.CellContext<D, V>,
+    className?: string,
+}
+export function CellCheckbox<D, V>(p: CellCheckboxProps<D, V>) {
+    const row = p.ctx.row
     return <Checkbox
+        className={p.className}
         checked={row.getIsSelected()}
         disabled={!row.getCanSelect()}
         onChange={row.getToggleSelectedHandler()}
     />
 }
 
-export function headerCheckbox<D, V>(ctx: RT.HeaderContext<D, V>) {
-    const table = ctx.table
+export type HeaderCheckboxPrpos<D, V> = {
+    ctx: RT.HeaderContext<D, V>,
+    className?: string,
+}
+export function HeaderCheckbox<D, V>(p: HeaderCheckboxPrpos<D, V>) {
+    const table = p.ctx.table
 
     return <Checkbox
+        className={p.className}
         checked={table.getIsAllRowsSelected()}
         ref={it => {
             if(it == null) return
@@ -110,37 +123,43 @@ export function headerCheckbox<D, V>(ctx: RT.HeaderContext<D, V>) {
     />
 }
 
-
-export function textFilter<D, T extends string | string[]>(ctx: RT.HeaderContext<D, T>) {
-    return <label className='flex grow items-start'>
+export type TextFilterProps<D> = {
+    ctx: RT.HeaderContext<D, string | readonly string[]>,
+    className?: string
+}
+export function TextFilter<D>(p: TextFilterProps<D>) {
+    return <label className={(p.className ?? '') + ' flex grow items-start'}>
         <input
             className='grow w-20'
             placeholder='Search'
-            value={ctx.column.getFilterValue() as string ?? ''}
-            onChange={it => ctx.column.setFilterValue(it.target.value)}
+            value={p.ctx.column.getFilterValue() as string ?? ''}
+            onChange={it => p.ctx.column.setFilterValue(it.target.value)}
         />
     </label>
 }
 
-
-export function mkSelectFilter<D, T extends string>(values: readonly string[]) {
+export type SelectFilterProps<D, V> = {
+    ctx: RT.HeaderContext<D, V>,
+    values: readonly string[],
+    className?: string;
+}
+export function SelectFilter<D, V>(p: SelectFilterProps<D, V>) {
+    const values = p.values
     const options = values.map(it => {
         return <option className='text-black' key={it} value={it}>{it}</option>
     })
 
-    return (ctx: RT.HeaderContext<D, T>) => {
-        const v = values[values.indexOf(ctx.column.getFilterValue() as string)] ?? ''
-        return <label className='flex grow items-start'>
-            <select
-                className={'grow w-20' + (v === '' ? ' text-gray-500' : '')}
-                value={v}
-                onChange={it => ctx.column.setFilterValue(it.target.value)}
-            >
-                <option value='' className='text-black'>All</option>
-                {options}
-            </select>
-        </label>
-    }
+    const v = values[values.indexOf(p.ctx.column.getFilterValue() as string)] ?? ''
+    return <label className={(p.className ?? '') + ' flex grow items-start'}>
+        <select
+            className={'grow w-20' + (v === '' ? ' text-gray-500' : '')}
+            value={v}
+            onChange={it => p.ctx.column.setFilterValue(it.target.value)}
+        >
+            <option value='' className='text-black'>All</option>
+            {options}
+        </select>
+    </label>
 }
 
 
@@ -150,7 +169,6 @@ export type DateFilter = {
 }
 
 export function dateSortingFn<T>(rowA: RT.Row<T>, rowB: RT.Row<T>, id: string) {
-    console.log(rowA)
     const a = rowA.getValue(id) as DateComponents
     const b = rowB.getValue(id) as DateComponents
     return dateCmp(a, b)
@@ -171,8 +189,12 @@ export function dateFilterFn<T>(row: RT.Row<T>, id: string, filter: any) {
     return true
 }
 
-export function dateFilter<D, T extends DateComponents>(ctx: RT.HeaderContext<D, T>) {
-    const v = ctx.column.getFilterValue() as DateFilter | undefined
+export type DateFilterProps<D> = {
+    ctx: RT.HeaderContext<D, DateComponents>,
+    className?: string,
+}
+export function DateFilter<D>(p: DateFilterProps<D>) {
+    const v = p.ctx.column.getFilterValue() as DateFilter | undefined
     let firstV = ''
     let lastV = ''
     if(v != null && v.first != null) {
@@ -182,14 +204,14 @@ export function dateFilter<D, T extends DateComponents>(ctx: RT.HeaderContext<D,
         lastV = toISODate(v.last)
     }
 
-    return <div className='grow flex flex-col'>
+    return <div className={(p.className ?? '') + ' grow flex flex-col'}>
         <div className='grow flex'>
             <DateInput
                 defaultValue={firstV}
                 className={'w-30 grow ' + (firstV === '' ? 'text-gray-500' : '')}
                 onChange={it => {
                     const cs = strDateToComponents(it.target.value)
-                    ctx.column.setFilterValue({ ...v, first: cs })
+                    p.ctx.column.setFilterValue({ ...v, first: cs })
                 }}
                 placeholder='First'
             />
@@ -201,7 +223,7 @@ export function dateFilter<D, T extends DateComponents>(ctx: RT.HeaderContext<D,
                 defaultValue={lastV}
                 onChange={it => {
                     const cs = strDateToComponents(it.target.value)
-                    ctx.column.setFilterValue({ ...v, last: cs })
+                    p.ctx.column.setFilterValue({ ...v, last: cs })
                 }}
             />
         </div>
@@ -237,8 +259,12 @@ export function numberFilterFn<T>(row: RT.Row<T>, id: string, filter: any) {
     return true
 }
 
-export function numberFilter<D, T extends number>(ctx: RT.HeaderContext<D, T>) {
-    const v = ctx.column.getFilterValue() as NumbersFilter | undefined
+export type NumberFilterProps<D> = {
+    ctx: RT.HeaderContext<D, number>,
+    className?: string,
+}
+export function NumberFilter<D>(p: NumberFilterProps<D>) {
+    const v = p.ctx.column.getFilterValue() as NumbersFilter | undefined
     let firstV = ''
     let lastV = ''
     if(v != null && v.first != null) {
@@ -248,7 +274,7 @@ export function numberFilter<D, T extends number>(ctx: RT.HeaderContext<D, T>) {
         lastV = '' + v.last
     }
 
-    return <div className='grow flex flex-col'>
+    return <div className={(p.className ?? '') + ' grow flex flex-col'}>
         <div className='grow flex'>
             <input
                 type='number'
@@ -256,7 +282,7 @@ export function numberFilter<D, T extends number>(ctx: RT.HeaderContext<D, T>) {
                 className={'w-10 grow ' + (firstV === '' ? 'text-gray-500' : '')}
                 onChange={it => {
                     const cs = parseFloat(it.target.value)
-                    ctx.column.setFilterValue({ ...v, first: cs })
+                    p.ctx.column.setFilterValue({ ...v, first: cs })
                 }}
                 placeholder='First'
             />
@@ -269,7 +295,7 @@ export function numberFilter<D, T extends number>(ctx: RT.HeaderContext<D, T>) {
                 defaultValue={lastV}
                 onChange={it => {
                     const cs = parseFloat(it.target.value)
-                    ctx.column.setFilterValue({ ...v, last: cs })
+                    p.ctx.column.setFilterValue({ ...v, last: cs })
                 }}
             />
         </div>

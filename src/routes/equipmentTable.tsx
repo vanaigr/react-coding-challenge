@@ -5,19 +5,19 @@ import * as RT from '@tanstack/react-table'
 import { type Equipment, departments, statuses, equipmentFieldNames } from '@/data/recordDefs'
 import { componentsToString } from '@/util/date'
 import { store } from '@/data/equipment'
-import Header from '@/components/header'
+import PageHeader from '@/components/header'
 
 import {
     TextCell,
-    mkHeader,
-    mkOpenButton,
-    headerCheckbox,
-    cellCheckbox,
-    textFilter,
-    mkSelectFilter,
+    Header,
+    OpenButton,
+    HeaderCheckbox,
+    CellCheckbox,
+    TextFilter,
+    SelectFilter,
     dateSortingFn,
     dateFilterFn,
-    dateFilter,
+    DateFilter,
 } from '@/components/grid'
 
 const helper = RT.createColumnHelper<Equipment>()
@@ -30,58 +30,62 @@ const statusColors = {
     Retired: 'bg-blue-200',
 } satisfies Colors<typeof statuses>
 
+const p = ' px-3 py-2'
+const h = ' px-3 pt-3'
+const f = ' px-3 pt-2 pb-3'
+
 const columns = [
     helper.accessor('id', {
-        header: mkHeader(equipmentFieldNames.id),
-        cell: v => <TextCell className='break-all' value={v.getValue()}/>,
-        meta: { filter: textFilter },
+        header: v => <Header ctx={v} className={h}>{equipmentFieldNames.id}</Header>,
+        cell: v => <TextCell className={'break-all' + p} value={v.getValue()}/>,
+        meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('name', {
-        header: mkHeader(equipmentFieldNames.name),
-        cell: v => <TextCell value={v.getValue()}/>,
-        meta: { filter: textFilter },
+        header: v => <Header ctx={v} className={h}>{equipmentFieldNames.name}</Header>,
+        cell: v => <TextCell className={p} value={v.getValue()}/>,
+        meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('location', {
-        header: mkHeader(equipmentFieldNames.location),
-        cell: v => <TextCell value={v.getValue()}/>,
-        meta: { filter: textFilter },
+        header: v => <Header ctx={v} className={h}>{equipmentFieldNames.location}</Header>,
+        cell: v => <TextCell className={p} value={v.getValue()}/>,
+        meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('department', {
-        header: mkHeader(equipmentFieldNames.department),
-        cell: v => <TextCell value={v.getValue()}/>,
-        meta: { filter: mkSelectFilter(departments) },
+        header: v => <Header ctx={v} className={h}>{equipmentFieldNames.department}</Header>,
+        cell: v => <TextCell className={p} value={v.getValue()}/>,
+        meta: { filter: v => <SelectFilter ctx={v} values={departments} className={f}/> },
     }),
     helper.accessor('model', {
-        header: mkHeader(equipmentFieldNames.model),
-        cell: v => <TextCell value={v.getValue()}/>,
-        meta: { filter: textFilter },
+        header: v => <Header ctx={v} className={h}>{equipmentFieldNames.model}</Header>,
+        cell: v => <TextCell className={p} value={v.getValue()}/>,
+        meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('serialNumber', {
-        header: mkHeader(equipmentFieldNames.serialNumber),
-        cell: v => <TextCell className='break-all' value={v.getValue()}/>,
-        meta: { filter: textFilter },
+        header: v => <Header ctx={v} className={h}>{equipmentFieldNames.serialNumber}</Header>,
+        cell: v => <TextCell className={'break-all' + p} value={v.getValue()}/>,
+        meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('installDate', {
-        header: mkHeader(equipmentFieldNames.installDate),
-        cell: v => <TextCell value={componentsToString(v.getValue())}/>,
+        header: v => <Header ctx={v} className={h}>{equipmentFieldNames.installDate}</Header>,
+        cell: v => <TextCell className={p} value={componentsToString(v.getValue())}/>,
         sortingFn: dateSortingFn,
         filterFn: dateFilterFn,
-        meta: { filter: dateFilter },
+        meta: { filter: v => <DateFilter ctx={v} className={f}/> },
     }),
     helper.accessor('status', {
-        header: mkHeader(equipmentFieldNames.status),
-        cell: v => <TextCell value={v.getValue()}/>,
-        meta: { filter: mkSelectFilter(statuses) },
-    }),
-    helper.display({
-        id: 'actions',
-        header: headerCheckbox,
-        cell: cellCheckbox,
+        header: v => <Header ctx={v} className={h}>{equipmentFieldNames.status}</Header>,
+        cell: v => <TextCell className={p} value={v.getValue()}/>,
+        meta: { filter: v => <SelectFilter ctx={v} values={statuses} className={f}/> },
     }),
     helper.display({
         id: 'open',
         header: '',
-        cell: mkOpenButton(it => `/equipment/${it.id}`),
+        cell: v => <OpenButton url={`/equipment/${v.row.original.id}`} className={p}/>
+    }),
+    helper.display({
+        id: 'actions',
+        header: v => <HeaderCheckbox ctx={v} className={h}/>,
+        cell: v => <CellCheckbox ctx={v} className={p}/>,
     }),
 ]
 
@@ -111,7 +115,7 @@ export default function Component() {
     })
 
     return <div>
-        <Header path={[]} name='Equipment records'/>
+        <PageHeader path={[]} name='Equipment records'/>
         <Control data={list} selected={selected}/>
         <Table table={table}/>
     </div>
@@ -179,7 +183,7 @@ function Table({ table }: { table: RT.Table<Equipment> }) {
     return <div className='text-sm m-4 max-w-7xl mx-auto'>
         <div style={gridStyle} className='w-full grid px-1'>
             {hGroup.headers.map(header => (
-                <span key={header.id} className='flex px-3 pt-3'>
+                <span key={header.id} className='flex'>
                     {RT.flexRender(
                         header.column.columnDef.header,
                         header.getContext()
@@ -187,10 +191,7 @@ function Table({ table }: { table: RT.Table<Equipment> }) {
                 </span>
             ))}
             {hGroup.headers.map(header => (
-                <span
-                    key={header.id}
-                    className='flex border-b border-b-gray-600 px-3 pt-2 pb-3'
-                >
+                <span key={header.id} className='flex border-b border-b-gray-600'>
                     {RT.flexRender(
                         header.column.columnDef.meta?.filter,
                         header.getContext()
@@ -199,13 +200,10 @@ function Table({ table }: { table: RT.Table<Equipment> }) {
             ))}
             {table.getRowModel().rows.map((row, i) => {
                 const status = row.getValue<Equipment['status']>('status')
-                const style = statusColors[status] + ' ' + (i ? cellBorder : '')
+                const style = 'flex ' + statusColors[status] + ' ' + (i ? cellBorder : '')
                 return <R.Fragment key={row.id}>
                     {row.getVisibleCells().map(cell => {
-                        return <span
-                            key={cell.id}
-                            className={style + ' flex px-3 py-2'}
-                        >
+                        return <span key={cell.id} className={style}>
                             {RT.flexRender(
                                 cell.column.columnDef.cell,
                                 cell.getContext()
