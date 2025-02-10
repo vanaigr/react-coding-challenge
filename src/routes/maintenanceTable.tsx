@@ -13,6 +13,7 @@ import {
 import { componentsToString } from '@/util/date'
 import { store as maintenanceStore } from '@/data/maintenance'
 import { store as equipmentStore } from '@/data/equipment'
+import Header from '@/components/header'
 
 import {
     TextCell,
@@ -146,6 +147,7 @@ export default function Component() {
     })
 
     return <div>
+        <Header path={[]} name='Maintenance records'/>
         <Table table={table}/>
     </div>
 }
@@ -157,7 +159,7 @@ function Table({ table }: { table: RT.Table<Entry> }) {
 
     const gridStyle = { gridTemplateColumns: `repeat(${hGroup.headers.length}, 1fr)` }
 
-    return <div className='text-sm m-4 max-w-[120em] mx-auto'>
+    return <div className='text-sm m-4 mt-10 max-w-[120em] mx-auto'>
         <div style={gridStyle} className='w-full grid px-1'>
             {hGroup.headers.map(header => (
                 <span key={header.id} className='flex px-3 pt-3'>

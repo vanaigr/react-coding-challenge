@@ -7,6 +7,7 @@ import { statuses, departments, type Statuses, type Departments } from '@/data/r
 import { store as equipmentStore } from '@/data/equipment'
 import { store as maintenanceStore } from '@/data/maintenance'
 import { cmp as dateCmp, componentsToString, dateLocalToComponents } from '@/util/date'
+import Header from '@/components/header'
 
 const departmentColor: Record<Statuses, string> = {
     Operational: colors.green[600],
@@ -16,10 +17,13 @@ const departmentColor: Record<Statuses, string> = {
 }
 
 export default function Component() {
-    return <div className='grid grid-cols-1 md:grid-cols-2 gap-8 mx-auto'>
-        <EquipmentChart/>
-        <DepartmentChart/>
-        <RecentMaintenance/>
+    return <div>
+        <Header/>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-8 mx-auto'>
+            <EquipmentChart/>
+            <DepartmentChart/>
+            <RecentMaintenance/>
+        </div>
     </div>
 }
 

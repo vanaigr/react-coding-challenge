@@ -1,19 +1,32 @@
 import * as R from 'react'
 import * as RN from 'react-router-dom'
 
-export type PathEntry = { name: String, url: string }
-export type HeaderProps = { path: Array<PathEntry>, name: string }
+export type PathEntry = { name: string, url: string }
+export type HeaderProps = { path?: Array<PathEntry>, name?: string }
 
 export default function Header({ path, name }: HeaderProps) {
+    const root = (path == null || path.length === 0) && name == null
+
     const pathComponents: Array<R.ReactElement> = []
-    pathComponents.push(<RN.Link to={'/'} className='material-symbols-outlined'>home</RN.Link>)
-    for(let i = 0; i < path.length; i++) {
-        const it = path[i]
-        pathComponents.push(<span className='text-gray-600 material-symbols-outlined'>{'chevron_right'}</span>)
-        pathComponents.push(<RN.Link to={it.url}>{it.name}</RN.Link>)
+    if(root) {
+        pathComponents.push(<span className='material-symbols-outlined'>home</span>)
     }
-    pathComponents.push(<span className='text-gray-600 material-symbols-outlined'>{'chevron_right'}</span>)
-    pathComponents.push(<span>{name}</span>)
+    else {
+        pathComponents.push(<RN.Link to={'/'} className='material-symbols-outlined'>home</RN.Link>)
+
+        if(path != null) {
+            for(let i = 0; i < path.length; i++) {
+                const it = path[i]
+                pathComponents.push(<span className='text-gray-600 material-symbols-outlined'>{'chevron_right'}</span>)
+                pathComponents.push(<RN.Link to={it.url}>{it.name}</RN.Link>)
+            }
+        }
+
+        if(name != null) {
+            pathComponents.push(<span className='text-gray-600 material-symbols-outlined'>{'chevron_right'}</span>)
+            pathComponents.push(<span>{name}</span>)
+        }
+    }
 
     return <div className='flex justify-center mb-4'>
         <div className='max-w-6xl grow border-b border-indigo-200 py-7 px-4 flex gap-6 items-center'>

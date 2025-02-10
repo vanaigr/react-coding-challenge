@@ -28,7 +28,7 @@ export default function Component() {
     const error = result.error?.format()
 
     return <div className='grow flex flex-col'>
-        <Header path={[{ url: '/equipment', name: 'Equipment' }]} name='new'/>
+        <Header path={[{ url: '/equipment', name: 'Equipment records' }]} name='new'/>
         <form className='flex flex-col p-4 mx-auto' onSubmit={it => it.preventDefault()}>
             <div className='grid items-stretch gap-6 grid-cols-[auto] md:grid-cols-2 md:gap-x-10'>
                 <Input

@@ -5,6 +5,7 @@ import { types, priorities, completionStatuses } from '@/data/recordDefs'
 import { type Raw, type FormData, createFormData } from '@/data/maintenanceForm'
 import { Input, Select, EditableList } from '@/components/inputs'
 import { store as equpmentStore } from '@/data/equipment'
+import Header from '@/components/header'
 
 export default function Component() {
     const store = R.useState(() => Z.create<FormData>(() => {
@@ -44,7 +45,8 @@ export default function Component() {
     }
     const error = result.error?.format()
 
-    return <div className='grow flex items-center'>
+    return <div className='grow flex flex-col items-stretch'>
+        <Header path={[{ url: '/maintenance', name: 'Maintenance records' }]} name='new'/>
         <form className='flex flex-col p-4 mx-auto' onSubmit={ev => ev.preventDefault()}>
             <div className='grid items-stretch gap-6 grid-cols-[auto] md:grid-cols-2 md:gap-x-10'>
                 <Select

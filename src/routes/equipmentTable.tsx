@@ -5,6 +5,7 @@ import * as RT from '@tanstack/react-table'
 import { type Equipment, departments, statuses, equipmentFieldNames } from '@/data/recordDefs'
 import { componentsToString } from '@/util/date'
 import { store } from '@/data/equipment'
+import Header from '@/components/header'
 
 import {
     Cell,
@@ -106,13 +107,13 @@ export default function Component() {
     })
 
     return <div>
+        <Header path={[]} name='Equipment records'/>
         <Control data={list} selected={selected}/>
         <Table table={table}/>
     </div>
 }
 
 function Control({ data, selected }: { data: Equipment[], selected: Selected }) {
-
     let count = 0
     let commonStatus: Equipment['status'] | '' | null = null
     for(const k in selected) {
@@ -131,7 +132,7 @@ function Control({ data, selected }: { data: Equipment[], selected: Selected }) 
 
     const disabled = count == 0
 
-    return <div className='flex text-sm m-4 px-5 py-3 max-w-7xl mx-auto rounded-full bg-indigo-100'>
+    return <div className='flex text-sm m-4 px-5 py-3 mt-10 max-w-7xl mx-auto rounded-full bg-indigo-100'>
         <div className='grow'>Selected: {count}</div>
         <div className={'flex gap-4' + (disabled ? ' text-gray-600' : '') }>
             <span>Change status:</span>
