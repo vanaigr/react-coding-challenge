@@ -155,9 +155,7 @@ function Table({ table }: { table: RT.Table<Entry> }) {
     const cellBorderInsideGroup = 'border-t border-t-gray-400'
     const hGroup = table.getHeaderGroups()[0]
 
-    // In tailwind, it would be `grid-cols-[repeat(${hGroup.headers.length},auto)]`
-    // but it doesn't work _sometimes_, maybe '@tailwindcss/vite' issue.
-    const gridStyle = { gridTemplateColumns: `repeat(${hGroup.headers.length}, auto)` }
+    const gridStyle = { gridTemplateColumns: `repeat(${hGroup.headers.length}, 1fr)` }
 
     return <div className='text-sm m-4 max-w-[120em] mx-auto'>
         <div style={gridStyle} className='w-full grid px-1'>
