@@ -4,6 +4,7 @@ import * as Z from 'zustand'
 import { equipmentFieldNames, statuses, departments } from '@/data/recordDefs'
 import { type Raw, type FormData, createFormData } from '@/data/equipmentForm'
 import { Input, Select } from '@/components/inputs'
+import Header from '@/components/header'
 
 export default function Component() {
     const store = R.useState(() => Z.create<FormData>(() => {
@@ -26,7 +27,8 @@ export default function Component() {
     }
     const error = result.error?.format()
 
-    return <div className='grow flex items-center'>
+    return <div className='grow flex flex-col'>
+        <Header path={[{ url: '/equipment', name: 'Equipment' }]} name='new'/>
         <form className='flex flex-col p-4 mx-auto' onSubmit={it => it.preventDefault()}>
             <div className='grid items-stretch gap-6 grid-cols-[auto] md:grid-cols-2 md:gap-x-10'>
                 <Input
