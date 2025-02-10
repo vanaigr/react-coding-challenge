@@ -10,10 +10,6 @@ import {
 } from '@/util/date'
 import DateInput from '@/components/dateInput'
 
-
-export type CellProps<Element> = R.PropsWithChildren<{}>
-    & R.DetailedHTMLProps<R.HTMLAttributes<Element>, Element>
-
 export type TextCellProps = { className?: string, value: string }
 export function TextCell({ className, value }: TextCellProps) {
     return <div

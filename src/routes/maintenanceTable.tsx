@@ -27,6 +27,7 @@ import {
     numberFilterFn,
     NumberFilter,
     stringArrFilterFn,
+    OpenButton,
 } from '@/components/grid'
 
 type Entry = { maintenance: MaintenanceRecord, equipment: Equipment }
@@ -35,6 +36,8 @@ const helper = RT.createColumnHelper<Entry>()
 
 const cellBorder = 'border-t border-t-gray-600'
 const p = ' px-3 py-2'
+const p_left = ' pl-3 py-2'
+const p_right = ' pr-3 py-2'
 const h = ' px-3 pt-3'
 const f = ' px-3 pt-2 pb-3'
 const f_top = ' px-3 pt-2'
@@ -50,21 +53,32 @@ const columns = [
         id: 'equipment-id',
         header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.equipmentId}</Header>,
         cell: v => {
-            if(v.column.getIsGrouped()) {
-                const row = v.row
+            const row = v.row
 
-                return <button
-                    key={v.cell.id}
-                    className={'flex gap-2 cursor-pointer' + p}
-                    onClick={row.getToggleExpandedHandler()}
-                >
-                    {row.getIsExpanded() ? '▼' : '▶'}
-                    <span>({row.subRows.length})</span>
-                    <TextCell className='break-all' value={v.getValue()}/>
-                </button>
+            const openB = <span className={'pl-2 flex' + p_right}>
+                <OpenButton url={`/equipment/${row.original.maintenance.equipmentId}`}/>
+            </span>
+
+            if(v.column.getIsGrouped()) {
+                return <div title={v.getValue()} className='grow flex'>
+                    <button
+                        type='button'
+                        key={v.cell.id}
+                        className={'grow flex gap-2 cursor-pointer' + p_left}
+                        onClick={row.getToggleExpandedHandler()}
+                    >
+                        {row.getIsExpanded() ? '▼' : '▶'}
+                        <span>({row.subRows.length})</span>
+                        <span className='break-all'>{v.getValue()}</span>
+                    </button>
+                    {openB}
+                </div>
             }
             else {
-                return <TextCell className={'break-all' + p} value={v.getValue()}/>
+                return <div title={v.getValue()} className='grow flex'>
+                    <TextCell className={'break-all' + p_left} value={v.getValue()}/>
+                    {openB}
+                </div>
             }
         },
         getGroupingValue: v => v.maintenance.equipmentId,
@@ -85,56 +99,66 @@ const columns = [
     helper.accessor('equipment.name', {
         id: 'equipment-name',
         header: v => <Header ctx={v} className={h}>Equipment name</Header>,
-        cell: v => <TextCell value={v.getValue()}/>,
-        aggregatedCell: v => <TextCell value={v.getValue()}/>,
+        cell: v => <TextCell className={p} value={v.getValue()}/>,
+        aggregatedCell: v => <TextCell className={p} value={v.getValue()}/>,
         aggregationFn: (id, rows) => rows.length == 0 ? '' : rows[0].getValue(id),
         meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('maintenance.date', {
         header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.date}</Header>,
-        cell: v => <TextCell value={componentsToString(v.getValue())}/>,
+        cell: v => <TextCell className={p} value={componentsToString(v.getValue())}/>,
         sortingFn: dateSortingFn,
         filterFn: dateFilterFn,
         meta: { filter: v => <DateFilter ctx={v} className={f}/> },
     }),
     helper.accessor('maintenance.type', {
         header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.type}</Header>,
-        cell: v => <TextCell value={v.getValue()}/>,
+        cell: v => <TextCell className={p} value={v.getValue()}/>,
         meta: { filter: v => <SelectFilter ctx={v} values={types} className={f}/> },
     }),
     helper.accessor('maintenance.technician', {
         header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.technician}</Header>,
-        cell: v => <TextCell value={v.getValue()}/>,
+        cell: v => <TextCell className={p} value={v.getValue()}/>,
         meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('maintenance.hoursSpent', {
+        id: 'hours-spent',
         header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.hoursSpent}</Header>,
-        cell: v => <TextCell value={'' + v.getValue()}/>,
+        cell: v => <TextCell className={p} value={'' + v.getValue()}/>,
         sortingFn: numberSortingFn,
         filterFn: numberFilterFn,
         meta: { filter: v => <NumberFilter ctx={v} className={f}/> },
     }),
     helper.accessor('maintenance.description', {
         header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.description}</Header>,
-        cell: v => <TextCell value={v.getValue()}/>,
+        cell: v => <TextCell className={p} value={v.getValue()}/>,
         meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('maintenance.partsReplaced', {
         header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.partsReplaced}</Header>,
         enableSorting: false,
-        cell: v => <TextCell value={v.getValue().join(', ')}/>,
+        cell: v => <TextCell className={p} value={v.getValue().join(', ')}/>,
         filterFn: stringArrFilterFn,
         meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('maintenance.priority', {
+        id: 'priority',
         header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.priority}</Header>,
-        cell: v => <TextCell value={v.getValue()}/>,
+        cell: v => <TextCell className={p} value={v.getValue()}/>,
         meta: { filter: v => <SelectFilter ctx={v} values={priorities} className={f}/> },
     }),
     helper.accessor('maintenance.completionStatus', {
         header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.completionStatus}</Header>,
-        cell: v => <TextCell value={v.getValue()}/>,
+        cell: v => <TextCell className={p} value={v.getValue()}/>,
         meta: { filter: v => <SelectFilter ctx={v} values={completionStatuses} className={f}/> },
+    }),
+    helper.display({
+        id: 'open',
+        header: '',
+        cell: v => <OpenButton
+            url={`/maintenance/${v.row.original.maintenance.id}`}
+            className={p}
+        />
     }),
 ]
 
@@ -181,7 +205,14 @@ function Table({ table }: { table: RT.Table<Entry> }) {
     const cellBorderInsideGroup = 'border-t border-t-gray-400'
     const hGroup = table.getHeaderGroups()[0]
 
-    const gridStyle = { gridTemplateColumns: `repeat(${hGroup.headers.length}, 1fr)` }
+    const columns = hGroup.headers.map(it => {
+        if(it.id === 'hours-spent') return '0.5fr'
+        if(it.id === 'priority') return '0.7fr'
+        if(it.id === 'open') return 'auto'
+        return '1fr'
+    }).join(' ')
+
+    const gridStyle = { gridTemplateColumns: columns }
 
     return <div className='text-sm m-4 mt-10 max-w-[120em] mx-auto'>
         <div style={gridStyle} className='w-full grid px-1'>
