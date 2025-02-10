@@ -6,7 +6,14 @@ import colors from 'tailwindcss/colors'
 import { statuses, departments, type Statuses, type Departments } from '@/data/recordDefs'
 import { store as equipmentStore } from '@/data/equipment'
 import { store as maintenanceStore } from '@/data/maintenance'
-import { cmp as dateCmp, componentsToString, dateLocalToComponents } from '@/util/date'
+import {
+    cmp as dateCmp,
+    toISODate,
+    componentsToString,
+    dateLocalToComponents,
+    strDateToComponents,
+    type DateComponents,
+} from '@/util/date'
 import Header from '@/components/header'
 
 const departmentColor: Record<Statuses, string> = {
@@ -17,32 +24,53 @@ const departmentColor: Record<Statuses, string> = {
 }
 
 export default function Component() {
+    const [cutoff, setCutoff] = R.useState(() => {
+        const now = new Date()
+        now.setMonth(now.getMonth() - 8)
+        return dateLocalToComponents(now)
+    })
+
     return <div className='grow bg-gray-100'>
-        <Header/>
-        <div className='grid grid-cols-1 xl:grid-cols-2 gap-2 mx-auto p-2 max-w-[95rem]'>
-            <EquipmentChart/>
-            <RecentMaintenance/>
-            <DepartmentChart/>
+        <Header name='Dashboard'/>
+        <div className='max-w-[95rem] flex flex-col'>
+            <div className='grid grid-cols-1 xl:grid-cols-2 gap-2 mx-auto p-2 pt-0'>
+                <div className='flex col-span-full justify-start mb-8'>
+                    <div className='bg-white p-3 px-4 rounded-md flex flex-col'>
+                        <span className='text-sm text-gray-600'>Earliest date</span>
+                        <input
+                            className='pt-2'
+                            type='date'
+                            defaultValue={cutoff && toISODate(cutoff)}
+                            onChange={it => {
+                                const newCutoff = strDateToComponents(it.target.value)
+                                setCutoff(newCutoff)
+                            }}
+                        />
+                    </div>
+                </div>
+                <EquipmentChart cutoff={cutoff}/>
+                <DepartmentChart cutoff={cutoff}/>
+                <RecentMaintenance cutoff={cutoff}/>
+            </div>
         </div>
     </div>
 }
 
-function RecentMaintenance() {
+type Props = { cutoff?: DateComponents }
+
+function RecentMaintenance({ cutoff }: Props) {
     const maintenance = [...Z.useStore(maintenanceStore).values()]
     const equipment = Z.useStore(equipmentStore)
     maintenance.sort((a, b) => -dateCmp(a.date, b.date))
-
-    const cutoff = dateLocalToComponents(new Date())!
-    cutoff[0]--
 
     const components = []
     for(let i = 0; i < Math.min(10, maintenance.length); i++) {
         const m = maintenance[i]
         const e = equipment.get(m.equipmentId)!
-        if(dateCmp(m.date, cutoff) < 0) break
+        if(cutoff && dateCmp(m.date, cutoff) < 0) break
 
         if(components.length !== 0) {
-            components.push(<div className='col-span-full border-t border-gray-600'/>)
+            components.push(<div className='col-span-full border-t border-gray-300'/>)
         }
         components.push(<R.Fragment key={m.id}>
             <span/>
@@ -65,13 +93,14 @@ function RecentMaintenance() {
     </div>
 }
 
-function DepartmentChart() {
+function DepartmentChart({ cutoff }: Props) {
     const equipment = Z.useStore(equipmentStore)
     const maintenance = Z.useStore(maintenanceStore)
 
     const departmentHours: Partial<Record<Departments, number>> = {}
 
     for(const m of maintenance.values()) {
+        if(cutoff && dateCmp(m.date, cutoff) < 0) continue
         const e = equipment.get(m.equipmentId)
         if(e == null) continue
 
@@ -99,7 +128,7 @@ function DepartmentChart() {
     </div>
 }
 
-function EquipmentChart() {
+function EquipmentChart({}: Props) {
     const equipment = Z.useStore(equipmentStore)
 
     const statusCounts: Partial<Record<Statuses, number>> = {}
