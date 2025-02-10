@@ -2,7 +2,7 @@ import * as R from 'react'
 
 import type { ValuesUnion } from '@/util/types'
 
-const inputContC = ' flex flex-col items-stretch'
+const inputContC = ' min-w-xs flex flex-col items-stretch'
 const borderC = ' border border-indigo-400 rounded-lg focus-within:outline-2 focus-within:outline-indigo-400'
 const errorBorderC = ' border-red-600 focus-within:outline-red-400'
 const errorTextC = ' whitespace-nowrap overflow-hidden text-ellipsis w-xs mt-1'

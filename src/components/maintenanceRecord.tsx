@@ -7,21 +7,9 @@ import { Input, Select, EditableList } from '@/components/inputs'
 import { store as equpmentStore } from '@/data/equipment'
 import Header from '@/components/header'
 
-export default function Component() {
-    const store = R.useState(() => Z.create<FormData>(() => {
-        return createFormData({
-            equipmentId: '',
-            date: '',
-            type: types[0],
-            technician: '',
-            hoursSpent: '1',
-            description: '',
-            partsReplaced: [],
-            priority: priorities[0],
-            completionStatus: completionStatuses[0],
-        })
-    }))[0]
+export type Props = { store: Z.StoreApi<FormData>, name: string }
 
+export default function Component({ store, name }: Props) {
     const equipment = Z.useStore(equpmentStore)
     const ids = []
     const names = []
@@ -37,7 +25,7 @@ export default function Component() {
         )
     }
 
-    const { input, result } = store()
+    const { input, result } = Z.useStore(store)
     const update = (newValues: Partial<Raw>) => {
         store.setState(state => {
             return createFormData({ ...state.input, ...newValues })
@@ -46,7 +34,7 @@ export default function Component() {
     const error = result.error?.format()
 
     return <div className='grow flex flex-col items-stretch'>
-        <Header path={[{ url: '/maintenance', name: 'Maintenance records' }]} name='new'/>
+        <Header path={[{ url: '/maintenance', name: 'Maintenance records' }]} name={name}/>
         <form className='flex flex-col p-4 mx-auto' onSubmit={ev => ev.preventDefault()}>
             <div className='grid items-stretch gap-6 grid-cols-[auto] md:grid-cols-2 md:gap-x-10'>
                 <Select

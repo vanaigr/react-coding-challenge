@@ -10,7 +10,7 @@ const exampleData: Array<Equipment> = [
         'department': 'Machining',
         'status': 'Operational',
         'model': 'System238',
-        'serialNumber': '74077711-3770-4700-a391-ad9d25b3fb54',
+        'serialNumber': '7407771137704700a391ad9d25b3fb54',
         'installDate': [2011, 1, 4],
     },
     {
@@ -20,7 +20,7 @@ const exampleData: Array<Equipment> = [
         'department': 'Shipping',
         'status': 'Down',
         'model': 'System330',
-        'serialNumber': 'c43a7647-6f7e-46fb-a06c-f0ba97e35d52',
+        'serialNumber': 'c43a76476f7e46fba06cf0ba97e35d52',
         'installDate': [2012, 5, 8],
     },
     {
@@ -30,7 +30,7 @@ const exampleData: Array<Equipment> = [
         'department': 'Assembly',
         'status': 'Down',
         'model': 'Name607',
-        'serialNumber': '06f88723-bae4-4d55-81ec-11d21f842b17',
+        'serialNumber': '06f88723bae44d5581ec11d21f842b17',
         'installDate': [2023, 8, 7],
     },
     {
@@ -40,7 +40,7 @@ const exampleData: Array<Equipment> = [
         'department': 'Machining',
         'status': 'Down',
         'model': 'Machine907',
-        'serialNumber': 'd32d3ed7-a9fe-4144-ac2c-d80554da08ab',
+        'serialNumber': 'd32d3ed7a9fe4144ac2cd80554da08ab',
         'installDate': [2024, 8, 8],
     },
     {
@@ -50,7 +50,7 @@ const exampleData: Array<Equipment> = [
         'department': 'Machining',
         'status': 'Down',
         'model': 'Between678',
-        'serialNumber': 'bb9a020e-6c82-4b94-8d49-bcf5e5495b1e',
+        'serialNumber': 'bb9a020e6c824b948d49bcf5e5495b1e',
         'installDate': [2014, 5, 14],
     },
     {
@@ -60,7 +60,7 @@ const exampleData: Array<Equipment> = [
         'department': 'Assembly',
         'status': 'Retired',
         'model': 'Successful589',
-        'serialNumber': '03ded75f-9170-4bb1-a6a2-0970a3c0168d',
+        'serialNumber': '03ded75f91704bb1a6a20970a3c0168d',
         'installDate': [2012, 9, 10],
     },
     {
@@ -70,7 +70,7 @@ const exampleData: Array<Equipment> = [
         'department': 'Assembly',
         'status': 'Maintenance',
         'model': 'Environment134',
-        'serialNumber': 'e8e0cab2-e80f-49ce-8ec8-72c63a366f22',
+        'serialNumber': 'e8e0cab2e80f49ce8ec872c63a366f22',
         'installDate': [2018, 11, 3],
     },
     {
@@ -80,7 +80,7 @@ const exampleData: Array<Equipment> = [
         'department': 'Packaging',
         'status': 'Operational',
         'model': 'Grow691',
-        'serialNumber': '0bbf11a6-fa3f-442e-b483-3147d44d0601',
+        'serialNumber': '0bbf11a6fa3f442eb4833147d44d0601',
         'installDate': [2013, 2, 26],
     },
     {
@@ -90,7 +90,7 @@ const exampleData: Array<Equipment> = [
         'department': 'Shipping',
         'status': 'Down',
         'model': 'Operation980',
-        'serialNumber': 'bdac9ca1-e1c5-4f18-acb5-aa01a3170438',
+        'serialNumber': 'bdac9ca1e1c54f18acb5aa01a3170438',
         'installDate': [2020, 3, 15],
     },
     {
@@ -100,7 +100,7 @@ const exampleData: Array<Equipment> = [
         'department': 'Machining',
         'status': 'Down',
         'model': 'Order195',
-        'serialNumber': 'd90d7a6f-2674-4a7c-b0a0-9a978db18959',
+        'serialNumber': 'd90d7a6f26744a7cb0a09a978db18959',
         'installDate': [2020, 9, 10],
     },
 ]
