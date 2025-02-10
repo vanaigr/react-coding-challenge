@@ -1,11 +1,11 @@
 import * as R from 'react'
 import * as Z from 'zustand'
-import * as RD from 'react-router-dom'
 
 import { equipmentFieldNames, statuses, departments } from '@/data/recordDefs'
 import { type Raw, type FormData, createFormData } from '@/data/equipmentForm'
 import { Input, Select } from '@/components/inputs'
 import Header from '@/components/header'
+import FormButtons from '@/components/formButtons'
 
 export type Props = {
     store: Z.StoreApi<FormData>,
@@ -15,7 +15,6 @@ export type Props = {
 }
 
 export default function Component({ store, name, submitName, onSubmit }: Props) {
-    const navigate = RD.useNavigate()
     const [submitted, setSubmitted] = R.useState(false)
 
     const { input, result } = Z.useStore(store)
@@ -27,15 +26,11 @@ export default function Component({ store, name, submitName, onSubmit }: Props) 
     const error = result.error?.format()
 
     const canSubmit = result.success && !submitted
-    const submitC = 'grow px-1 py-2 rounded-xl box-border text-white'
-        + (canSubmit
-                ? ' cursor-pointer border-indigo-600 bg-indigo-600'
-                : ' border-indigo-300 bg-indigo-300')
 
     return <div className='grow flex flex-col'>
         <Header path={[{ url: '/equipment', name: 'Equipment records' }]} name={name}/>
         <form
-            className='flex flex-col p-4 mx-auto'
+            className='grow flex flex-col p-4'
             onSubmit={it => {
                 it.preventDefault()
                 if(!submitted) {
@@ -43,79 +38,66 @@ export default function Component({ store, name, submitName, onSubmit }: Props) 
                 }
             }}
         >
-            <div className='grid items-stretch gap-6 grid-cols-[auto] md:grid-cols-2 md:gap-x-10'>
-                <Input
-                    type='text'
-                    title={equipmentFieldNames.name}
-                    defaultValue={input.name}
-                    onChange={it => update({ name: it.target.value })}
-                    errors={error?.name?._errors}
-                />
-                <Input
-                    type='text'
-                    autoComplete='street-address'
-                    title={equipmentFieldNames.location}
-                    defaultValue={input.location}
-                    onChange={it => update({ location: it.target.value })}
-                    errors={error?.location?._errors}
-                />
-                <Select
-                    options={departments}
-                    title={equipmentFieldNames.department}
-                    defaultValue={input.department}
-                    onChange={it => update({ department: it })}
-                    errors={error?.department?._errors}
-                />
-                <Input
-                    type='text'
-                    title={equipmentFieldNames.model}
-                    defaultValue={input.model}
-                    onChange={it => update({ model: it.target.value })}
-                    errors={error?.model?._errors}
-                />
-                <Input
-                    type='text'
-                    title={equipmentFieldNames.serialNumber}
-                    defaultValue={input.serialNumber}
-                    onChange={it => update({ serialNumber: it.target.value })}
-                    errors={error?.serialNumber?._errors}
-                />
-                <Input
-                    type='date'
-                    title={equipmentFieldNames.installDate}
-                    defaultValue={input.installDate}
-                    onChange={it => update({ installDate: it.target.value })}
-                    errors={error?.installDate?._errors}
-                />
-                <Select
-                    options={statuses}
-                    title={equipmentFieldNames.status}
-                    defaultValue={input.status}
-                    onChange={it => update({ status: it })}
-                    errors={error?.status?._errors}
-                />
-            </div>
-            <div className='flex mt-6 md:mt-10 justify-end'>
-                <div className='flex basis-sm shrink gap-3'>
-                    <button
-                        className={
-                            'grow border border-indigo-400 cursor-pointer'
-                            + ' px-1 py-2 rounded-xl box-border'
-                        }
-                        type='button'
-                        onClick={() => navigate(-1)}
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        className={submitC}
-                        disabled={!canSubmit}
-                        type='submit'
-                    >
-                        {submitName}
-                    </button>
+            <div className='grow flex flex-col'>
+                <div
+                    className={
+                        'grid items-stretch gap-6 grid-cols-[auto]'
+                            + ' md:grid-cols-2 md:gap-x-10 mx-auto'
+                    }
+                >
+                    <Input
+                        type='text'
+                        title={equipmentFieldNames.name}
+                        defaultValue={input.name}
+                        onChange={it => update({ name: it.target.value })}
+                        errors={error?.name?._errors}
+                    />
+                    <Input
+                        type='text'
+                        autoComplete='street-address'
+                        title={equipmentFieldNames.location}
+                        defaultValue={input.location}
+                        onChange={it => update({ location: it.target.value })}
+                        errors={error?.location?._errors}
+                    />
+                    <Select
+                        options={departments}
+                        title={equipmentFieldNames.department}
+                        defaultValue={input.department}
+                        onChange={it => update({ department: it })}
+                        errors={error?.department?._errors}
+                    />
+                    <Input
+                        type='text'
+                        title={equipmentFieldNames.model}
+                        defaultValue={input.model}
+                        onChange={it => update({ model: it.target.value })}
+                        errors={error?.model?._errors}
+                    />
+                    <Input
+                        type='text'
+                        title={equipmentFieldNames.serialNumber}
+                        defaultValue={input.serialNumber}
+                        onChange={it => update({ serialNumber: it.target.value })}
+                        errors={error?.serialNumber?._errors}
+                    />
+                    <Input
+                        type='date'
+                        title={equipmentFieldNames.installDate}
+                        defaultValue={input.installDate}
+                        onChange={it => update({ installDate: it.target.value })}
+                        errors={error?.installDate?._errors}
+                    />
+                    <Select
+                        options={statuses}
+                        title={equipmentFieldNames.status}
+                        defaultValue={input.status}
+                        onChange={it => update({ status: it })}
+                        errors={error?.status?._errors}
+                    />
                 </div>
             </div>
+            <FormButtons submitName={submitName} canSubmit={canSubmit}/>
         </form>
     </div>
 }
