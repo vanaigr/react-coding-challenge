@@ -7,9 +7,10 @@ import EquipmentRecord from '@/routes/equipmentRecord'
 import EquipmentTable from '@/routes/equipmentTable'
 import MaintenanceRecord from '@/routes/maintenanceRecord'
 import MaintenanceTable from '@/routes/maintenanceTable'
+import Dashboard from '@/routes/dashboard'
 
 const router = createBrowserRouter([
-    { path: '/', element: <div>dashboard</div> },
+    { path: '/', element: <Dashboard/> },
     { path: '/equipment', element: <EquipmentTable/> },
     { path: '/equipment/:id', element: <EquipmentRecord/> },
     { path: '/maintenance', element: <MaintenanceTable/> },

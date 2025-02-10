@@ -4,6 +4,8 @@ import type { ValuesUnion } from '@/util/types'
 export const departments = ['Machining', 'Assembly', 'Packaging', 'Shipping'] as const
 export const statuses = ['Operational', 'Down', 'Maintenance', 'Retired'] as const
 
+export type Statuses = ValuesUnion<typeof statuses>
+
 export interface Equipment {
     id: string,
     name: string,
@@ -12,7 +14,7 @@ export interface Equipment {
     model: string,
     serialNumber: string,
     installDate: DateComponents,
-    status: ValuesUnion<typeof statuses>,
+    status: Statuses,
 }
 
 export const equipmentFieldNames: Record<keyof Equipment, string> = {
