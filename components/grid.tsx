@@ -1,5 +1,5 @@
 import * as R from 'react'
-import * as RD from 'react-router-dom'
+import Link from 'next/link'
 import * as RT from '@tanstack/react-table'
 
 import {
@@ -61,18 +61,18 @@ export type OpenButtonProps = {
     className?: string,
 }
 export function OpenButton(p: OpenButtonProps) {
-    return <RD.Link
+    return <Link
         className={
             p.className
             + ' flex items-center justify-center cursor-pointer grow text-slate-900'
         }
-        to={p.url}
+        href={p.url}
     >
         <span
             className='material-symbols-outlined'
             style={{ fontSize: '1.2em' }}
         >open_in_new</span>
-    </RD.Link>
+    </Link>
 }
 
 export type InputProps = R.DetailedHTMLProps<R.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>

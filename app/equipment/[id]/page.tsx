@@ -1,5 +1,6 @@
+'use client'
+import { useRouter, useParams } from 'next/navigation'
 import * as R from 'react'
-import * as RD from 'react-router-dom'
 import * as Z from 'zustand'
 
 import { type FormData, createFormData } from '@/data/equipmentForm'
@@ -8,14 +9,8 @@ import { store as eStore } from '@/data/equipment'
 import { toISODate } from '@/util/date'
 
 export default function Component() {
-    const { id } = RD.useParams()
-    if(id == null) return <RD.Navigate to='/404'/>
-
-    return <Inner id={id}/>
-}
-
-function Inner({ id }: { id: string }) {
-    const navigate = RD.useNavigate()
+    const navigate = useRouter()
+    const { id }: { id: string } = useParams()
     const [store, setStore] = R.useState<Z.StoreApi<FormData> | null | 'error'>(null)
 
     R.useEffect(() => {
@@ -40,10 +35,12 @@ function Inner({ id }: { id: string }) {
         setStore(newStore)
     }, [id])
 
-    // TODO: error message?
-    if(store === 'error') return <RD.Navigate to='/404'/>
+    R.useEffect(() => {
+        // TODO: error message?
+        if(store === 'error') navigate.replace('/404')
+    }, [store])
 
-    if(store == null) return
+    if(store == null || store === 'error') return
 
     return <Page
         store={store}
@@ -58,7 +55,7 @@ function Inner({ id }: { id: string }) {
             newEquipment.set(id, { ...state.result.data, id })
             eStore.setState(newEquipment, true)
 
-            navigate(-1)
+            navigate.back()
             return true
         }}
     />

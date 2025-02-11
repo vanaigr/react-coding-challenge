@@ -1,6 +1,7 @@
+'use client'
 import * as R from 'react'
 import * as Z from 'zustand'
-import * as RD from 'react-router-dom'
+import { useRouter } from 'next/navigation'
 import { v4 as V4 } from 'uuid'
 
 import { statuses, departments } from '@/data/recordDefs'
@@ -9,7 +10,7 @@ import { store as equipmentStore } from '@/data/equipment'
 import Page from '@/components/equipmentRecord'
 
 export default function Component() {
-    const navigate = RD.useNavigate()
+    const navigate = useRouter()
     const store = R.useState(() => Z.create<FormData>(() => {
         return createFormData({
             name: '',
@@ -42,7 +43,7 @@ export default function Component() {
 
             equipmentStore.setState(newEquipment, true)
 
-            navigate(-1)
+            navigate.back()
             return true
         }}
     />

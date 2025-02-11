@@ -1,3 +1,4 @@
+'use client'
 import * as R from 'react'
 import * as Z from 'zustand'
 import * as RT from '@tanstack/react-table'

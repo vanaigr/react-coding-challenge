@@ -1,5 +1,6 @@
+'use client'
 import * as R from 'react'
-import * as RD from 'react-router-dom'
+import { useRouter, useParams } from 'next/navigation'
 import * as Z from 'zustand'
 
 import { type FormData, createFormData } from '@/data/maintenanceForm'
@@ -8,14 +9,8 @@ import { store as mStore } from '@/data/maintenance'
 import { toISODate } from '@/util/date'
 
 export default function Component() {
-    const { id } = RD.useParams()
-    if(id == null) return <RD.Navigate to='/404'/>
-
-    return <Inner id={id}/>
-}
-
-function Inner({ id }: { id: string }) {
-    const navigate = RD.useNavigate()
+    const navigate = useRouter()
+    const { id }: { id: string } = useParams()
     const [store, setStore] = R.useState<Z.StoreApi<FormData> | null | 'error'>(null)
 
     R.useEffect(() => {
@@ -43,7 +38,12 @@ function Inner({ id }: { id: string }) {
     }, [id])
 
     // TODO: error message?
-    if(store === 'error') return <RD.Navigate to='/404'/>
+    R.useEffect(() => {
+        // TODO: error message?
+        if(store === 'error') navigate.replace('/404')
+    }, [store])
+
+    if(store == null || store === 'error') return
 
     if(store == null) return
 
@@ -60,7 +60,7 @@ function Inner({ id }: { id: string }) {
             newMaintenance.set(id, { ...state.result.data, id })
             mStore.setState(newMaintenance, true)
 
-            navigate(-1)
+            navigate.back()
             return true
         }}
     />

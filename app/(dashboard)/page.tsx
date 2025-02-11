@@ -1,6 +1,8 @@
+'use client'
 import * as Z from 'zustand'
 import * as R from 'react'
 import * as RC from 'recharts'
+import dynamic from 'next/dynamic'
 import colors from 'tailwindcss/colors'
 
 import { statuses, departments, type Statuses, type Departments } from '@/data/recordDefs'
@@ -23,7 +25,13 @@ const departmentColor: Record<Statuses, string> = {
     Retired: colors.blue[600],
 }
 
-export default function Component() {
+export default function() {
+    return <Component2/>
+}
+
+const Component2 = dynamic(() => Promise.resolve(Component), { ssr: false })
+
+function Component() {
     const [cutoff, setCutoff] = R.useState(() => {
         const now = new Date()
         now.setMonth(now.getMonth() - 8)
@@ -32,7 +40,7 @@ export default function Component() {
 
     return <div className='grow bg-gray-100'>
         <Header name='Dashboard'/>
-        <div className='max-w-[95rem] flex flex-col'>
+        <div className='mx-auto max-w-[95rem] flex flex-col'>
             <div className='grid grid-cols-1 xl:grid-cols-2 gap-2 mx-auto p-2 pt-0'>
                 <div className='flex col-span-full justify-start mb-8'>
                     <div className='bg-white p-3 px-4 rounded-md flex flex-col'>
@@ -40,7 +48,7 @@ export default function Component() {
                         <input
                             className='pt-2'
                             type='date'
-                            defaultValue={cutoff && toISODate(cutoff)}
+                            defaultValue={(cutoff && toISODate(cutoff)) ?? undefined}
                             onChange={it => {
                                 const newCutoff = strDateToComponents(it.target.value)
                                 setCutoff(newCutoff)
@@ -56,7 +64,7 @@ export default function Component() {
     </div>
 }
 
-type Props = { cutoff?: DateComponents }
+type Props = { cutoff: DateComponents | null }
 
 function RecentMaintenance({ cutoff }: Props) {
     const maintenance = [...Z.useStore(maintenanceStore).values()]
@@ -70,9 +78,12 @@ function RecentMaintenance({ cutoff }: Props) {
         if(cutoff && dateCmp(m.date, cutoff) < 0) break
 
         if(components.length !== 0) {
-            components.push(<div className='col-span-full border-t border-gray-300'/>)
+            components.push(<div
+              key={'d' + m.id}
+              className='col-span-full border-t border-gray-300'
+            />)
         }
-        components.push(<R.Fragment key={m.id}>
+        components.push(<R.Fragment key={'k' + m.id}>
             <span/>
             <span>{m.type} maintenance</span>
             <span>at {e.department}</span>

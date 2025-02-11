@@ -1,5 +1,5 @@
 import * as R from 'react'
-import * as RN from 'react-router-dom'
+import Link from 'next/link'
 
 export type PathEntry = { name: string, url: string }
 export type HeaderProps = { path?: Array<PathEntry>, name?: string }
@@ -17,9 +17,9 @@ export default function Header({ path, name }: HeaderProps) {
     }
     else {
         pathComponents.push(
-            <RN.Link key='home' to={'/'} className={'material-symbols-outlined' + pathC}>
+            <Link key='home' href={'/'} className={'material-symbols-outlined' + pathC}>
                 home
-            </RN.Link>
+            </Link>
         )
 
         if(path != null) {
@@ -31,7 +31,7 @@ export default function Header({ path, name }: HeaderProps) {
                     </span>
                 )
                 pathComponents.push(
-                    <RN.Link key={i} className={pathC} to={it.url}>{it.name}</RN.Link>
+                    <Link key={i} className={pathC} href={it.url}>{it.name}</Link>
                 )
             }
         }
@@ -50,14 +50,14 @@ export default function Header({ path, name }: HeaderProps) {
 
     return <div className='flex justify-center mb-4 bg-white border-b border-indigo-200 '>
         <div className='max-w-7xl grow py-7 px-4 flex gap-6 items-center'>
-            <div className='flex gap-2 grow max-w-[50%]'>
+            <div className='flex gap-2 grow max-w-[50%] sm:max-w-[100%]'>
                 {pathComponents}
             </div>
             <div className='flex gap-6 text-sm text-slate-900'>
-                <RN.Link to='/equipment'>Equipment</RN.Link>
-                <RN.Link to='/equipment/new'>Add equipment record</RN.Link>
-                <RN.Link to='/maintenance'>Maintenance</RN.Link>
-                <RN.Link to='/maintenance/new'>Add maintenance record</RN.Link>
+                <Link href='/equipment'>Equipment</Link>
+                <Link href='/equipment/new'>Add equipment record</Link>
+                <Link href='/maintenance'>Maintenance</Link>
+                <Link href='/maintenance/new'>Add maintenance record</Link>
             </div>
         </div>
     </div>

@@ -1,2 +1,7 @@
 /node_modules/
 /build/
+
+/.next/
+/out/
+
+next-env.d.ts

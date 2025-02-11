@@ -1,11 +1,11 @@
-import * as RD from 'react-router-dom'
+import { useRouter } from 'next/navigation'
 
 export type FormButtonsProps = {
     submitName: string,
     canSubmit: boolean,
 }
 export default function FormButtons({ submitName, canSubmit }: FormButtonsProps) {
-    const navigate = RD.useNavigate()
+    const navigate = useRouter()
 
     const submitC = canSubmit
             ? ' cursor-pointer border-indigo-600 bg-indigo-600'
@@ -20,7 +20,7 @@ export default function FormButtons({ submitName, canSubmit }: FormButtonsProps)
                             + ' px-1 py-2 rounded-xl box-border'
                     }
                     type='button'
-                    onClick={() => navigate(-1)}
+                    onClick={() => navigate.back()}
                 >
                     Cancel
                 </button>
