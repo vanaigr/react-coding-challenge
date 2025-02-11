@@ -163,12 +163,9 @@ const columns = [
     }),
 ]
 
-type Selected = Record<number, boolean>
-
 export default function Component() {
     const equipment = Z.useStore(equipmentStore)
     const data = Z.useStore(maintenanceStore)
-    const [selected, setSelected] = R.useState<Selected>({})
 
     // Tanstack Table docs suggest useMemo, but React doesn't
     // guarantee it won't be recomputed every time.
@@ -183,11 +180,11 @@ export default function Component() {
     }
     const list = listRef.current.list
 
+    // Can't perform a React state update on a component that hasn't mounted yet:
+    // https://github.com/TanStack/table/issues/5026
     const table = RT.useReactTable({
         data: list,
         columns,
-        state: { rowSelection: selected },
-        onRowSelectionChange: setSelected,
         getFilteredRowModel: RT.getFilteredRowModel(),
         getCoreRowModel: RT.getCoreRowModel(),
         getExpandedRowModel: RT.getExpandedRowModel(),
