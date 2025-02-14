@@ -39,19 +39,19 @@ const f_bot = ' px-3 pb-3'
 
 const helper = RT.createColumnHelper<Entry>()
 const columns = [
-    helper.accessor('maintenance.id', {
+    helper.accessor('id', {
         header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.id}</Header>,
         cell: v => <TextCell className={'break-all' + p} value={v.getValue()}/>,
         meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
-    helper.accessor('maintenance.equipmentId', {
+    helper.accessor('equipmentId', {
         id: 'equipment-id',
         header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.equipmentId}</Header>,
         cell: v => {
             const row = v.row
 
             const openB = <span className={'pl-2 flex' + p_right}>
-                <OpenButton url={`/equipment/${row.original.maintenance.equipmentId}`}/>
+                <OpenButton url={`/equipment/${row.original.equipmentId}`}/>
             </span>
 
             if(v.column.getIsGrouped()) {
@@ -76,7 +76,7 @@ const columns = [
                 </div>
             }
         },
-        getGroupingValue: v => v.maintenance.equipmentId,
+        getGroupingValue: v => v.equipmentId,
         meta: { filter: v => {
             return <div className='grow flex flex-col'>
                 <TextFilter ctx={v} className={f_top}/>
@@ -99,24 +99,24 @@ const columns = [
         aggregationFn: (id, rows) => rows.length == 0 ? '' : rows[0].getValue(id),
         meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
-    helper.accessor('maintenance.date', {
+    helper.accessor('date', {
         header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.date}</Header>,
         cell: v => <TextCell className={p} value={componentsToString(v.getValue())}/>,
         sortingFn: dateSortingFn,
         filterFn: dateFilterFn,
         meta: { filter: v => <DateFilter ctx={v} className={f}/> },
     }),
-    helper.accessor('maintenance.type', {
+    helper.accessor('type', {
         header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.type}</Header>,
         cell: v => <TextCell className={p} value={v.getValue()}/>,
         meta: { filter: v => <SelectFilter ctx={v} values={types} className={f}/> },
     }),
-    helper.accessor('maintenance.technician', {
+    helper.accessor('technician', {
         header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.technician}</Header>,
         cell: v => <TextCell className={p} value={v.getValue()}/>,
         meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
-    helper.accessor('maintenance.hoursSpent', {
+    helper.accessor('hoursSpent', {
         id: 'hours-spent',
         header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.hoursSpent}</Header>,
         cell: v => <TextCell className={p} value={'' + v.getValue()}/>,
@@ -124,25 +124,25 @@ const columns = [
         filterFn: numberFilterFn,
         meta: { filter: v => <NumberFilter ctx={v} className={f}/> },
     }),
-    helper.accessor('maintenance.description', {
+    helper.accessor('description', {
         header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.description}</Header>,
         cell: v => <TextCell className={p} value={v.getValue()}/>,
         meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
-    helper.accessor('maintenance.partsReplaced', {
+    helper.accessor('partsReplaced', {
         header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.partsReplaced}</Header>,
         enableSorting: false,
         cell: v => <TextCell className={p} value={v.getValue().join(', ')}/>,
         filterFn: stringArrFilterFn,
         meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
-    helper.accessor('maintenance.priority', {
+    helper.accessor('priority', {
         id: 'priority',
         header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.priority}</Header>,
         cell: v => <TextCell className={p} value={v.getValue()}/>,
         meta: { filter: v => <SelectFilter ctx={v} values={priorities} className={f}/> },
     }),
-    helper.accessor('maintenance.completionStatus', {
+    helper.accessor('completionStatus', {
         header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.completionStatus}</Header>,
         cell: v => <TextCell className={p} value={v.getValue()}/>,
         meta: { filter: v => <SelectFilter ctx={v} values={completionStatuses} className={f}/> },
@@ -151,16 +151,13 @@ const columns = [
         id: 'open',
         header: '',
         cell: v => <OpenButton
-            url={`/maintenance/${v.row.original.maintenance.id}`}
+            url={`/maintenance/${v.row.original.id}`}
             className={p}
         />
     }),
 ]
 
-export type Entry = {
-    maintenance: MaintenanceRecord
-    equipment?: { name: string }
-}
+export type Entry = MaintenanceRecord & { equipment: { name: string } }
 
 export type TableProps = { data: Entry[] }
 

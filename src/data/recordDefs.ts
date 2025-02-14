@@ -33,11 +33,15 @@ export const types = ['Preventive', 'Repair', 'Emergency'] as const
 export const priorities = ['Low', 'Medium', 'High'] as const
 export const completionStatuses = ['Complete', 'Incomplete', 'Pending Parts'] as const
 
+export type Types = ValuesUnion<typeof types>
+export type Priorities = ValuesUnion<typeof priorities>
+export type CompletionStatuses = ValuesUnion<typeof completionStatuses>
+
 export interface MaintenanceRecord {
     id: string,
     equipmentId: Equipment['id'],
     date: DateComponents,
-    type: ValuesUnion<typeof types>,
+    type: Types,
     technician: string,
     hoursSpent: number,
     description: string,
@@ -45,8 +49,8 @@ export interface MaintenanceRecord {
     // I don't think there's any semantic difference
     // between empty array and no array in this case.
     partsReplaced: string[],
-    priority: ValuesUnion<typeof priorities>,
-    completionStatus: ValuesUnion<typeof completionStatuses>,
+    priority: Priorities,
+    completionStatus: CompletionStatuses,
 }
 
 export const maintenanceFieldNames: Record<keyof MaintenanceRecord, string> = {
