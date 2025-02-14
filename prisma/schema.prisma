@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Department {
+    Machining
+    Assembly
+    Packaging
+    Shipping
+}
+
+enum Status {
+    Operational
+    Down
+    Maintenance
+    Retired
+}
+
+model Equipment {
+    id           String @id @default(cuid())
+    name         String
+    location     String
+    department   Department
+    model        String
+    serialNumber String
+    // not DateTime, because who knows what it does with the timezone
+    installDate  String
+    status       Status
+
+    maintenances MaintenanceRecord[]
+}
+
+enum Types {
+    Preventive
+    Repair
+    Emergency
+}
+
+enum Priorities {
+    Low
+    Medium
+    High
+}
+
+model MaintenanceRecord {
+    id               String    @id @default(cuid())
+    equipment        Equipment @relation(fields: [equipmentId], references: [id])
+    equipmentId      String
+    date             String
+    type             Types
+    technician       String
+    hoursSpent       Int
+    description      String
+    partsReplaced    MaintenanceRecordParts[]
+    priority         Priorities
+    // https://github.com/prisma/prisma/discussions/5881
+    completionStatus String
+}
+
+model MaintenanceRecordParts {
+    id            Int               @id @default(autoincrement())
+    maintenance   MaintenanceRecord @relation(fields: [maintenanceId], references: [id])
+    maintenanceId String
+    part          String
+}
