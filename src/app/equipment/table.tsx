@@ -1,12 +1,10 @@
 'use client'
 import * as R from 'react'
-import * as Z from 'zustand'
 import * as RT from '@tanstack/react-table'
 
 import { type Equipment, departments, statuses, equipmentFieldNames } from '@/data/recordDefs'
 import { componentsToString } from '@/util/date'
-import { store } from '@/data/equipment'
-import PageHeader from '@/components/header'
+import { updateStatuses } from './action'
 
 import {
     TextCell,
@@ -24,7 +22,7 @@ import {
 
 type Colors<T extends readonly string[]> = { [K in T[number]]: string }
 const statusColors = {
-    Operational: 'bg-green-200',
+    Operational: 'bg-lime-200',
     Down: 'bg-red-200',
     Maintenance: 'bg-yellow-200',
     Retired: 'bg-blue-200',
@@ -132,29 +130,39 @@ function Control({ data, selected }: { data: Equipment[], selected: Selected }) 
     }
     commonStatus = commonStatus ?? ''
 
+    const [updateStatus, setUpdateStatus] = R.useState<'none' | 'sending'>('none')
     const disabled = count == 0
+    const ariaDisabled = updateStatus !== 'none'
 
-    return <div className='flex text-sm m-4 px-5 py-3 mt-10 max-w-7xl mx-auto rounded-full bg-indigo-100'>
+    return <div className='flex text-sm m-4 px-5 py-3 mt-10 max-w-[90rem] mx-auto rounded-full bg-indigo-100'>
         <div className='grow'>Selected: {count}</div>
-        <div className={'flex gap-4' + (disabled ? ' text-gray-600' : '') }>
+        <div className={'flex gap-4' + (disabled || ariaDisabled ? ' text-gray-600' : '') }>
             <span>Change status:</span>
             <select
                 value={commonStatus}
                 disabled={disabled}
-                onChange={it => {
+                aria-disabled={ariaDisabled}
+                onChange={async(it) => {
+                    if(disabled || ariaDisabled) return
                     const newStatus = it.target.value as (Equipment['status'] | '')
                     if(newStatus === '') return
 
-                    const newData: Map<Equipment['id'], Equipment> = new Map()
-                    for(let i = 0; i < data.length; i++) {
-                        let record = data[i]
-                        if(selected[i]) {
-                            record = { ...record, status: newStatus }
+                    setUpdateStatus('sending')
+                    try {
+                        const ids: string[] = []
+                        for(const index in selected) {
+                            if(!selected[index]) continue
+                            ids.push(data[index].id)
                         }
-                        newData.set(record.id, record)
-                    }
 
-                    store.setState(newData, true)
+                        await updateStatuses(ids, newStatus)
+                    }
+                    catch(err) {
+                        console.error(err)
+                    }
+                    finally {
+                        setUpdateStatus('none')
+                    }
                 }}
             >
                 <option value=''>Select a status</option>
@@ -172,7 +180,7 @@ function TableDisplay({ table }: { table: RT.Table<Equipment> }) {
 
     const gridStyle = { gridTemplateColumns: `repeat(${hGroup.headers.length}, auto)` }
 
-    return <div className='text-sm m-4 max-w-7xl mx-auto'>
+    return <div className='text-sm m-8 max-w-[90rem] mx-auto'>
         <div style={gridStyle} className='w-full grid px-1'>
             {hGroup.headers.map(header => (
                 <span key={header.id} className='flex'>
