@@ -17,6 +17,8 @@ import {
     dateSortingFn,
     dateFilterFn,
     DateFilter,
+    Controls,
+    ControlsCont,
 } from '@/components/grid'
 
 
@@ -116,32 +118,9 @@ export function Table({ data }: TableProps) {
     </div>
 }
 
-type CbProps = {
-    title: string
-    text: string
-    enabled: boolean
-    onClick: () => void
-}
-function Cb({ title, text, enabled, onClick }: CbProps) {
-    return <div className='flex items-center'>
-        <button
-            onClick={() => enabled && onClick()}
-            disabled={!enabled}
-            type='button'
-            className={'material-symbols-outlined' + (enabled ? '' : ' text-gray-500')}
-            title={title}
-        >
-            {text}
-        </button>
-    </div>
-
-}
-
 type ControlProps = { data: Equipment[], selected: Selected, table: RT.Table<Equipment> }
 
 function Control({ data, selected, table }: ControlProps) {
-    const gotoPageRef = R.useRef<HTMLInputElement | null>(null)
-
     let count = 0
     let commonStatus: Equipment['status'] | '' | null = null
     for(const k in selected) {
@@ -158,67 +137,15 @@ function Control({ data, selected, table }: ControlProps) {
     }
     commonStatus = commonStatus ?? ''
 
-    const curPageI = table.getState().pagination.pageIndex
-    const pageC = table.getPageCount()
-
     const [updateStatus, setUpdateStatus] = R.useState<'none' | 'sending'>('none')
     const disabled = count == 0
     const ariaDisabled = updateStatus !== 'none'
 
-    return <div className='flex text-sm m-4 px-5 py-3 mt-10 max-w-[90rem] mx-auto rounded-full bg-indigo-100 items-center'>
+    return <ControlsCont>
         <div>Selected: {count} of {table.getRowCount()}</div>
         <div className='w-6'/>
-        <div>
-            Page: {1 + curPageI} of {pageC}
-        </div>
-        <div className='w-2'/>
-        <Cb
-            title='Go to first page'
-            text='stat_2'
-            enabled={curPageI > 0}
-            onClick={() => table.setPageIndex(0)}
-        />
-        <Cb
-            title='Go to previous page'
-            text='stat_1'
-            enabled={curPageI > 0}
-            onClick={() => table.setPageIndex(curPageI - 1)}
-        />
-        <Cb
-            title='Go to next page'
-            text='stat_minus_1'
-            enabled={curPageI < pageC - 1}
-            onClick={() => table.setPageIndex(curPageI + 1)}
-        />
-        <Cb
-            title='Go to last page'
-            text='stat_minus_2'
-            enabled={curPageI < pageC - 1}
-            onClick={() => table.setPageIndex(pageC - 1)}
-        />
-        <div className='w-6'/>
-        <div>
-            Go to page
-            {' '}
-            <input
-                ref={gotoPageRef}
-                type='number'
-                min={1}
-                max={table.getPageCount()}
-                defaultValue={1}
-            />
-            {' '}
-            <button
-                onClick={() => {
-                    if(!gotoPageRef.current) return
-                    let page = parseInt(gotoPageRef.current.value)
-                    if(!isFinite(page)) return
-                    page = Math.min(Math.max(1, page), pageC) - 1
-                    table.setPageIndex(page)
-                }}
-            >Go</button>
-        </div>
-        <div className='grow'/>
+        <Controls table={table}/>
+        <div className='grow w-6'/>
         <div className={'flex gap-4' + (disabled || ariaDisabled ? ' text-gray-600' : '') }>
             <span>Change status:</span>
             <select
@@ -254,7 +181,7 @@ function Control({ data, selected, table }: ControlProps) {
                 ))}
             </select>
         </div>
-    </div>
+    </ControlsCont>
 }
 
 function TableDisplay({ table }: { table: RT.Table<Equipment> }) {

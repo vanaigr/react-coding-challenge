@@ -24,6 +24,8 @@ import {
     NumberFilter,
     stringArrFilterFn,
     OpenButton,
+    Controls,
+    ControlsCont,
 } from '@/components/grid'
 
 
@@ -64,7 +66,7 @@ const columns = [
                     >
                         {row.getIsExpanded() ? '▼' : '▶'}
                         <span>({row.subRows.length})</span>
-                        <span className='break-all'>{v.getValue()}</span>
+                        <span className='break-all line-clamp-2'>{v.getValue()}</span>
                     </button>
                     {openB}
                 </div>
@@ -162,20 +164,35 @@ export type Entry = MaintenanceRecord & { equipment: { name: string } }
 export type TableProps = { data: Entry[] }
 
 export function Table({ data }: TableProps) {
+    const [pagination, setPagination] = R.useState({ pageIndex: 0, pageSize: 10 })
+
     // Can't perform a React state update on a component that hasn't mounted yet:
     // https://github.com/TanStack/table/issues/5026
     const table = RT.useReactTable({
         data,
         columns,
+        state: { pagination },
         getFilteredRowModel: RT.getFilteredRowModel(),
         getCoreRowModel: RT.getCoreRowModel(),
         getExpandedRowModel: RT.getExpandedRowModel(),
         getGroupedRowModel: RT.getGroupedRowModel(),
         getSortedRowModel: RT.getSortedRowModel(),
+        getPaginationRowModel: RT.getPaginationRowModel(),
+        onPaginationChange: setPagination,
         enableRowSelection: true,
     })
 
-    return <TableDisplay table={table}/>
+    return <div>
+        <Control table={table}/>
+        <TableDisplay table={table}/>
+    </div>
+}
+
+function Control({ table }: { table: RT.Table<Entry> }) {
+    return <ControlsCont>
+        <Controls table={table}/>
+        <div className='grow w-6'/>
+    </ControlsCont>
 }
 
 function TableDisplay({ table }: { table: RT.Table<Entry> }) {
