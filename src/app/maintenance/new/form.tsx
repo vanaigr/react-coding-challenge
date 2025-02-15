@@ -32,7 +32,6 @@ export function Form({ equipment }: FormProps) {
         })
     }))[0]
     const valid = Z.useStore(store, it => it.result.success)
-
     const canSubmit = valid && !submitting
 
     return <FormDisplay

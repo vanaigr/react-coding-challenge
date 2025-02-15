@@ -22,12 +22,12 @@ export const validation = z.object({
 export type Raw = z.input<typeof validation>
 export type Validated = z.infer<typeof validation>
 
-export type FormData = {
+export type FormState = {
     input: Raw,
     result: z.SafeParseReturnType<Raw, Validated>,
 }
 
-export function createFormData(input: Raw): FormData {
+export function createFormState(input: Raw): FormState {
     const result = validation.safeParse(input)
     return { input, result }
 }

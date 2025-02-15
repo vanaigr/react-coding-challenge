@@ -9,6 +9,9 @@ import { prisma } from '@/data/prisma'
 
 export default async function Component({ params }: any) {
     const id: string = params.id
+    if(id == null) {
+        return redirect('/404')
+    }
 
     const recordP = prisma.maintenanceRecord.findFirst({
         where: { id },

@@ -21,7 +21,7 @@ export async function addMaintenanceRecord(recordRaw: Raw) {
         },
     })
 
-    Cache.revalidatePath('/equipment')
+    Cache.revalidatePath('/maintenance')
 
     return { ok: true }
 }

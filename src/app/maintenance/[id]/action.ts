@@ -23,8 +23,8 @@ export async function updateMaintenanceRecord(id: string, recordRaw: Raw) {
         },
     })
 
-    Cache.revalidatePath('/equipment')
-    Cache.revalidatePath('/equipment/' + encodeURIComponent(id))
+    Cache.revalidatePath('/maintenance')
+    Cache.revalidatePath('/maintenance/' + encodeURIComponent(id))
 
     return { ok: true }
 }
