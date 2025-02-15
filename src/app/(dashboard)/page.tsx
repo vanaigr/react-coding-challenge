@@ -87,7 +87,9 @@ export default function() {
 }
 
 function DataDisplay({ data }: { data: Data | null }) {
-    if(!data) return <div style={{ width: '500px' }}>Loading...</div>
+    if(!data) return <div
+        style={{ width: 'calc(calc(550px + var(--spacing) * 10))' }}
+    >Loading...</div>
 
     return <>
         <EquipmentChart data={data.statusBreakdown}/>
@@ -133,8 +135,8 @@ function DepartmentChart({ data }: { data: DepartmentMaintenance[] }) {
     return <div className='flex flex-col p-5 pt-4 bg-white rounded-md'>
         <span className='text-sm text-gray-700 mb-6'>{title}</span>
         <RC.BarChart
-            width={500}
-            height={250}
+            width={550}
+            height={300}
             data={data}
             dataKey={'department'}
             title={title}
@@ -171,7 +173,7 @@ function EquipmentChart({ data }: { data: StatusCount[] }) {
     const title = 'Equipment status breakdown'
     return <div className='flex flex-col p-5 pt-4 bg-white rounded-md'>
         <span className='text-sm text-gray-700 mb-6'>{title}</span>
-        <RC.PieChart width={500} height={250} title={title}>
+        <RC.PieChart width={550} height={300} title={title}>
             <RC.Pie label={it => it.name} data={proportions} dataKey='value'>
                 {proportions.map(
                     (it, i) => <RC.Cell key={i} fill={statusColor[it.status]}/>
