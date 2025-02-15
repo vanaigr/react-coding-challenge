@@ -1,47 +1,67 @@
 'use client'
-import * as Z from 'zustand'
 import * as R from 'react'
 import * as RC from 'recharts'
-import dynamic from 'next/dynamic'
 import colors from 'tailwindcss/colors'
 
-import { statuses, departments, type Statuses, type Departments } from '@/data/recordDefs'
-import { store as equipmentStore } from '@/data/equipment'
-import { store as maintenanceStore } from '@/data/maintenance'
+import { type Statuses } from '@/data/recordDefs'
 import {
-    cmp as dateCmp,
     toISODate,
     componentsToString,
     dateLocalToComponents,
     strDateToComponents,
-    type DateComponents,
 } from '@/util/date'
 import Header from '@/components/header'
+import {
+    type Data,
+    type RecentMaintenance,
+    type DepartmentMaintenance,
+    type StatusCount,
+} from './info/route'
 
-const departmentColor: Record<Statuses, string> = {
+const statusColor: Record<Statuses, string> = {
     Operational: colors.green[600],
     Down: colors.orange[600],
-    Maintenance: colors.yellow[600],
-    Retired: colors.blue[600],
+    Maintenance: colors.violet[600],
+    Retired: colors.cyan[600],
 }
 
 export default function() {
-    return <Component2/>
-}
-
-const Component2 = dynamic(() => Promise.resolve(Component), { ssr: false })
-
-function Component() {
     const [cutoff, setCutoff] = R.useState(() => {
         const now = new Date()
         now.setMonth(now.getMonth() - 8)
         return dateLocalToComponents(now)
     })
 
+    const [data, setData] = R.useState<Data | null>(null)
+    R.useEffect(() => {
+        if(!cutoff) return
+
+        const controller = new AbortController()
+        ;(async() => {
+            const url = new URL('./info', window.location.toString())
+            url.searchParams.append('cutoff', toISODate(cutoff))
+            const resp = await fetch(url, {
+                method: 'GET',
+                headers: { accept: 'application/json' },
+                signal: controller.signal
+            })
+            if(!resp.ok) return
+            const res = await resp.json()
+            if(res.ok) {
+                setData(res.data as Data)
+            }
+            else {
+                console.error(res.error)
+            }
+        })().catch(console.error)
+
+        return () => controller.abort()
+    }, [cutoff])
+
     return <div className='grow bg-gray-100'>
         <Header name='Dashboard'/>
         <div className='mx-auto max-w-[95rem] flex flex-col'>
-            <div className='grid grid-cols-1 xl:grid-cols-2 gap-2 mx-auto p-2 pt-0'>
+            <div className='grid grid-cols-1 xl:grid-cols-2 gap-5 mx-auto p-2 pt-0'>
                 <div className='flex col-span-full justify-start mb-8'>
                     <div className='bg-white p-3 px-4 rounded-md flex flex-col'>
                         <span className='text-sm text-gray-600'>Earliest date</span>
@@ -56,41 +76,41 @@ function Component() {
                         />
                     </div>
                 </div>
-                <EquipmentChart cutoff={cutoff}/>
-                <DepartmentChart cutoff={cutoff}/>
-                <RecentMaintenance cutoff={cutoff}/>
+                <DataDisplay data={data}/>
             </div>
         </div>
     </div>
 }
 
-type Props = { cutoff: DateComponents | null }
+function DataDisplay({ data }: { data: Data | null }) {
+    if(!data) return <div style={{ width: '500px' }}>Loading...</div>
 
-function RecentMaintenance({ cutoff }: Props) {
-    const maintenance = [...Z.useStore(maintenanceStore).values()]
-    const equipment = Z.useStore(equipmentStore)
-    maintenance.sort((a, b) => -dateCmp(a.date, b.date))
+    return <>
+        <EquipmentChart data={data.statusBreakdown}/>
+        <DepartmentChart data={data.departmentsMaintenance}/>
+        <RecentMaintenance data={data.recentMaintenance}/>
+    </>
+}
 
+function RecentMaintenance({ data }: { data: RecentMaintenance[] }) {
     const components = []
-    for(let i = 0; i < Math.min(10, maintenance.length); i++) {
-        const m = maintenance[i]
-        const e = equipment.get(m.equipmentId)!
-        if(cutoff && dateCmp(m.date, cutoff) < 0) break
+    for(let i = 0; i < data.length; i++) {
+        const it = data[i]
 
         if(components.length !== 0) {
             components.push(<div
-              key={'d' + m.id}
+              key={'d' + it.id}
               className='col-span-full border-t border-gray-300'
             />)
         }
-        components.push(<R.Fragment key={'k' + m.id}>
+        components.push(<R.Fragment key={'k' + it.id}>
             <span/>
-            <span>{m.type} maintenance</span>
-            <span>at {e.department}</span>
-            <span>on {componentsToString(m.date)}</span>
+            <span>{it.type} maintenance</span>
+            <span>at {it.department}</span>
+            <span>on {componentsToString(it.date)}</span>
             <span>-</span>
-            <span>{m.completionStatus}</span>
-            <span>after {m.hoursSpent} hrs</span>
+            <span>{it.completionStatus}</span>
+            <span>after {it.hoursSpent} hrs</span>
             <span/>
         </R.Fragment>)
     }
@@ -104,63 +124,42 @@ function RecentMaintenance({ cutoff }: Props) {
     </div>
 }
 
-function DepartmentChart({ cutoff }: Props) {
-    const equipment = Z.useStore(equipmentStore)
-    const maintenance = Z.useStore(maintenanceStore)
-
-    const departmentHours: Partial<Record<Departments, number>> = {}
-
-    for(const m of maintenance.values()) {
-        if(cutoff && dateCmp(m.date, cutoff) < 0) continue
-        const e = equipment.get(m.equipmentId)
-        if(e == null) continue
-
-        const totalHours = departmentHours[e.department]
-        if(totalHours == null) departmentHours[e.department] = m.hoursSpent
-        else departmentHours[e.department] = totalHours + m.hoursSpent
-    }
-
-    const data: Array<{ name: string, value: number }> = []
-    for(let i = 0; i < departments.length; i++) {
-        const hours = departmentHours[departments[i]]
-        if(hours == null) continue
-        data.push({ name: departments[i], value: hours })
-    }
-
+function DepartmentChart({ data }: { data: DepartmentMaintenance[] }) {
     const title = 'Maintenance hours by department'
     return <div className='flex flex-col p-5 pt-4 bg-white rounded-md'>
         <span className='text-sm text-gray-700 mb-6'>{title}</span>
-        <RC.BarChart width={500} height={250} data={data} title={title}>
+        <RC.BarChart
+            width={500}
+            height={250}
+            data={data}
+            dataKey={'department'}
+            title={title}
+        >
             <RC.CartesianGrid strokeDasharray='3 3'/>
             <RC.XAxis dataKey='name'/>
             <RC.YAxis/>
-            <RC.Bar dataKey='value' fill={colors.purple[300]} label={{ fill: colors.purple[900] }}/>
+            <RC.Bar
+                dataKey='count'
+                fill={colors.purple[300]}
+                label={{ fill: colors.purple[900] }}
+            />
         </RC.BarChart>
     </div>
 }
 
-function EquipmentChart({}: Props) {
-    const equipment = Z.useStore(equipmentStore)
+function EquipmentChart({ data }: { data: StatusCount[] }) {
+    const proportions: Array<{ status: Statuses, name: string, value: number }> = []
 
-    const statusCounts: Partial<Record<Statuses, number>> = {}
     let total = 0
+    for(let i = 0; i < data.length; i++) total += data[i].count
 
-    for(const v of equipment.values()) {
-        const s = statusCounts[v.status]
-        if(s == null) statusCounts[v.status] = 1
-        else statusCounts[v.status] = s + 1
-        total++
-    }
-
-    const data: Array<{ status: Statuses, name: string, value: number }> = []
-    for(let i = 0; i < statuses.length; i++) {
-        const status = statuses[i]
-        const v = statusCounts[status]
+    for(let i = 0; i < data.length; i++) {
+        const v = data[i]
         if(v == null) continue
-        const proportion = v / total
-        data.push({
-            status: status,
-            name: `${status} (${Math.round(proportion * 100)}%)`,
+        const proportion = v.count / total
+        proportions.push({
+            status: v.status,
+            name: `${v.status} (${Math.round(proportion * 100)}%)`,
             value: proportion,
         })
     }
@@ -169,8 +168,10 @@ function EquipmentChart({}: Props) {
     return <div className='flex flex-col p-5 pt-4 bg-white rounded-md'>
         <span className='text-sm text-gray-700 mb-6'>{title}</span>
         <RC.PieChart width={500} height={250} title={title}>
-            <RC.Pie label={it => it.name} data={data} dataKey='value'>
-                {data.map((it, i) => <RC.Cell key={i} fill={departmentColor[it.status]}/>)}
+            <RC.Pie label={it => it.name} data={proportions} dataKey='value'>
+                {proportions.map(
+                    (it, i) => <RC.Cell key={i} fill={statusColor[it.status]}/>
+                )}
             </RC.Pie>
         </RC.PieChart>
     </div>
