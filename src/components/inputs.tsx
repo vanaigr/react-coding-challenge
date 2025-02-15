@@ -200,6 +200,7 @@ function NewItem({ onAdd }: NewItemProps) {
                 onChange={it => setValue(it.target.value)}
                 onKeyDown={it => {
                     if(it.key === 'Enter' && !disabled) {
+                        it.preventDefault()
                         onAdd(value)
                         setValue('')
                         if(ref.current) ref.current.value = ''
