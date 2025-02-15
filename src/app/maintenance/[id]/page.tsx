@@ -1,67 +1,61 @@
-'use client'
-import * as R from 'react'
-import { useRouter, useParams } from 'next/navigation'
-import * as Z from 'zustand'
+import { redirect } from "next/navigation"
 
-import { type FormData, createFormData } from '@/data/maintenanceForm'
-import Page from '@/components/maintenanceRecord'
-import { store as mStore } from '@/data/maintenance'
-import { toISODate } from '@/util/date'
+import { type CompletionStatuses } from '@/data/recordDefs'
+import Header from '@/components/header'
+import { Form, EquipmentInfo } from './form'
+import { strDateToComponents } from '@/util/date'
+import { prisma } from '@/data/prisma'
 
-export default function Component() {
-    const navigate = useRouter()
-    const { id }: { id: string } = useParams()
-    const [store, setStore] = R.useState<Z.StoreApi<FormData> | null | 'error'>(null)
+export default async function Component({ params }: any) {
+    const id: string = params.id
 
-    R.useEffect(() => {
-        const records = mStore.getState()
-        const record = records.get(id)
-        if(record == null) {
-            setStore('error')
-            return
+    const recordP = prisma.maintenanceRecord.findFirst({
+        where: { id },
+        include: { partsReplaced: { select: { part: true } } },
+    })
+    const equipmentP = prisma.equipment.findMany({
+        select: {
+            id: true,
+            name: true,
+            location: true,
+            department: true,
+            serialNumber: true,
+            status: true,
         }
+    })
 
-        const newStore = Z.createStore<FormData>(() => {
-            return createFormData({
-                equipmentId: record.equipmentId,
-                date: toISODate(record.date),
-                type: record.type,
-                technician: record.technician,
-                hoursSpent: '' + record.hoursSpent,
-                description: record.description,
-                partsReplaced: record.partsReplaced,
-                priority: record.priority,
-                completionStatus: record.completionStatus,
-            })
-        })
-        setStore(newStore)
-    }, [id])
+    const recordDb = await recordP
+    if(recordDb == null) {
+        return redirect('/404')
+    }
 
-    // TODO: error message?
-    R.useEffect(() => {
-        // TODO: error message?
-        if(store === 'error') navigate.replace('/404')
-    }, [store])
+    const equipmentDb = await equipmentP
+    const equipment: EquipmentInfo[] = Array(equipmentDb.length)
+    for(let i = 0; i < equipment.length; i++) {
+        const it = equipmentDb[i]
+        equipment[i] = {
+            id: it.id,
+            name: it.name,
+            desc: '"' + it.name + '" in ' + it.location
+                + '\nDepartment: ' + it.department
+                + '\nSerial: ' + it.serialNumber
+                + '\nStatus: ' + it.status
+        }
+    }
 
-    if(store == null || store === 'error') return
+    const record = {
+        ...recordDb,
+        partsReplaced: recordDb.partsReplaced.map(v => v.part),
+        date: strDateToComponents(recordDb.date)!,
+        completionStatus: recordDb.completionStatus as CompletionStatuses
+    }
 
-    if(store == null) return
-
-    return <Page
-        store={store}
-        name={id}
-        submitName='Update'
-        onSubmit={() => {
-            const state = store.getState()
-            if(!state.result.success) return false
-
-            const newMaintenance = new Map(mStore.getState())
-
-            newMaintenance.set(id, { ...state.result.data, id })
-            mStore.setState(newMaintenance, true)
-
-            navigate.back()
-            return true
-        }}
-    />
+    return <div className='grow flex flex-col items-stretch'>
+        <Header path={[{ url: '/maintenance', name: 'Maintenance records' }]} name={id}/>
+        <Form
+            id={record.id}
+            initial={record}
+            equipment={equipment}
+        />
+    </div>
 }
