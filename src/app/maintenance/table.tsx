@@ -168,6 +168,9 @@ export function Table({ data }: TableProps) {
 
     // Can't perform a React state update on a component that hasn't mounted yet:
     // https://github.com/TanStack/table/issues/5026
+    const [hack, setHack] = R.useState(false)
+    R.useEffect(() => setHack(true), [])
+
     const table = RT.useReactTable({
         data,
         columns,
@@ -179,8 +182,10 @@ export function Table({ data }: TableProps) {
         getSortedRowModel: RT.getSortedRowModel(),
         getPaginationRowModel: RT.getPaginationRowModel(),
         onPaginationChange: setPagination,
+        autoResetPageIndex: hack,
         enableRowSelection: true,
     })
+
 
     return <div>
         <Control table={table}/>
