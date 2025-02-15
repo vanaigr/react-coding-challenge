@@ -9,13 +9,7 @@ export default async function() {
     const data: Entry[] = Array(dbData.length)
     for(let i = 0; i < data.length; i++) {
         const itDb = dbData[i]
-
-        type ToType = Omit<typeof itDb, 'installDate'> & { installDate: DateComponents; }
-
-        const it = itDb as any as ToType
-
-        it.installDate = strDateToComponents(itDb.installDate)!
-
+        const it = { ...itDb, installDate: strDateToComponents(itDb.installDate)! }
         data[i] = it
     }
 

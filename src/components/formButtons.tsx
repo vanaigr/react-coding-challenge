@@ -29,7 +29,7 @@ export default function FormButtons({ submitName, canSubmit }: FormButtonsProps)
                         'w-40 shrink px-1 py-2 rounded-xl box-border text-white'
                             + submitC
                     }
-                    disabled={!canSubmit}
+                    aria-disabled={!canSubmit}
                     type='submit'
                 >
                     {submitName}

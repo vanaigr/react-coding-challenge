@@ -16,15 +16,14 @@ export default async function() {
     for(let i = 0; i < data.length; i++) {
         const itDb = dbData[i]
 
-        type ToType = Omit<Omit<typeof itDb, 'partsReplaced'>, 'date'>
-            & { partsReplaced: string[], date: DateComponents, completionStatus: CompletionStatuses }
+        const it = {
+            ...itDb,
+            partsReplaced: itDb.partsReplaced.map(v => v.part),
+            date: strDateToComponents(itDb.date)!,
+            completionStatus: itDb.completionStatus as CompletionStatuses
+        }
 
-        const it = itDb as any as ToType
-
-        it.partsReplaced = itDb.partsReplaced.map(v => v.part)
-        it.date = strDateToComponents(itDb.date)!
-
-        data.push(it)
+        data[i] = it
     }
 
     return <div>
