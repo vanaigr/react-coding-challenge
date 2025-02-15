@@ -4,9 +4,9 @@ import * as Z from 'zustand'
 import { types, priorities, completionStatuses } from '@/data/recordDefs'
 import { type Raw, type FormState, createFormState } from '@/data/maintenanceForm'
 import { Input, Select, EditableList } from '@/components/inputs'
+import { type EquipmentInfo } from '@/util/equipmentInfo'
 import FormButtons from '@/components/formButtons'
 
-export type EquipmentInfo = { id: string, name: string, desc: string }
 
 export type Props = {
     store: Z.StoreApi<FormState>,

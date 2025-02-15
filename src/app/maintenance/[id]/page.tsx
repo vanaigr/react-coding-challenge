@@ -2,8 +2,9 @@ import { redirect } from "next/navigation"
 
 import { type CompletionStatuses } from '@/data/recordDefs'
 import Header from '@/components/header'
-import { Form, EquipmentInfo } from './form'
+import { Form } from './form'
 import { strDateToComponents } from '@/util/date'
+import { makeEquipmentInfo } from '@/util/equipmentInfo'
 import { prisma } from '@/data/prisma'
 
 export default async function Component({ params }: any) {
@@ -30,18 +31,7 @@ export default async function Component({ params }: any) {
     }
 
     const equipmentDb = await equipmentP
-    const equipment: EquipmentInfo[] = Array(equipmentDb.length)
-    for(let i = 0; i < equipment.length; i++) {
-        const it = equipmentDb[i]
-        equipment[i] = {
-            id: it.id,
-            name: it.name,
-            desc: '"' + it.name + '" in ' + it.location
-                + '\nDepartment: ' + it.department
-                + '\nSerial: ' + it.serialNumber
-                + '\nStatus: ' + it.status
-        }
-    }
+    const equipment = makeEquipmentInfo(equipmentDb)
 
     const record = {
         ...recordDb,

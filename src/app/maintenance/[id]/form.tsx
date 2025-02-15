@@ -5,10 +5,10 @@ import * as Z from 'zustand'
 
 import { type Validated, type FormState, createFormState } from '@/data/maintenanceForm'
 import { toISODate } from '@/util/date'
-import { FormDisplay, type EquipmentInfo } from '@/components/maintenanceRecord'
+import { FormDisplay } from '@/components/maintenanceRecord'
 import { updateMaintenanceRecord } from './action'
+import { type EquipmentInfo } from '@/util/equipmentInfo'
 
-export { EquipmentInfo }
 export type FormProps = {
     id: string
     initial: Validated
