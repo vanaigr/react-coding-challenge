@@ -47,15 +47,19 @@ export default function() {
             })
             if(!resp.ok) return
             const res = await resp.json()
+            if(controller.signal.aborted) return
             if(res.ok) {
                 setData(res.data as Data)
             }
             else {
                 console.error(res.error)
             }
-        })().catch(console.error)
+        })().catch(err => {
+            if(controller.signal.aborted) return
+            console.log(err)
+        })
 
-        return () => controller.abort()
+        return () => { controller.abort() }
     }, [cutoff])
 
     return <div className='grow bg-gray-100'>
