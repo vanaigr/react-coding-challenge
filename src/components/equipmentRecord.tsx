@@ -4,7 +4,6 @@ import * as Z from 'zustand'
 import { equipmentFieldNames, statuses, departments } from '@/data/recordDefs'
 import { type Raw, type FormState, createFormState } from '@/data/equipmentForm'
 import { Input, Select } from '@/components/inputs'
-import Header from '@/components/header'
 import FormButtons from '@/components/formButtons'
 
 export type Props = {
@@ -39,6 +38,7 @@ export function FormDisplay({ store, submit, onSubmit }: Props) {
                     defaultValue={input.name}
                     onChange={it => update({ name: it.target.value })}
                     errors={error?.name?._errors}
+                    id_prefix='form_name'
                 />
                 <Input
                     type='text'
@@ -47,6 +47,7 @@ export function FormDisplay({ store, submit, onSubmit }: Props) {
                     defaultValue={input.location}
                     onChange={it => update({ location: it.target.value })}
                     errors={error?.location?._errors}
+                    id_prefix='form_location'
                 />
                 <Select
                     options={departments}
@@ -54,6 +55,7 @@ export function FormDisplay({ store, submit, onSubmit }: Props) {
                     defaultValue={input.department}
                     onChange={it => update({ department: it })}
                     errors={error?.department?._errors}
+                    id_prefix='form_department'
                 />
                 <Input
                     type='text'
@@ -61,6 +63,7 @@ export function FormDisplay({ store, submit, onSubmit }: Props) {
                     defaultValue={input.model}
                     onChange={it => update({ model: it.target.value })}
                     errors={error?.model?._errors}
+                    id_prefix='form_model'
                 />
                 <Input
                     type='text'
@@ -68,6 +71,7 @@ export function FormDisplay({ store, submit, onSubmit }: Props) {
                     defaultValue={input.serialNumber}
                     onChange={it => update({ serialNumber: it.target.value })}
                     errors={error?.serialNumber?._errors}
+                    id_prefix='form_serialNumber'
                 />
                 <Input
                     type='date'
@@ -75,6 +79,7 @@ export function FormDisplay({ store, submit, onSubmit }: Props) {
                     defaultValue={input.installDate}
                     onChange={it => update({ installDate: it.target.value })}
                     errors={error?.installDate?._errors}
+                    id_prefix='form_installDate'
                 />
                 <Select
                     options={statuses}
@@ -82,6 +87,7 @@ export function FormDisplay({ store, submit, onSubmit }: Props) {
                     defaultValue={input.status}
                     onChange={it => update({ status: it })}
                     errors={error?.status?._errors}
+                    id_prefix='form_status'
                 />
             </div>
         </div>

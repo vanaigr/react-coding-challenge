@@ -54,6 +54,7 @@ export function FormDisplay({ store, equipment, submit, onSubmit }: Props) {
                     defaultValue={input.equipmentId}
                     onChange={it => update({ equipmentId: it })}
                     errors={error?.equipmentId?._errors}
+                    id_prefix='form_equipmentId'
                 />
                 <Input
                     title='Date'
@@ -61,6 +62,7 @@ export function FormDisplay({ store, equipment, submit, onSubmit }: Props) {
                     defaultValue={input.date}
                     onChange={it => update({ date: it.target.value })}
                     errors={error?.date?._errors}
+                    id_prefix='form_date'
                 />
                 <Select
                     title='Type'
@@ -68,6 +70,7 @@ export function FormDisplay({ store, equipment, submit, onSubmit }: Props) {
                     defaultValue={input.type}
                     onChange={it => update({ type: it })}
                     errors={error?.type?._errors}
+                    id_prefix='form_type'
                 />
                 <Input
                     title='Technician'
@@ -75,6 +78,7 @@ export function FormDisplay({ store, equipment, submit, onSubmit }: Props) {
                     defaultValue={input.technician}
                     onChange={it => update({ technician: it.target.value })}
                     errors={error?.technician?._errors}
+                    id_prefix='form_technician'
                 />
                 <Input
                     title='Hours spent'
@@ -82,6 +86,7 @@ export function FormDisplay({ store, equipment, submit, onSubmit }: Props) {
                     defaultValue={input.hoursSpent}
                     onChange={it => update({ hoursSpent: it.target.value })}
                     errors={error?.hoursSpent?._errors}
+                    id_prefix='form_hoursSpent'
                 />
                 <Input
                     title='Description'
@@ -89,6 +94,7 @@ export function FormDisplay({ store, equipment, submit, onSubmit }: Props) {
                     defaultValue={input.description}
                     onChange={it => update({ description: it.target.value })}
                     errors={error?.description?._errors}
+                    id_prefix='form_description'
                 />
                 <Select
                     title='Priority'
@@ -96,6 +102,7 @@ export function FormDisplay({ store, equipment, submit, onSubmit }: Props) {
                     defaultValue={input.priority}
                     onChange={it => update({ priority: it })}
                     errors={error?.priority?._errors}
+                    id_prefix='form_priority'
                 />
                 <Select
                     title='Completion status'
@@ -103,12 +110,14 @@ export function FormDisplay({ store, equipment, submit, onSubmit }: Props) {
                     defaultValue={input.completionStatus}
                     onChange={it => update({ completionStatus: it })}
                     errors={error?.completionStatus?._errors}
+                    id_prefix='form_completionStatus'
                 />
                 <EditableList
                     title='Parts replaced'
                     defaultValue={input.partsReplaced}
                     onChange={list => update({ partsReplaced: list })}
                     errors={error?.partsReplaced?._errors}
+                    id_prefix='form_partsReplaced'
                 />
             </div>
         </div>

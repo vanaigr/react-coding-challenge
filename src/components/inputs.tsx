@@ -13,25 +13,49 @@ const textC = ' font-sans mb-1'
 type InputProps = {
     title: string,
     errors?: string[],
+    id_prefix: string,
 } & R.DetailedHTMLProps<R.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
 
-export function Input({ title, errors, ...rest }: InputProps) {
-    const isError = errors != null && errors.length > 0
-    const errorStyle = !isError ? '' : errorBorderC
-    const errorText = !isError ? '' : errors.join('. ')
+function errProps(isError: boolean, error_id: string) {
+    if(isError) {
+        return {
+            ['aria-invalid']: true,
+            ['aria-errormessage']: error_id,
+        }
+    }
 
-    return <label className={inputContC}>
-        <span className={textC}>{title}</span>
+    return {
+        ['aria-invalid']: false,
+    }
+}
+
+export function Input({ title, errors, id_prefix, ...rest }: InputProps) {
+    const input_id = id_prefix + '_input'
+    const error_id = id_prefix + '_error'
+
+    const isError = errors != null && errors.length > 0
+    const errorText = isError ? errors.join('. ') : ''
+    const errorStyle = isError ? errorBorderC : ''
+    const errorProps = errProps(isError, error_id)
+
+    return <div className={inputContC}>
+        <label htmlFor={input_id} className={textC}>{title}</label>
         <span className={'flex' + borderC + errorStyle}>
-            <input className={inputC + ' px-4'} {...rest}/>
+            <input
+                id={input_id}
+                className={inputC + ' px-4'}
+                {...errorProps}
+                {...rest}
+            />
         </span>
         <span
-            className={!isError ? '' : errorTextC}
+            className={isError ? errorTextC : ''}
             title={errorText}
+            id={error_id}
         >
             {errorText}
         </span>
-    </label>
+    </div>
 }
 
 type SelectProps<T extends readonly string[]> = {
@@ -41,6 +65,7 @@ type SelectProps<T extends readonly string[]> = {
     optionTitles?: readonly string[],
     errors?: string[],
     onChange?: (value: ValuesUnion<T>, event: R.ChangeEvent<HTMLSelectElement>) => void,
+    id_prefix: string,
 } & Omit<R.DetailedHTMLProps<R.SelectHTMLAttributes<HTMLSelectElement>, HTMLSelectElement>, 'onChange'>
 
 export function Select<T extends readonly string[]>({
@@ -50,17 +75,24 @@ export function Select<T extends readonly string[]>({
     optionNames,
     errors,
     onChange,
+    id_prefix,
     ...rest
 }: SelectProps<T>) {
-    const isError = errors != null && errors.length > 0
-    const errorStyle = !isError ? '' : errorBorderC
-    const errorText = !isError ? '' : errors.join('. ')
+    const input_id = id_prefix + '_input'
+    const error_id = id_prefix + '_error'
 
-    return <label className={inputContC}>
-        <span className={textC}>{title}</span>
+    const isError = errors != null && errors.length > 0
+    const errorStyle = isError ? errorBorderC : ''
+    const errorText = isError ? errors.join('. ') : ''
+    const errorProps = errProps(isError, error_id)
+
+    return <span className={inputContC}>
+        <label htmlFor={input_id} className={textC}>{title}</label>
         <span className={'flex' + borderC + errorStyle}>
             <select
                 className={inputC + ' px-3'}
+                id={input_id}
+                {...errorProps}
                 {...rest}
                 onChange={onChange && ((ev) => onChange(ev.target.value as ValuesUnion<T>, ev))}
             >
@@ -72,12 +104,13 @@ export function Select<T extends readonly string[]>({
             </select>
         </span>
         <span
+            id={error_id}
             className={!isError ? '' : errorTextC}
             title={errorText}
         >
             {errorText}
         </span>
-    </label>
+    </span>
 }
 
 
@@ -86,9 +119,15 @@ type EditableListProps = {
     defaultValue: string[],
     onChange: (value: string[]) => void,
     errors?: string[],
+    id_prefix: string,
 }
 
-export function EditableList({ title, defaultValue, onChange, errors }: EditableListProps) {
+export function EditableList(
+    { title, defaultValue, onChange, errors, id_prefix }: EditableListProps
+) {
+    const input_id = id_prefix + '_input'
+    const error_id = id_prefix + '_error'
+
     const [items, setItems] = R.useState(defaultValue)
     const [itemsMeta, setItemsMeta] = R.useState(() => {
         const ids = defaultValue.map((_, i) => i)
@@ -99,6 +138,7 @@ export function EditableList({ title, defaultValue, onChange, errors }: Editable
     const isError = errors != null && errors.length > 0
     const errorStyle = !isError ? '' : ' border-red-600'
     const errorText = !isError ? '' : errors.join('. ')
+    const errorProps = errProps(isError, error_id)
 
     const itemComponents = []
     for(let i = items.length - 1; i != -1; i--) {
@@ -127,10 +167,12 @@ export function EditableList({ title, defaultValue, onChange, errors }: Editable
     const showItems = itemComponents.length > 0
 
     return <div className={inputContC}>
-        <span className={textC}>{title}</span>
+        <label htmlFor={input_id} className={textC}>{title}</label>
         <div className={'flex flex-col border border-indigo-400 rounded-lg' + errorStyle}>
             <div className={showItems ? 'border-b border-indigo-400' + errorStyle : ''}>
                 <NewItem
+                    id={input_id}
+                    {...errorProps}
                     onAdd={value => {
                         const newItems = items.slice()
                         newItems.push(value)
@@ -152,6 +194,7 @@ export function EditableList({ title, defaultValue, onChange, errors }: Editable
             }
         </div>
         <span
+            id={error_id}
             className={!isError ? '' : errorTextC}
             title={errorText}
         >
@@ -185,8 +228,10 @@ function Item({ defaultValue, onChange, onDelete }: ItemProps) {
 }
 
 type NewItemProps = { onAdd: (value: string) => void }
+    & R.DetailedHTMLProps<R.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
 
-function NewItem({ onAdd }: NewItemProps) {
+
+function NewItem({ onAdd, ...rest }: NewItemProps) {
     const [value, setValue] = R.useState('')
     const disabled = value === ''
     const ref = R.useRef<HTMLInputElement>(null)
@@ -194,6 +239,7 @@ function NewItem({ onAdd }: NewItemProps) {
     return <div className='h-10 flex items-center gap-3 box-border'>
         <label className='flex grow items-center pl-3'>
             <input
+                {...rest}
                 ref={ref}
                 className='grow'
                 type='text'
