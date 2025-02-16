@@ -11,7 +11,8 @@ export const validation = z.object({
     location: z.string().nonempty('Must not be empty'),
     department: z.string().pipe(z.enum(departments)),
     model: z.string().nonempty('Must not be empty'),
-    serialNumber: z.string().regex(/^[\p{L}\p{N}]+$/u, 'Must be alphanumeric'),
+    // or ^[\p{L}\p{N}]+$ if unicode alphanumeric
+    serialNumber: z.string().regex(/^[a-zA-Z\d]+$/, 'Must be alphanumeric'),
     installDate: z.string().pipe(dateValidation).refine(it => {
         const today = dateLocalToComponents(new Date())!
         return dateCmp(it, today) < 0
