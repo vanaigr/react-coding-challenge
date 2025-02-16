@@ -1,7 +1,23 @@
-import { test, expect, type Locator, type Page } from '@playwright/test'
+import {
+    test,
+    expect,
+    type Locator,
+    type Page,
+} from '@playwright/test'
 import * as filtered from './equipmentFilters'
 
-false && test('Should create new equipment with valid data', async({ page }) => {
+test.beforeEach('Reset DB', async({ page }) => {
+    await page.goto('/')
+    await page.evaluate(async() => {
+        const url = new URL('/test/resetDB', window.location.origin)
+        const resp = await fetch(url, { method: 'POST' })
+        if(!resp.ok) throw new Error('Reset DB status: ' + resp.status)
+        const res = await resp.json()
+        if(!res.ok) throw new Error('Reset DB error: ' + res.error)
+    })
+})
+
+test('Should create new equipment with valid data', async({ page }) => {
     await page.goto('/equipment')
 
     await page.getByPlaceholder('Search').nth(1).fill('new item')
@@ -33,12 +49,41 @@ false && test('Should create new equipment with valid data', async({ page }) => 
     })
 })
 
-false && test('Should show validation errors for invalid equipment data', async({ page }) => {
-    const url = '/equipment/new'
-    await page.goto(url)
-
+async function testValidation(path: string, page: Page) {
     const inputs = getInputs(page)
     const { name, loc, dep, model, serial, date, status } = inputs
+    const button = page.locator('button[type="submit"]')
+
+    const chk = async(input: Locator, error: string, invalidList: Locator[]) => {
+        if(invalidList.includes(input)) {
+            await expect(input).toHaveAttribute('aria-invalid', 'true')
+            const id = await input.getAttribute('aria-errormessage')
+            expect(id).not.toBeNull()
+            await expect(page.locator('id=' + id)).toContainText(error)
+        }
+        else {
+            await expectValid(input)
+        }
+    }
+    const expectInvalid = async(...invalidInputs: Locator[]) => {
+        await chk(name, 'Must be at least 3 characters', invalidInputs)
+        await chk(loc, 'Must not be empty', invalidInputs)
+        await expectValid(dep)
+        await chk(model, 'Must not be empty', invalidInputs)
+        await chk(serial, 'Must be alphanumeric', invalidInputs)
+        await chk(date, 'Invalid date. Must be past date', invalidInputs)
+        await expectValid(status)
+
+        if(invalidInputs.length > 0) {
+            await expect(button).toBeDisabled()
+            // check that it doesn't let us add the equipment
+            await page.getByRole('textbox', { name: 'Name' }).press('Enter');
+            await expect(page).toHaveURL(path);
+        }
+        else {
+            await expect(button).toBeEnabled()
+        }
+    }
 
     // fill with invalid values
     await name.fill('12')
@@ -49,44 +94,52 @@ false && test('Should show validation errors for invalid equipment data', async(
     // 02/31/2020 - 31 of Feb, which is ivalid date
     await date.pressSequentially('02312020')
     // Status is also <select> with no invalid option
-
-    const button = page.getByRole('button', { name: 'Add' })
-    await expect(button).toBeDisabled()
-
-    const chk = async(input: Locator, error: string) => {
-        await expect(input).toHaveAttribute('aria-invalid', 'true')
-        const id = await input.getAttribute('aria-errormessage')
-        expect(id).not.toBeNull()
-        await expect(page.locator('id=' + id)).toContainText(error)
-    }
-    await chk(name, 'Must be at least 3 characters')
-    await chk(loc, 'Must not be empty')
-    await expectValid(dep)
-    await chk(model, 'Must not be empty')
-    await chk(serial, 'Must be alphanumeric')
-    await chk(date, 'Invalid date. Must be past date')
-    await expectValid(status)
-
-    // check that it doesn't let us add the equipment
-    await page.getByRole('textbox', { name: 'Name' }).press('Enter');
-    await expect(page).toHaveURL(url);
+    await expectInvalid(name, loc, model, serial, date)
 
     // fill with valid values
     await name.fill('123')
+    await expectInvalid(loc, model, serial, date)
     await loc.fill('1')
+    await expectInvalid(model, serial, date)
     await dep.selectOption('Shipping')
+    await expectInvalid(model, serial, date)
     await model.fill('1')
+    await expectInvalid(serial, date)
     await serial.fill('123abc')
+    await expectInvalid(date)
     await date.fill('2020-02-20')
+    await expectInvalid()
     await status.selectOption('Down')
+    await expectInvalid()
 
-    await expectInputsValid(inputs)
-
-    await expect(button).toBeEnabled()
     await button.click()
+    await expect(page).toHaveURL('/equipment')
+}
+
+test.describe('Should show validation errors for invalid equipment data', () => {
+    // Note: keep /equipment as previous page
+    test('On new equipment page', async({ page }) => {
+        await page.goto('/equipment')
+        await page.getByRole('link', { name: 'Add equipment record' }).click()
+        const path = '/equipment/new'
+        await expect(page).toHaveURL(path);
+        await testValidation(path, page)
+    })
+    test('When editing equipment', async({ page }) => {
+        const id = '0ec93e1d-a05c-4b9d-ba57-c935a9bbf2b6'
+        const path = '/equipment/' + id
+
+        await page.goto('/equipment')
+        await page.getByPlaceholder('Search').first().fill(id)
+        await page.getByTestId('table').getByRole('link', { name: 'open_in_new' })
+            .first().click()
+
+        await expect(page).toHaveURL(path);
+        await testValidation(path, page)
+    })
 })
 
-false && test('Should edit existing equipment', async({ page }) => {
+test('Should edit existing equipment', async({ page }) => {
     const id = '9927a87d-a69c-449c-b6e1-35daab537301'
     await page.goto('/equipment')
 
