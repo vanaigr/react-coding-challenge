@@ -334,17 +334,44 @@ function Cb({ title, text, enabled, onClick }: CbProps) {
 
 }
 
-export function Controls<T>({ table }: { table: RT.Table<T> }) {
+export type ControlsProps<T> = {
+    table: RT.Table<T>
+}
+export function Controls<T>({ table }: ControlsProps<T>) {
     const gotoPageRef = R.useRef<HTMLInputElement | null>(null)
 
     const curPageI = table.getState().pagination.pageIndex
     const pageC = table.getPageCount()
 
+    const perPageC = table.getState().pagination.pageSize
+    console.log(perPageC)
+
     return <>
         <div>
             Page: {1 + curPageI} of {pageC}
         </div>
-        <div className='w-2'/>
+        <div className='w-4'/>
+        <div>
+            Showing{' '}
+            <select
+                value={perPageC === 10 || perPageC === 50 ? '' + perPageC : '999999999'}
+                onChange={it => {
+                    table.setPageSize(parseInt(it.target.value))
+                }}
+            >
+                {/*
+                    There's no way to disable pagination in tanstack table.
+                    It remembers you had pagination and not providing
+                    state/pagination row model doesn't disable it. Even though
+                    not providing them from the start does disable it...
+                */}
+                <option value='999999999'>all</option>
+                <option value='10'>10</option>
+                <option value='50'>50</option>
+            </select>
+            {' '}per page
+        </div>
+        <div className='w-4'/>
         <Cb
             title='Go to first page'
             text='stat_2'
