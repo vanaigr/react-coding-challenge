@@ -9,6 +9,9 @@ export default defineConfig({
         baseURL: 'http://127.0.0.1:3000',
         trace: 'on', //'on-first-retry',
     },
+    // We need consistent DB state for each test.
+    // It is reset before running each test.
+    workers: 1,
     timeout: 10 * 1000,
     projects: [
         {
@@ -19,6 +22,7 @@ export default defineConfig({
     webServer: {
         command: './node_modules/.bin/next dev --turbopack',
         url: 'http://127.0.0.1:3000',
-        reuseExistingServer: !process.env.CI,
+        reuseExistingServer: false,
+        env: { ...process.env, 'RCC_TESTING': 'true' },
     },
 });
