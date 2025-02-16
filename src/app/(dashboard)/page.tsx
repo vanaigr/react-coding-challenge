@@ -165,12 +165,12 @@ function EquipmentChart({ data }: { data: StatusCount[] }) {
         const proportion = v.count / total
         proportions.push({
             status: v.status,
-            name: `${v.status} (${Math.round(proportion * 100)}%)`,
+            name: `${v.status} - ${v.count} (${Math.round(proportion * 100)}%)`,
             value: proportion,
         })
     }
 
-    const title = 'Equipment status breakdown'
+    const title = `Equipment status breakdown - ${total} total`
     return <div className='flex flex-col p-5 pt-4 bg-white rounded-md'>
         <span className='text-sm text-gray-700 mb-6'>{title}</span>
         <RC.PieChart width={550} height={300} title={title}>
