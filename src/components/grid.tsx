@@ -397,17 +397,16 @@ export function Controls<T>({ table }: ControlsProps<T>) {
             onClick={() => table.setPageIndex(pageC - 1)}
         />
         <div className='w-6'/>
-        <div className='flex'>
+        <div className='flex gap-1'>
             Go to page
-            {' '}
             <input
+                className='w-8'
                 ref={gotoPageRef}
                 type='number'
                 min={1}
                 max={table.getPageCount()}
                 defaultValue={1}
             />
-            {' '}
             <button
                 onClick={() => {
                     if(!gotoPageRef.current) return
