@@ -190,8 +190,8 @@ function TableDisplay({ table }: { table: RT.Table<Equipment> }) {
 
     const gridStyle = { gridTemplateColumns: `repeat(${hGroup.headers.length}, auto)` }
 
-    return <div className='text-sm m-8 max-w-[90rem] mx-auto' data-testid='table'>
-        <div style={gridStyle} className='w-full grid px-1'>
+    return <div className='text-sm m-8 max-w-[90rem] mx-auto'>
+        <div style={gridStyle} className='w-full grid px-1' data-testid='table'>
             {hGroup.headers.map(header => (
                 <span key={header.id} className='flex'>
                     {RT.flexRender(

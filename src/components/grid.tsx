@@ -344,18 +344,18 @@ export function Controls<T>({ table }: ControlsProps<T>) {
     const pageC = table.getPageCount()
 
     const perPageC = table.getState().pagination.pageSize
-    console.log(perPageC)
 
     return <>
-        <div>
+        <div className='flex'>
             Page: {1 + curPageI} of {pageC}
         </div>
         <div className='w-4'/>
-        <div>
-            Showing{' '}
+        <div className='flex gap-1'>
+            <span>Showing</span>
             <select
                 value={perPageC === 10 || perPageC === 50 ? '' + perPageC : '999999999'}
                 onChange={it => {
+                    console.warn(it.target.value)
                     table.setPageSize(parseInt(it.target.value))
                 }}
             >
@@ -369,7 +369,7 @@ export function Controls<T>({ table }: ControlsProps<T>) {
                 <option value='10'>10</option>
                 <option value='50'>50</option>
             </select>
-            {' '}per page
+            <span>per page</span>
         </div>
         <div className='w-4'/>
         <Cb
@@ -397,7 +397,7 @@ export function Controls<T>({ table }: ControlsProps<T>) {
             onClick={() => table.setPageIndex(pageC - 1)}
         />
         <div className='w-6'/>
-        <div>
+        <div className='flex'>
             Go to page
             {' '}
             <input
