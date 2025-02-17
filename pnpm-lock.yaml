@@ -57,9 +57,6 @@ importers:
       '@types/react-dom':
         specifier: ^19.0.3
         version: 19.0.3(@types/react@19.0.8)
-      playwright:
-        specifier: ^1.50.1
-        version: 1.50.1
       postcss:
         specifier: ^8
         version: 8.5.1
