@@ -20,8 +20,8 @@ import {
 
 const statusColor: Record<Statuses, string> = {
     Operational: colors.green[600],
-    Down: colors.orange[600],
-    Maintenance: colors.violet[600],
+    Down: colors.red[600],
+    Maintenance: colors.amber[600],
     Retired: colors.cyan[600],
 }
 
@@ -174,11 +174,16 @@ function EquipmentChart({ data }: { data: StatusCount[] }) {
     return <div className='flex flex-col p-5 pt-4 bg-white rounded-md'>
         <span className='text-sm text-gray-700 mb-6'>{title}</span>
         <RC.PieChart width={550} height={300} title={title}>
-            <RC.Pie label={it => it.name} data={proportions} dataKey='value'>
+            <RC.Pie data={proportions} dataKey='value'>
                 {proportions.map(
                     (it, i) => <RC.Cell key={i} fill={statusColor[it.status]}/>
                 )}
             </RC.Pie>
+            <RC.Legend
+                layout="vertical"
+                align="right"
+                verticalAlign="middle"
+            />
         </RC.PieChart>
     </div>
 }

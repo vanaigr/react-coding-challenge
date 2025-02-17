@@ -24,10 +24,10 @@ import {
 
 type Colors<T extends readonly string[]> = { [K in T[number]]: string }
 const statusColors = {
-    Operational: 'bg-lime-200',
-    Down: 'bg-red-200',
-    Maintenance: 'bg-yellow-200',
-    Retired: 'bg-blue-200',
+    Operational: 'bg-lime-100',
+    Down: 'bg-red-100',
+    Maintenance: 'bg-yellow-100',
+    Retired: 'bg-blue-100',
 } satisfies Colors<typeof statuses>
 
 const p = ' px-3 py-2'
