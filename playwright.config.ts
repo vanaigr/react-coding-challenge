@@ -1,4 +1,7 @@
 import { devices, defineConfig } from '@playwright/test';
+// @ts-ignore
+import { quote } from 'shell-quote'
+import path from 'node:path'
 
 export default defineConfig({
     testDir: './test',
@@ -20,13 +23,14 @@ export default defineConfig({
         },
     ],
     webServer: {
-        command: './node_modules/.bin/next dev --turbopack',
+        command: quote([path.join(import.meta.dirname, 'node_modules', '.bin', 'next'), 'dev', '--turbopack']),
+        cwd: import.meta.dirname,
         url: 'http://127.0.0.1:3000',
         reuseExistingServer: false,
         env: {
             ...process.env,
-            'RCC_TESTING': 'true',
-            'DATABASE_URL': "file:./test.db"
-        },
+            RCC_TESTING: 'true',
+            DATABASE_URL: 'file:./test.db',
+        }
     },
 });

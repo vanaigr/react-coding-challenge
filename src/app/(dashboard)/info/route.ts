@@ -57,7 +57,6 @@ export async function GET(req: NextRequest) {
             departmentsMaintenance: maintenance,
         },
     })
-
 }
 
 async function recentMaintenance(cutoff?: DateComponents) {
