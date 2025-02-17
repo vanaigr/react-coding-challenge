@@ -19,14 +19,15 @@ export const validation = z.object({
     }, 'Must not be future date'),
     type: z.enum(types),
     technician: z.string().min(2, 'Must be at least 2 characters long'),
-    // TODO: should this be an integer?
+    // TODO: should this allow fractional values?
     hoursSpent: z.string().transform((it, ctx) => {
         // there's z.coerce.number(), but it parses '' as 0 which is wrong for our case
         const v = parseFloat(it)
         if(isFinite(v)) return v
         ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Must be valid' })
         return z.NEVER
-    }).pipe(z.number().min(1, 'Must be positive').max(24, 'Must be at most 24')),
+    }).pipe(z.number().int('Must be whole number')
+        .min(1, 'Must be positive').max(24, 'Must be at most 24')),
     description: z.string().min(10, 'Must be at least 10 characters long'),
     partsReplaced: z.array(z.string()), // empty if none
     priority: z.enum(priorities),
