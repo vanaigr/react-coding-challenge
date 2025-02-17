@@ -1,26 +1,33 @@
 import { expect, type Page, type Locator } from '@playwright/test'
 import { expectRow } from '../common'
 
-export type EquipmentDisplay = {
-    name: string,
-    location: string,
-    department: string,
-    model: string,
-    serialNumber: string,
-    installDate: string,
-    status: string,
+
+export type MaintenanceRowDisplay = {
+    equipmentId: string,
+    equipmentName: string,
+    date: string,
+    type: string,
+    technician: string,
+    hoursSpent: string,
+    description: string,
+    partsReplaced: string,
+    priority: string,
+    completionStatus: string,
 }
 const columns = [
-    'name',
-    'location',
-    'department',
-    'model',
-    'serialNumber',
-    'installDate',
-    'status',
+    'equipmentId',
+    'equipmentName',
+    'date',
+    'type',
+    'technician',
+    'hoursSpent',
+    'description',
+    'partsReplaced',
+    'priority',
+    'completionStatus',
 ] as const
-export async function expectEquipmentRow(page: Page, it: EquipmentDisplay) {
-    await expectRow(page.getByTestId('table'), columns, it)
+export async function expectMaintenanceRow(page: Page, it: MaintenanceRowDisplay) {
+    await expectRow(page.getByTestId('m-table'), columns, it)
 }
 
 export async function expectInputValid(it: Locator) {

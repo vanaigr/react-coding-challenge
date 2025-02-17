@@ -45,7 +45,7 @@ export interface MaintenanceRecord {
     technician: string,
     hoursSpent: number,
     description: string,
-    // TODO: should this be `string[]` or `string[] | undefined`.
+    // TODO: should this be `string[]` or `string[] | undefined`?
     // I don't think there's any semantic difference
     // between empty array and no array in this case.
     partsReplaced: string[],
