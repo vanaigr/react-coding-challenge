@@ -64,7 +64,7 @@ export default function() {
 
     return <div className='grow bg-gray-100'>
         <Header name='Dashboard'/>
-        <div className='mx-auto max-w-[95rem] flex flex-col'>
+        <div className='mx-auto max-w-[95rem] flex flex-col pb-4'>
             <div className='grid grid-cols-1 xl:grid-cols-2 gap-5 mx-auto p-2 pt-0'>
                 <div className='flex col-span-full justify-start mb-8'>
                     <div className='bg-white p-3 px-4 rounded-md flex flex-col'>

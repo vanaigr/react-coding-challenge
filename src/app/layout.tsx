@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: 'React coding challenge' }
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang='en'>
-      <body>
+            <body className='overflow-y-scroll'>
         {children}
       </body>
     </html>
