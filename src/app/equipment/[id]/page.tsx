@@ -6,7 +6,7 @@ import { strDateToComponents } from '@/util/date'
 import { prisma } from '@/data/prisma'
 
 export default async function({ params }: any) {
-    const id: string = params.id
+    const id: string = (await params).id
     if(id == null) {
         return redirect('/404')
     }
@@ -23,7 +23,6 @@ export default async function({ params }: any) {
         installDate: strDateToComponents(recordDb.installDate)!,
     }
 
-    console.log(id)
     return <div className='grow flex flex-col'>
         <Header path={[{ url: '/equipment', name: 'Equipment records' }]} name={id}/>
         <Form
