@@ -2,6 +2,7 @@
 import * as R from 'react'
 import * as RC from 'recharts'
 import colors from 'tailwindcss/colors'
+import { OpenButton } from '@/components/grid'
 
 import { type Statuses } from '@/data/recordDefs'
 import {
@@ -88,7 +89,7 @@ export default function() {
 
 function DataDisplay({ data }: { data: Data | null }) {
     if(!data) return <div
-        style={{ width: 'calc(calc(550px + var(--spacing) * 10))' }}
+        style={{ width: 'calc(calc(570px + var(--spacing) * 10))' }}
     >Loading...</div>
 
     return <>
@@ -117,6 +118,7 @@ function RecentMaintenance({ data }: { data: RecentMaintenance[] }) {
             <span>-</span>
             <span>{it.completionStatus}</span>
             <span>after {it.hoursSpent} hrs</span>
+            <OpenButton url={'/maintenance/' + encodeURIComponent(it.id)}/>
             <span/>
         </R.Fragment>)
     }
@@ -124,18 +126,21 @@ function RecentMaintenance({ data }: { data: RecentMaintenance[] }) {
     const title = 'Recent maintenance activities'
     return <div className='flex flex-col p-5 pt-4 pb-7 bg-white rounded-md'>
         <span className='text-sm text-gray-700 mb-6'>{title}</span>
-        <div className='text-sm grid gap-x-2 gap-y-3' style={{ gridTemplateColumns: 'repeat(8, auto)' }}>
+        <div className='text-sm grid gap-x-2 gap-y-3' style={{ gridTemplateColumns: 'repeat(9, auto)' }}>
             {components}
         </div>
     </div>
 }
 
 function DepartmentChart({ data }: { data: DepartmentMaintenance[] }) {
-    const title = 'Maintenance hours by department'
+    let total = 0
+    data.forEach(it => total += it.count)
+
+    const title = 'Maintenance hours by department - ' + total + ' total'
     return <div className='flex flex-col p-5 pt-4 bg-white rounded-md'>
         <span className='text-sm text-gray-700 mb-6'>{title}</span>
         <RC.BarChart
-            width={550}
+            width={570}
             height={300}
             data={data}
             dataKey={'department'}
@@ -173,7 +178,7 @@ function EquipmentChart({ data }: { data: StatusCount[] }) {
     const title = `Equipment status breakdown - ${total} total`
     return <div className='flex flex-col p-5 pt-4 bg-white rounded-md'>
         <span className='text-sm text-gray-700 mb-6'>{title}</span>
-        <RC.PieChart width={550} height={300} title={title}>
+        <RC.PieChart width={570} height={300} title={title}>
             <RC.Pie data={proportions} dataKey='value'>
                 {proportions.map(
                     (it, i) => <RC.Cell key={i} fill={statusColor[it.status]}/>
