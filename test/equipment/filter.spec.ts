@@ -26,8 +26,8 @@ test('Should filter equipment table', async ({ page }) => {
         return expect(page.getByTestId('table')).toMatchAriaSnapshot(snap)
     }
 
-    await page.locator('div').filter({ hasText: /^Showing all1050 per page$/ })
-        .getByRole('combobox').selectOption('999999999');
+    await page.getByText("Showingall1050per page").getByRole('combobox')
+        .selectOption('999999999');
 
     await chk(
         filtered.getAllSnapshot(),
