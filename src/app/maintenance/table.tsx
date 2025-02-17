@@ -122,6 +122,7 @@ const columns = [
         id: 'hours-spent',
         header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.hoursSpent}</Header>,
         cell: v => <TextCell className={p} value={'' + v.getValue()}/>,
+        aggregatedCell: v => <TextCell className={p} value={'' + v.getValue()}/>,
         sortingFn: numberSortingFn,
         filterFn: numberFilterFn,
         meta: { filter: v => <NumberFilter ctx={v} className={f}/> },
