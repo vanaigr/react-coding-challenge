@@ -147,7 +147,7 @@ function DepartmentChart({ data }: { data: DepartmentMaintenance[] }) {
             title={title}
         >
             <RC.CartesianGrid strokeDasharray='3 3'/>
-            <RC.XAxis dataKey='name'/>
+            <RC.XAxis dataKey='department'/>
             <RC.YAxis/>
             <RC.Bar
                 dataKey='count'
