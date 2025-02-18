@@ -3,10 +3,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { type MaintenanceRecord } from '@/data/recordDefs'
 import { toISODate, strDateToComponents } from '@/util/date'
 import { prisma, Prisma } from '@/data/prisma'
-import { maintenanceValidation as v } from '@/data/recordDefs'
+import { maintenanceValidationWithoutId as v } from '@/data/recordDefs'
 
 export async function GET(_q: NextRequest, { params }: any) {
-    const id = await params.id
+    const id = (await params).id
     if(typeof id !== 'string' || id === '') {
         return NextResponse.json({ error: 'Invalid id' }, { status: 400 })
     }
@@ -28,7 +28,12 @@ export async function GET(_q: NextRequest, { params }: any) {
     return NextResponse.json({ ok: true, data: getRes })
 }
 
-export async function PUT(q: NextRequest) {
+export async function PUT(q: NextRequest, { params }: any) {
+    const id = (await params).id
+    if(typeof id !== 'string' || id === '') {
+        return NextResponse.json({ error: 'Invalid id' }, { status: 400 })
+    }
+
     const itRaw = q.json()
     const res = v.safeParse(itRaw)
     if(!res.success) {
@@ -36,7 +41,7 @@ export async function PUT(q: NextRequest) {
     }
 
     const updateRes = await prisma.maintenanceRecord.update({
-        where: { id: res.data.id },
+        where: { id },
         data: {
             ...res.data,
             partsReplaced: {
@@ -58,7 +63,7 @@ export async function PUT(q: NextRequest) {
 // TODO: PATCH
 
 export async function DELETE(_q: NextRequest, { params }: any) {
-    const id = await params.id
+    const id = (await params).id
     if(typeof id !== 'string' || id === '') {
         return NextResponse.json({ error: 'Invalid id' }, { status: 400 })
     }
