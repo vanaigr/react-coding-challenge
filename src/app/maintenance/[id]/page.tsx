@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation"
+import { notFound } from "next/navigation"
 
 import { type CompletionStatuses } from '@/data/recordDefs'
 import Header from '@/components/header'
@@ -8,9 +8,9 @@ import { makeEquipmentInfo } from '@/util/equipmentInfo'
 import { prisma } from '@/data/prisma'
 
 export default async function Component({ params }: any) {
-    const id: string = params.id
+    const id: string = (await params).id
     if(id == null) {
-        return redirect('/404')
+        return notFound()
     }
 
     const recordP = prisma.maintenanceRecord.findFirst({
@@ -30,7 +30,7 @@ export default async function Component({ params }: any) {
 
     const recordDb = await recordP
     if(recordDb == null) {
-        return redirect('/404')
+        return notFound()
     }
 
     const equipmentDb = await equipmentP

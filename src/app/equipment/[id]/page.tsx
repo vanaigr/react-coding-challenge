@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation"
+import { notFound } from "next/navigation"
 
 import Header from '@/components/header'
 import { Form } from './form'
@@ -8,14 +8,14 @@ import { prisma } from '@/data/prisma'
 export default async function({ params }: any) {
     const id: string = (await params).id
     if(id == null) {
-        return redirect('/404')
+        return notFound()
     }
 
     const recordDb = await prisma.equipment.findFirst({
         where: { id },
     })
     if(recordDb == null) {
-        return redirect('/404')
+        return notFound()
     }
 
     const record = {
