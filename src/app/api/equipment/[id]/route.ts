@@ -6,7 +6,7 @@ import { prisma, Prisma } from '@/data/prisma'
 import { equipmentValidationWithoutId as v } from '@/data/recordDefs'
 
 export async function GET(_q: NextRequest, { params }: any) {
-    const id = await params.id
+    const id = (await params).id
     if(typeof id !== 'string' || id === '') {
         return NextResponse.json({ error: 'Invalid id' }, { status: 400 })
     }
@@ -24,7 +24,7 @@ export async function GET(_q: NextRequest, { params }: any) {
 }
 
 export async function PUT(q: NextRequest, { params }: any) {
-    const id = await params.id
+    const id = (await params).id
     if(typeof id !== 'string' || id === '') {
         return NextResponse.json({ error: 'Invalid id' }, { status: 400 })
     }
@@ -53,7 +53,7 @@ export async function PUT(q: NextRequest, { params }: any) {
 // TODO: PATCH
 
 export async function DELETE(_q: NextRequest, { params }: any) {
-    const id = await params.id
+    const id = (await params).id
     if(typeof id !== 'string' || id === '') {
         return NextResponse.json({ error: 'Invalid id' }, { status: 400 })
     }
@@ -61,13 +61,17 @@ export async function DELETE(_q: NextRequest, { params }: any) {
     const deleteRes = await prisma.equipment.delete({ where: { id } })
         .then(() => ({ ok: true }))
         .catch(err => {
-            if(err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
-                return { ok: false, error: 'Given record does not exist' }
+            if(err instanceof Prisma.PrismaClientKnownRequestError) {
+                if(err.code === 'P2025') {
+                    return { ok: false, error: 'Given record does not exist' }
+                }
+                else if(err.code === 'P2003') {
+                    return { ok: false, error: 'Referenced by other records' }
+                }
             }
             throw err
 
         })
 
     return NextResponse.json(deleteRes)
-
 }

@@ -6,7 +6,7 @@ export const apiUrl = new URL('http://localhost:3000/api/')
 
 /**
     @param {string} endpoint
-    @param {'GET' | 'POST' | 'PUT' | 'DETETE' | 'PATCH'} method
+    @param {'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'} method
     @param {Object=} body
 */
 export async function api(endpoint, method, body) {
