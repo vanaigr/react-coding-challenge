@@ -1,6 +1,5 @@
 import { devices, defineConfig } from '@playwright/test';
 // @ts-ignore
-import { quote } from 'shell-quote'
 import path from 'node:path'
 
 export default defineConfig({
@@ -22,10 +21,11 @@ export default defineConfig({
             use: { ...devices['Desktop Chrome'] },
         },
     ],
-    webServer: {
+    // works only on Linux
+    /*webServer: {
         command: 'node test/server.js',
         cwd: import.meta.dirname,
         url: 'http://127.0.0.1:3000',
         reuseExistingServer: false,
-    },
+    },*/
 });

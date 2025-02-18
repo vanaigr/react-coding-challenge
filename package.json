@@ -5,7 +5,7 @@
         "build": "next build",
         "start": "next start",
         "check": "tsc -b",
-        "dev-test": "node test/server.js",
+        "dev-test": "RCC_TESTING='true' DATABASE_URL='file:./test.db' next dev --turbopack",
         "test-api": "jasmine --config=jasmine.config.js"
     },
     "prisma": {
