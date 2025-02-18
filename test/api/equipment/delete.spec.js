@@ -23,7 +23,7 @@ describe('Deleting equipment', () => {
 
     it('By id', async() => {
         const id = '82b85eaa-f186-45a1-a1d3-2979b467f995'
-        expectUnchanged(id)
+        await expectUnchanged(id)
 
         {
             const res = await expectJson(api(
@@ -45,7 +45,7 @@ describe('Deleting equipment', () => {
 
     it('Rejects if referenced by other records', async() => {
         const id = 'ecda534c-bd94-41b8-b9ba-29c444af78f3'
-        expectUnchanged(id)
+        await expectUnchanged(id)
 
         {
             const res = await expectJson(api(
