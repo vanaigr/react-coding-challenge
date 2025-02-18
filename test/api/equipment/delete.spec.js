@@ -12,9 +12,7 @@ describe('Deleting equipment', () => {
     beforeEach(resetDB)
 
     async function expectUnchanged(id) {
-        const res = await expectJson(api('equipment', 'GET'), 200)
-        expectApiArr(res)
-        const d = res.data
+        const d = await expectApiArr(expectJson(api('equipment', 'GET'), 200))
         expect(d.length).toEqual(30)
         const item = d.find(it => it.id === id)
         expect(item).not.toBeUndefined()
@@ -34,9 +32,7 @@ describe('Deleting equipment', () => {
         }
 
         {
-            const res = await expectJson(api('equipment', 'GET'), 200)
-            expectApiArr(res)
-            const d = res.data
+            const d = await expectApiArr(expectJson(api('equipment', 'GET'), 200))
             expect(d.length).toEqual(29)
             const item = d.find(it => it.id === id)
             expect(item).toBeUndefined()
@@ -57,9 +53,7 @@ describe('Deleting equipment', () => {
         }
 
         {
-            const res = await expectJson(api('equipment', 'GET'), 200)
-            expectApiArr(res)
-            const d = res.data
+            const d = await expectApiArr(expectJson(api('equipment', 'GET'), 200))
             expect(d.length).toEqual(30)
             const item = d.find(it => it.id === id)
             expect(item).not.toBeUndefined()
@@ -70,9 +64,7 @@ describe('Deleting equipment', () => {
         const id = 'does-not-exist'
 
         {
-            const res = await expectJson(api('equipment', 'GET'), 200)
-            expectApiArr(res)
-            const d = res.data
+            const d = await expectApiArr(expectJson(api('equipment', 'GET'), 200))
             expect(d.length).toEqual(30)
             const item = d.find(it => it.id === id)
             expect(item).toBeUndefined()

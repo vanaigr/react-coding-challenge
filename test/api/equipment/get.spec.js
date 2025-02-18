@@ -13,9 +13,7 @@ import {
 describe('Getting equipment', () => {
     beforeEach(resetDB)
     it('All', async() => {
-        const res = await expectJson(api('equipment', 'GET'), 200)
-        expectApiArr(res)
-        const d = res.data
+        const d = await expectApiArr(expectJson(api('equipment', 'GET'), 200))
         expect(d.length).toEqual(30)
 
         for(let i = 0; i < d.length; i++) {

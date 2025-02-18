@@ -51,9 +51,7 @@ describe('Inserting equipment', () => {
     beforeEach(resetDB)
 
     async function checkNotPresent() {
-        const res = await expectJson(api('equipment', 'GET'), 200)
-        expectApiArr(res)
-        const d = res.data
+        const d = await expectApiArr(expectJson(api('equipment', 'GET'), 200))
         expect(d.length).toEqual(30)
         expect(d.findIndex(it => it.name === 'new item')).toEqual(-1)
     }
@@ -66,9 +64,7 @@ describe('Inserting equipment', () => {
             .toBeTrue()
 
         {
-            const res = await expectJson(api('equipment', 'GET'), 200)
-            expectApiArr(res)
-            const d = res.data
+            const d = await expectApiArr(expectJson(api('equipment', 'GET'), 200))
             expect(d.length).toEqual(31)
 
             const foundItem = d.find(it => it.id === insertRes.data.id)
@@ -97,9 +93,7 @@ describe('Updating equipment', () => {
     const url = 'equipment/' + encodeURIComponent(id)
 
     async function checkNotModified() {
-        const res = await expectJson(api('equipment', 'GET'), 200)
-        expectApiArr(res)
-        const d = res.data
+        const d = await expectApiArr(expectJson(api('equipment', 'GET'), 200))
         expect(d.length).toEqual(30)
         const foundItemI = d.findIndex(it => it.id === id)
         expect(foundItemI).not.toEqual(-1)
@@ -114,9 +108,7 @@ describe('Updating equipment', () => {
             .toBeTrue()
 
         {
-            const res = await expectJson(api('equipment', 'GET'), 200)
-            expectApiArr(res)
-            const d = res.data
+            const d = await expectApiArr(expectJson(api('equipment', 'GET'), 200))
             expect(d.length).toEqual(30)
 
             const foundItem = d.find(it => it.id === id)
@@ -141,9 +133,7 @@ describe('Updating equipment', () => {
         const nid = 'does-not-exist'
         const nurl = 'equipment/' + encodeURIComponent(nid)
 
-        const res = await expectJson(api('equipment', 'GET'), 200)
-        expectApiArr(res)
-        const d = res.data
+        const d = await expectApiArr(expectJson(api('equipment', 'GET'), 200))
         expect(d.length).toEqual(30)
         const foundItemI = d.findIndex(it => it.id === nid)
         expect(foundItemI).toEqual(-1)

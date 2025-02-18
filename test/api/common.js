@@ -20,16 +20,26 @@ export async function api(endpoint, method, body) {
     })
 }
 
+/**
+    @param {Promise<Response>} respP
+    @param {number} status
+*/
 export async function expectJson(respP, status) {
     const resp = await respP
     expect(resp.status).toEqual(status)
     return await resp.json()
 }
 
-export function expectApiArr(result) {
+/**
+    @param {Promise<any>} resultP
+    @returns {Promise<any[]>}
+*/
+export async function expectApiArr(resultP) {
+    const result = await resultP
     expect(result.ok).withContext(JSON.stringify(result)).toBe(true)
     const d = result.data
     expect(d instanceof Array).toBeTrue()
+    return d
 }
 
 export async function resetDB() {
