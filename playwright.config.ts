@@ -4,8 +4,8 @@ import { quote } from 'shell-quote'
 import path from 'node:path'
 
 export default defineConfig({
-    testDir: './test',
-    outputDir: 'testResults',
+    testDir: path.join(import.meta.dirname, 'test', 'e2e'),
+    outputDir: path.join(import.meta.dirname, 'testResults'),
     retries: 0,
     use: {
         baseURL: 'http://127.0.0.1:3000',
