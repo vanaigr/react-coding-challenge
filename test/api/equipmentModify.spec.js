@@ -95,7 +95,6 @@ describe('Updating equipment', () => {
 
     const id = '0ec93e1d-a05c-4b9d-ba57-c935a9bbf2b6'
     const url = 'equipment/' + encodeURIComponent(id)
-    const item = { ...valid, id }
 
     async function checkNotModified() {
         const res = await expectJson(api('equipment', 'GET'), 200)
@@ -104,13 +103,13 @@ describe('Updating equipment', () => {
         expect(d.length).toEqual(30)
         const foundItemI = d.findIndex(it => it.id === id)
         expect(foundItemI).not.toEqual(-1)
-        expect(d[foundItemI]).not.toEqual(item)
+        expect(d[foundItemI]).not.toEqual({ ...valid, id })
     }
 
     it('Accepts valid equipment', async() => {
         await checkNotModified()
 
-        const updateRes = await expectJson(api(url, 'PUT', item), 200)
+        const updateRes = await expectJson(api(url, 'PUT', valid), 200)
         expect(updateRes.ok).withContext(JSON.stringify(updateRes))
             .toBeTrue()
 
@@ -123,7 +122,7 @@ describe('Updating equipment', () => {
             const foundItem = d.find(it => it.id === id)
             expect(foundItem).not.toBeNull()
 
-            expect(foundItem).toEqual(item)
+            expect(foundItem).toEqual({ ...valid, id })
         }
     })
 
@@ -131,7 +130,7 @@ describe('Updating equipment', () => {
         await checkNotModified()
 
         for(let i = 0; i < invalid.length; i++) {
-            const updateRes = await expectJson(api(url, 'PUT', { ...invalid[i], id }), 400)
+            const updateRes = await expectJson(api(url, 'PUT', invalid[i]), 400)
             expect(updateRes.ok).withContext(JSON.stringify(updateRes))
                 .not.toBeTrue()
             await checkNotModified()
