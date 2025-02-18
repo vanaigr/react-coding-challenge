@@ -6,7 +6,7 @@ import {
     expectJson,
     expectApiArr,
     resetDB,
-} from './common.js'
+} from '../common.js'
 
 const valid = {
     name: 'new item',

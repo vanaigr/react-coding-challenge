@@ -1,4 +1,3 @@
-
 // @ts-check
 import 'jasmine'
 
@@ -9,7 +8,7 @@ import {
     resetDB,
     equipmentValidation,
     equipmentValidationWithoutId,
-} from './common.js'
+} from '../common.js'
 
 describe('Getting equipment', () => {
     beforeEach(resetDB)
