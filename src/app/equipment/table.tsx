@@ -112,7 +112,7 @@ export function Table({ data }: TableProps) {
         onPaginationChange: setPagination,
     })
 
-    return <div>
+    return <div className='min-w-fit'>
         <Control data={data} selected={selected} table={table}/>
         <TableDisplay table={table}/>
     </div>

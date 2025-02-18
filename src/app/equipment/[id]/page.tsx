@@ -23,7 +23,7 @@ export default async function({ params }: any) {
         installDate: strDateToComponents(recordDb.installDate)!,
     }
 
-    return <div className='grow flex flex-col'>
+    return <div className='grow flex flex-col min-w-fit'>
         <Header path={[{ url: '/equipment', name: 'Equipment records' }]} name={id}/>
         <Form
             id={id}

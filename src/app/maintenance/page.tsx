@@ -26,7 +26,7 @@ export default async function() {
         data[i] = it
     }
 
-    return <div>
+    return <div className='min-w-fit'>
         <PageHeader path={[]} name='Maintenance records'/>
         <Table data={data}/>
     </div>

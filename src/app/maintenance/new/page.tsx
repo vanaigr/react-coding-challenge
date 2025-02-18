@@ -14,7 +14,7 @@ export default async function Component() {
             status: true,
         }
     })
-    return <div className='grow flex flex-col items-stretch'>
+    return <div className='grow flex flex-col items-stretch min-w-fit'>
         <Header path={[{ url: '/maintenance', name: 'Maintenance records' }]} name='new'/>
         <Form equipment={makeEquipmentInfo(equipment)}/>
     </div>

@@ -63,10 +63,10 @@ export default function() {
         return () => { controller.abort() }
     }, [cutoff])
 
-    return <div className='grow bg-gray-100'>
+    return <div className='grow bg-gray-100 min-w-fit'>
         <Header name='Dashboard'/>
-        <div className='mx-auto max-w-[95rem] flex flex-col pb-4'>
-            <div className='grid grid-cols-1 xl:grid-cols-2 gap-5 mx-auto p-2 pt-0'>
+        <div className='mx-auto max-w-[95rem] flex flex-col pb-4 min-w-fit'>
+            <div className='grid grid-cols-[1fr] xl:grid-cols-[1fr_1fr] gap-5 mx-auto p-2 pt-0 min-w-fit'>
                 <div className='flex col-span-full justify-start mb-8'>
                     <div className='bg-white p-3 px-4 rounded-md flex flex-col'>
                         <span className='text-sm text-gray-600'>Earliest date</span>
@@ -124,7 +124,7 @@ function RecentMaintenance({ data }: { data: RecentMaintenance[] }) {
     }
 
     const title = 'Recent maintenance activities'
-    return <div className='flex flex-col p-5 pt-4 pb-7 bg-white rounded-md'>
+    return <div className='flex flex-col p-5 pt-4 pb-7 bg-white rounded-md min-w-fit'>
         <span className='text-sm text-gray-700 mb-6'>{title}</span>
         <div className='text-sm grid gap-x-2 gap-y-3' style={{ gridTemplateColumns: 'repeat(9, auto)' }}>
             {components}
@@ -137,7 +137,7 @@ function DepartmentChart({ data }: { data: DepartmentMaintenance[] }) {
     data.forEach(it => total += it.count)
 
     const title = 'Maintenance hours by department - ' + total + ' total'
-    return <div className='flex flex-col p-5 pt-4 bg-white rounded-md'>
+    return <div className='flex flex-col p-5 pt-4 bg-white rounded-md min-w-fit'>
         <span className='text-sm text-gray-700 mb-6'>{title}</span>
         <RC.BarChart
             width={570}
@@ -176,7 +176,7 @@ function EquipmentChart({ data }: { data: StatusCount[] }) {
     }
 
     const title = `Equipment status breakdown - ${total} total`
-    return <div className='flex flex-col p-5 pt-4 bg-white rounded-md'>
+    return <div className='flex flex-col p-5 pt-4 bg-white rounded-md min-w-fit'>
         <span className='text-sm text-gray-700 mb-6'>{title}</span>
         <RC.PieChart width={570} height={300} title={title}>
             <RC.Pie data={proportions} dataKey='value'>

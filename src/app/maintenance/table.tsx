@@ -188,7 +188,7 @@ export function Table({ data }: TableProps) {
     })
 
 
-    return <div>
+    return <div className='min-w-fit'>
         <Control table={table}/>
         <TableDisplay table={table}/>
     </div>

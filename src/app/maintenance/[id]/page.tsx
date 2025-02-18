@@ -43,7 +43,7 @@ export default async function Component({ params }: any) {
         completionStatus: recordDb.completionStatus as CompletionStatuses
     }
 
-    return <div className='grow flex flex-col items-stretch'>
+    return <div className='grow flex flex-col items-stretch min-w-fit'>
         <Header path={[{ url: '/maintenance', name: 'Maintenance records' }]} name={id}/>
         <Form
             id={record.id}
