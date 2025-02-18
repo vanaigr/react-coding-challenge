@@ -27,6 +27,7 @@ export async function api(endpoint, method, body) {
 export async function expectJson(respP, status) {
     const resp = await respP
     expect(resp.status).toEqual(status)
+    expect(resp.headers.get('content-type')).toContain('application/json')
     return await resp.json()
 }
 
@@ -110,7 +111,8 @@ export const types = /**@type{const}*/(['Preventive', 'Repair', 'Emergency'])
 export const priorities = /**@type{const}*/(['Low', 'Medium', 'High'])
 export const completionStatuses = /**@type{const}*/(['Complete', 'Incomplete', 'Pending Parts'])
 
-export const equipmentConstraintsWithoutId = {
+export const equipmentConstraints = {
+    id: z.string(),
     name: z.string().min(3, 'Must be at least 3 characters long'),
     location: z.string().nonempty('Must not be empty'),
     department: z.enum(departments),
@@ -122,16 +124,11 @@ export const equipmentConstraintsWithoutId = {
     }, 'Must be past date'),
     status: z.string().pipe(z.enum(statuses)),
 }
-export const equipmentConstraints = {
-    id: z.string(),
-    ...equipmentConstraintsWithoutId,
-}
-
-export const equipmentValidationWithoutId = z.object(equipmentConstraintsWithoutId)
 export const equipmentValidation = z.object(equipmentConstraints)
 
 
-const maintenanceConstraintsWithoutId = {
+const maintenanceConstraints = {
+    id: z.string(),
     equipmentId: z.string().nonempty('Reqired'),
     date: dateValidation.refine(it => {
         const today = dateUTCToComponents(new Date())
@@ -146,9 +143,4 @@ const maintenanceConstraintsWithoutId = {
     priority: z.enum(priorities),
     completionStatus: z.enum(completionStatuses),
 }
-export const maintenanceConstraints = {
-    id: z.string(),
-    ...maintenanceConstraintsWithoutId
-}
-export const maintenanceValidationWithoutId = z.object(maintenanceConstraintsWithoutId)
 export const maintenanceValidation = z.object(maintenanceConstraints)

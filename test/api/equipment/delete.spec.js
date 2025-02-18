@@ -63,17 +63,19 @@ describe('Deleting equipment', () => {
     it('Rejects if does not exist', async() => {
         const id = 'does-not-exist'
 
-        {
+        async function chk() {
             const d = await expectApiArr(expectJson(api('equipment', 'GET'), 200))
             expect(d.length).toEqual(30)
             const item = d.find(it => it.id === id)
             expect(item).toBeUndefined()
         }
 
+        chk()
         const res = await expectJson(api(
             'equipment/' + encodeURIComponent(id),
             'DELETE'
         ), 200)
         expect(res.ok).withContext(JSON.stringify(res)).not.toBeTrue()
+        chk()
     })
 })

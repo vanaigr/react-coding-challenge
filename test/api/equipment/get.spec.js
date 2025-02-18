@@ -7,7 +7,6 @@ import {
     expectApiArr,
     resetDB,
     equipmentValidation,
-    equipmentValidationWithoutId,
 } from '../common.js'
 
 describe('Getting equipment', () => {
@@ -17,7 +16,7 @@ describe('Getting equipment', () => {
         expect(d.length).toEqual(30)
 
         for(let i = 0; i < d.length; i++) {
-            const r = equipmentValidationWithoutId.safeParse(d[i])
+            const r = equipmentValidation.safeParse(d[i])
             expect(r.error).withContext('i=' + i).toBeFalsy()
         }
     })
