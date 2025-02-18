@@ -22,13 +22,13 @@ export function strDateToComponents(date: string): DateComponents | null {
     return null
 }
 
-export function dateLocalToComponents(date: Date): DateComponents | null {
+export function dateUTCToComponents(date: Date): DateComponents | null {
     if(date.getTime() == null) return null
 
     return [
-        date.getFullYear(),
-        date.getMonth() + 1,
-        date.getDate()
+        date.getUTCFullYear(),
+        date.getUTCMonth() + 1,
+        date.getUTCDate()
     ]
 }
 

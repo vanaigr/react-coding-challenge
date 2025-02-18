@@ -8,7 +8,7 @@ import { type Statuses } from '@/data/recordDefs'
 import {
     toISODate,
     componentsToString,
-    dateLocalToComponents,
+    dateUTCToComponents,
     strDateToComponents,
 } from '@/util/date'
 import Header from '@/components/header'
@@ -30,7 +30,7 @@ export default function() {
     const [cutoff, setCutoff] = R.useState(() => {
         const now = new Date()
         now.setMonth(now.getMonth() - 8)
-        return dateLocalToComponents(now)
+        return dateUTCToComponents(now)
     })
 
     const [data, setData] = R.useState<Data | null>(null)

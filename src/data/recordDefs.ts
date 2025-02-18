@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 import {
     dateValidation,
-    dateLocalToComponents,
+    dateUTCToComponents,
     cmp as dateCmp,
     type DateComponents,
 } from '@/util/date'
@@ -82,7 +82,12 @@ export const equipmentConstraintsWithoutId = {
     // or ^[\p{L}\p{N}]+$ if unicode alphanumeric
     serialNumber: z.string().regex(/^[a-zA-Z\d]+$/, 'Must be alphanumeric'),
     installDate: dateValidation.refine(it => {
-        const today = dateLocalToComponents(new Date())!
+        // TODO: this should probably not be UTC, but the challenge doesn't specify
+        // which timezone is canonical. If there's no canonical timezone, the user's
+        // "today" may be different from server's "today". Or 2 users can have different
+        // days, and then one submits "today", but for the other user it is "tomorrow"
+        // and they can't edit the record.
+        const today = dateUTCToComponents(new Date())!
         return dateCmp(it, today) < 0
     }, 'Must be past date'),
     status: z.string().pipe(z.enum(statuses)),
@@ -101,7 +106,7 @@ export type InputEquipment = z.infer<typeof equipmentValidation>
 export const maintenanceConstraintsWithoutId = {
     equipmentId: z.string().nonempty('Reqired'),
     date: dateValidation.refine(it => {
-        const today = dateLocalToComponents(new Date())!
+        const today = dateUTCToComponents(new Date())!
         return dateCmp(it, today) <= 0
     }, 'Must not be future date'),
     type: z.enum(types),
