@@ -23,14 +23,9 @@ export default defineConfig({
         },
     ],
     webServer: {
-        command: quote([path.join(import.meta.dirname, 'node_modules', '.bin', 'next'), 'dev', '--turbopack']),
+        command: 'node test/server.js',
         cwd: import.meta.dirname,
         url: 'http://127.0.0.1:3000',
         reuseExistingServer: false,
-        env: {
-            ...process.env,
-            RCC_TESTING: 'true',
-            DATABASE_URL: 'file:./test.db',
-        }
     },
 });
