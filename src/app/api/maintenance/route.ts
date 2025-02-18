@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 import { toISODate, strDateToComponents } from '@/util/date'
 import { MaintenanceRecord } from '@/data/recordDefs'
-import { prisma } from '@/data/prisma'
+import { prisma, Prisma } from '@/data/prisma'
 import { maintenanceValidationWithoutId as v } from '@/data/recordDefs'
 
 export async function GET(_q: NextRequest) {
@@ -35,7 +35,15 @@ export async function POST(q: NextRequest) {
             partsReplaced: { create: res.data.partsReplaced.map(it => ({ part: it })) },
             date: toISODate(res.data.date),
         },
+    }).then(it => ({ ok: true, data: { id: it.id } })).catch(err => {
+        if(err instanceof Prisma.PrismaClientKnownRequestError) {
+            if(err.code === 'P2003') {
+                return { ok: false, error: 'Equipment with the given id does not exist' }
+            }
+            console.log(err.code)
+        }
+        throw err
     })
 
-    return NextResponse.json({ ok: true, data: { id: resDb.id } })
+    return NextResponse.json(resDb)
 }

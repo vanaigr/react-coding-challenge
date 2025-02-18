@@ -34,7 +34,7 @@ export async function PUT(q: NextRequest, { params }: any) {
         return NextResponse.json({ error: 'Invalid id' }, { status: 400 })
     }
 
-    const itRaw = q.json()
+    const itRaw = await q.json()
     const res = v.safeParse(itRaw)
     if(!res.success) {
         return NextResponse.json({ error: res.error }, { status: 400 })
@@ -51,8 +51,14 @@ export async function PUT(q: NextRequest, { params }: any) {
             date: toISODate(res.data.date),
         },
     }).then(() => ({ ok: true })).catch(err => {
-        if(err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
-            return { ok: false, error: 'Given record does not exist' }
+        if(err instanceof Prisma.PrismaClientKnownRequestError) {
+            if(err.code === 'P2025') {
+                return { ok: false, error: 'Given record does not exist' }
+            }
+            else if(err.code === 'P2003') {
+                return { ok: false, error: 'Equipment with the given id does not exist' }
+            }
+            console.log(err)
         }
         throw err
     })
