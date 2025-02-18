@@ -33,7 +33,7 @@ export function Form() {
 
             setSubmitting(true)
             try {
-                const res = await addEquipment(store.getState().input)
+                const res = await addEquipment(store.getState().result.data!)
                 if(res.ok) {
                     navigate.back()
                     // cannot re-submit

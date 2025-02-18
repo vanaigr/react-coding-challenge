@@ -51,23 +51,27 @@ export function componentsToString(v: DateComponents) {
     return format.format(new Date(v[0], v[1] - 1, v[2]))
 }
 
-export const dateValidation = z.string()
+export const fromStr = z.string()
     .transform((it, ctx) => {
-        const components = strDateToComponents(it)
-        if(components == null) {
+        const res = strDateToComponents(it)
+        if(!res) {
             ctx.addIssue({ code: z.ZodIssueCode.invalid_date })
             return z.NEVER
         }
+        return res
+    })
 
-        const date = new Date(components[0], components[1] - 1, components[2])
+export const dateValidation = z.tuple([z.number(), z.number(), z.number()])
+    .transform((it, ctx) => {
+        const date = new Date(it[0], it[1] - 1, it[2])
         if(
-            date.getFullYear() != components[0]
-                || date.getMonth() != components[1] - 1
-                || date.getDate() != components[2]
+            date.getFullYear() != it[0]
+                || date.getMonth() != it[1] - 1
+                || date.getDate() != it[2]
         ) {
             ctx.addIssue({ code: z.ZodIssueCode.invalid_date })
             return z.NEVER
         }
 
-        return components
+        return it satisfies DateComponents
     })

@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { statuses, departments } from '@/data/recordDefs'
 import type { Statuses, Types, Departments, CompletionStatuses } from '@/data/recordDefs'
 import {
+    fromStr,
     dateValidation,
     type DateComponents,
     toISODate,
@@ -43,9 +44,11 @@ function wrap(msg: string) {
     }
 }
 
+const cutoffValidation = fromStr.pipe(dateValidation)
+
 export async function GET(req: NextRequest) {
     const cutoffRaw = req.nextUrl.searchParams.get('cutoff')
-    const res = dateValidation.safeParse(cutoffRaw)
+    const res = cutoffValidation.safeParse(cutoffRaw)
 
     let cutoff: DateComponents | undefined
     if(res.success) cutoff = res.data

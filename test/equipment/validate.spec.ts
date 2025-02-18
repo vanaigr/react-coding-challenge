@@ -49,7 +49,7 @@ async function testValidation(path: string, page: Page) {
         await expectInputValid(dep)
         await chk(model, 'Must not be empty', invalidInputs)
         await chk(serial, 'Must be alphanumeric', invalidInputs)
-        await chk(date, 'Invalid date. Must be past date', invalidInputs)
+        await chk(date, 'Invalid date', invalidInputs)
         await expectInputValid(status)
 
         if(invalidInputs.length > 0) {

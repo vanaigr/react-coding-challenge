@@ -43,7 +43,7 @@ export function Form({ equipment }: FormProps) {
 
             setSubmitting(true)
             try {
-                const res = await addMaintenanceRecord(store.getState().input)
+                const res = await addMaintenanceRecord(store.getState().result.data!)
                 if(res.ok) {
                     navigate.back()
                     // cannot re-submit
