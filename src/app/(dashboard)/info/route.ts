@@ -35,6 +35,14 @@ export type Data = {
     departmentsMaintenance: DepartmentMaintenance[]
 }
 
+function wrap(msg: string) {
+    return (err: any) => {
+        // next.js bug. There's reddit post about it but I lost it
+        console.log(err?.stack)
+        throw new Error(msg)
+    }
+}
+
 export async function GET(req: NextRequest) {
     const cutoffRaw = req.nextUrl.searchParams.get('cutoff')
     const res = dateValidation.safeParse(cutoffRaw)
@@ -42,9 +50,9 @@ export async function GET(req: NextRequest) {
     let cutoff: DateComponents | undefined
     if(res.success) cutoff = res.data
 
-    const recentP = recentMaintenance(cutoff)
-    const statusesP = equipmentStatus()
-    const maintenanceP = departmentsMaintenance(cutoff)
+    const recentP = recentMaintenance(cutoff).catch(wrap('Recent maintenance'))
+    const statusesP = equipmentStatus().catch(wrap('Equipment status'))
+    const maintenanceP = departmentsMaintenance(cutoff).catch(wrap('Maintenance hours'))
 
     const [recent, statuses, maintenance]
         = await Promise.all([recentP, statusesP, maintenanceP])
@@ -113,16 +121,19 @@ async function equipmentStatus() {
 async function departmentsMaintenance(cutoff?: DateComponents) {
     // since cutoff is optional, we have to change the query structure at runtime.
     // And Prisma's $queryRaw escaping doesn't allow that.
+    const lines = [
+        'SELECT Equipment.department AS dep, sum(MaintenanceRecord.hoursSpent) AS sum',
+        'FROM MaintenanceRecord',
+        'LEFT JOIN Equipment',
+        'ON MaintenanceRecord.equipmentId = Equipment.id',
+        ...(cutoff ? ['WHERE MaintenanceRecord.date >= $1'] : []),
+        'GROUP BY Equipment.department',
+    ]
+
     const resultsDb = await prisma.$queryRawUnsafe(
-        `
-        SELECT Equipment.department AS dep, sum(MaintenanceRecord.hoursSpent) AS sum
-        FROM MaintenanceRecord
-        LEFT JOIN Equipment
-        ON MaintenanceRecord.equipmentId = Equipment.id
-        ${cutoff ? 'WHERE MaintenanceRecord.date >= $1' : '' }
-        GROUP BY Equipment.department
-        `,
-        cutoff ? toISODate(cutoff) : undefined
+        lines.join(' '),
+        // https://github.com/prisma/prisma/issues/26355
+        ...(cutoff ? [toISODate(cutoff)] : []),
     ) as Array<{ dep: string, sum: BigInt }>
 
     const results: DepartmentMaintenance[] = []
