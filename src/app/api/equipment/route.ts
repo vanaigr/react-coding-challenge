@@ -20,7 +20,7 @@ export async function GET(_q: NextRequest) {
 }
 
 export async function POST(q: NextRequest) {
-    const res = v.safeParse(q.json())
+    const res = v.safeParse(await q.json())
     if(!res.success) {
         return NextResponse.json({ error: res.error }, { status: 400 })
     }

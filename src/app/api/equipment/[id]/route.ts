@@ -24,8 +24,7 @@ export async function GET(_q: NextRequest, { params }: any) {
 }
 
 export async function PUT(q: NextRequest) {
-    const itRaw = q.json()
-    const res = v.safeParse(itRaw)
+    const res = v.safeParse(await q.json())
     if(!res.success) {
         return NextResponse.json({ error: res.error }, { status: 400 })
     }
