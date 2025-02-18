@@ -122,8 +122,7 @@ async function equipmentStatus() {
 }
 
 async function departmentsMaintenance(cutoff?: DateComponents) {
-    // since cutoff is optional, we have to change the query structure at runtime.
-    // And Prisma's $queryRaw escaping doesn't allow that.
+    // I couldn't express this with Prisma API.
     const lines = [
         'SELECT Equipment.department AS dep, sum(MaintenanceRecord.hoursSpent) AS sum',
         'FROM MaintenanceRecord',
@@ -133,6 +132,8 @@ async function departmentsMaintenance(cutoff?: DateComponents) {
         'GROUP BY Equipment.department',
     ]
 
+    // since cutoff is optional, we have to change the query structure at runtime.
+    // And Prisma's $queryRaw escaping doesn't allow that.
     const resultsDb = await prisma.$queryRawUnsafe(
         lines.join(' '),
         // https://github.com/prisma/prisma/issues/26355
