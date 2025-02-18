@@ -64,7 +64,7 @@ model MaintenanceRecord {
 
 model MaintenanceRecordParts {
     id            Int               @id @default(autoincrement())
-    maintenance   MaintenanceRecord @relation(fields: [maintenanceId], references: [id])
+    maintenance   MaintenanceRecord @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
     maintenanceId String
     part          String
 }
