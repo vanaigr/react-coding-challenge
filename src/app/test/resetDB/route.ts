@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     }
 
     fs.copyFileSync(
-        path.join(dir, 'testFiles', 'dev.db'),
+        path.join(dir, 'test', 'dev.db'),
         path.join(dir, 'prisma', destUrl.pathname),
         0
     )
