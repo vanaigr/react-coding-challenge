@@ -136,4 +136,20 @@ describe('Updating equipment', () => {
             await checkNotModified()
         }
     })
+
+    it('Rejects if does not exist', async() => {
+        const nid = 'does-not-exist'
+        const nurl = 'equipment/' + encodeURIComponent(nid)
+
+        const res = await expectJson(api('equipment', 'GET'), 200)
+        expectApiArr(res)
+        const d = res.data
+        expect(d.length).toEqual(30)
+        const foundItemI = d.findIndex(it => it.id === nid)
+        expect(foundItemI).toEqual(-1)
+
+        const updateRes = await expectJson(api(nurl, 'PUT', valid), 200)
+        expect(updateRes.ok).withContext(JSON.stringify(updateRes))
+            .not.toBeTrue()
+    })
 })
