@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 import { fromStr } from '@/util/date'
-import { equipmentConstraintsWithoutId as c } from '@/data/recordDefs'
+import { constraintsWithoutId as c } from '@/data/equipmentDefs'
 
 export const formValidation = z.object({
     name: z.string().pipe(c.name),

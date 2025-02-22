@@ -1,4 +1,4 @@
-import type { Departments, Statuses } from '@/data/recordDefs'
+import type { Departments, Statuses } from '@/data/equipmentDefs'
 
 export type EquipmentSlice = {
     id: string

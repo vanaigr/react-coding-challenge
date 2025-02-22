@@ -7,8 +7,8 @@ import {
     types,
     priorities,
     completionStatuses,
-    maintenanceFieldNames,
-} from '@/data/recordDefs'
+    fieldNames,
+} from '@/data/maintenanceDefs'
 import { componentsToString } from '@/util/date'
 
 import {
@@ -42,13 +42,13 @@ const f_bot = ' px-3 pb-3'
 const helper = RT.createColumnHelper<Entry>()
 const columns = [
     helper.accessor('id', {
-        header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.id}</Header>,
+        header: v => <Header ctx={v} className={h}>{fieldNames.id}</Header>,
         cell: v => <TextCell className={'break-all' + p} value={v.getValue()}/>,
         meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('equipmentId', {
         id: 'equipment-id',
-        header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.equipmentId}</Header>,
+        header: v => <Header ctx={v} className={h}>{fieldNames.equipmentId}</Header>,
         cell: v => {
             const row = v.row
 
@@ -102,25 +102,25 @@ const columns = [
         meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('date', {
-        header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.date}</Header>,
+        header: v => <Header ctx={v} className={h}>{fieldNames.date}</Header>,
         cell: v => <TextCell className={p} value={componentsToString(v.getValue())}/>,
         sortingFn: dateSortingFn,
         filterFn: dateFilterFn,
         meta: { filter: v => <DateFilter ctx={v} className={f}/> },
     }),
     helper.accessor('type', {
-        header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.type}</Header>,
+        header: v => <Header ctx={v} className={h}>{fieldNames.type}</Header>,
         cell: v => <TextCell className={p} value={v.getValue()}/>,
         meta: { filter: v => <SelectFilter ctx={v} values={types} className={f}/> },
     }),
     helper.accessor('technician', {
-        header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.technician}</Header>,
+        header: v => <Header ctx={v} className={h}>{fieldNames.technician}</Header>,
         cell: v => <TextCell className={p} value={v.getValue()}/>,
         meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('hoursSpent', {
         id: 'hours-spent',
-        header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.hoursSpent}</Header>,
+        header: v => <Header ctx={v} className={h}>{fieldNames.hoursSpent}</Header>,
         cell: v => <TextCell className={p} value={'' + v.getValue()}/>,
         aggregatedCell: v => <TextCell className={p} value={'' + v.getValue()}/>,
         sortingFn: numberSortingFn,
@@ -128,12 +128,12 @@ const columns = [
         meta: { filter: v => <NumberFilter ctx={v} className={f}/> },
     }),
     helper.accessor('description', {
-        header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.description}</Header>,
+        header: v => <Header ctx={v} className={h}>{fieldNames.description}</Header>,
         cell: v => <TextCell className={p} value={v.getValue()}/>,
         meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('partsReplaced', {
-        header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.partsReplaced}</Header>,
+        header: v => <Header ctx={v} className={h}>{fieldNames.partsReplaced}</Header>,
         enableSorting: false,
         cell: v => <TextCell className={p} value={v.getValue().join(', ')}/>,
         filterFn: stringArrFilterFn,
@@ -141,12 +141,12 @@ const columns = [
     }),
     helper.accessor('priority', {
         id: 'priority',
-        header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.priority}</Header>,
+        header: v => <Header ctx={v} className={h}>{fieldNames.priority}</Header>,
         cell: v => <TextCell className={p} value={v.getValue()}/>,
         meta: { filter: v => <SelectFilter ctx={v} values={priorities} className={f}/> },
     }),
     helper.accessor('completionStatus', {
-        header: v => <Header ctx={v} className={h}>{maintenanceFieldNames.completionStatus}</Header>,
+        header: v => <Header ctx={v} className={h}>{fieldNames.completionStatus}</Header>,
         cell: v => <TextCell className={p} value={v.getValue()}/>,
         meta: { filter: v => <SelectFilter ctx={v} values={completionStatuses} className={f}/> },
     }),

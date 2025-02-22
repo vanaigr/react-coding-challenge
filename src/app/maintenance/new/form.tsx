@@ -3,7 +3,7 @@ import * as R from 'react'
 import * as Z from 'zustand'
 import { useRouter } from 'next/navigation'
 
-import { types, priorities, completionStatuses } from '@/data/recordDefs'
+import { types, priorities, completionStatuses } from '@/data/maintenanceDefs'
 import { type FormState, createFormState } from '@/data/maintenanceForm'
 import { FormDisplay } from '@/components/maintenanceRecord'
 import type { EquipmentInfo } from '@/util/equipmentInfo'

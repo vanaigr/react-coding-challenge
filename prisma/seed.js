@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client'
 
 /** @import { Prisma } from '@prisma/client' */
 
-// from src/data/recordDefs.ts
+// from src/data/equipmentDefs.ts and src/data/maintenanceDefs.ts
 export const departments = /**@type{const}*/([
     'Machining',
     'Assembly',

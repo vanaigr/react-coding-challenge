@@ -1,9 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server'
 
-import type { Equipment } from '@/data/recordDefs'
+import { type Equipment, validationWithoutId as v  } from '@/data/equipmentDefs'
 import { toISODate, strDateToComponents } from '@/util/date'
 import { prisma, Prisma } from '@/data/prisma'
-import { equipmentValidationWithoutId as v } from '@/data/recordDefs'
 
 export async function GET(_q: NextRequest, { params }: any) {
     const id = (await params).id

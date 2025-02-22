@@ -4,7 +4,7 @@ import * as RC from 'recharts'
 import colors from 'tailwindcss/colors'
 import { OpenButton } from '@/components/grid'
 
-import type { Statuses } from '@/data/recordDefs'
+import type { Statuses } from '@/data/equipmentDefs'
 import {
     toISODate,
     componentsToString,

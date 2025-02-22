@@ -98,6 +98,12 @@ Tests:
 pnpx @biomejs/biome check ./test
 ```
 
+### Type checking
+
+```
+pnpm exec tsc -b
+```
+
 ## Features Implementation
 
 ### List of completed features

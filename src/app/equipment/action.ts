@@ -2,7 +2,7 @@
 import Cache from 'next/cache'
 
 import { prisma } from '@/data/prisma'
-import { statuses, type Statuses } from '@/data/recordDefs'
+import { statuses, type Statuses } from '@/data/equipmentDefs'
 
 export async function updateStatuses(equipmentIds: string[], status: Statuses) {
     if(!statuses.includes(status)) return

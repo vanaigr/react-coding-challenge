@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 
-import type { CompletionStatuses } from '@/data/recordDefs'
+import type { CompletionStatuses } from '@/data/maintenanceDefs'
 import Header from '@/components/header'
 import { Form } from './form'
 import { strDateToComponents } from '@/util/date'

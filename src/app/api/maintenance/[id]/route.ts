@@ -1,9 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server'
 
-import type { MaintenanceRecord } from '@/data/recordDefs'
+import { type MaintenanceRecord, validationWithoutId as v } from '@/data/maintenanceDefs'
 import { toISODate, strDateToComponents } from '@/util/date'
 import { prisma, Prisma } from '@/data/prisma'
-import { maintenanceValidationWithoutId as v } from '@/data/recordDefs'
 
 export async function GET(_q: NextRequest, { params }: any) {
     const id = (await params).id

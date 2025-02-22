@@ -54,7 +54,7 @@ export async function resetDB() {
 // https://stackoverflow.com/a/77993035
 // https://github.com/TypeStrong/ts-node/pull/1585
 
-// from recordDefs.ts and date.ts
+// from equipmentDefs.ts, maintenanceDefs.ts and date.ts
 
 /** @typedef {[year: number, month: number, day: number]} DateComponents */
 

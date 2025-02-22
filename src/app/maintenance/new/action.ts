@@ -1,15 +1,12 @@
 'use server'
 import Cache from 'next/cache'
 
-import {
-    maintenanceValidationWithoutId,
-    type InputMaintenanceWithoutId,
-} from '@/data/recordDefs'
+import { validationWithoutId, type InputWithoutId } from '@/data/maintenanceDefs'
 import { toISODate } from '@/util/date'
 import { prisma } from '@/data/prisma'
 
-export async function addMaintenanceRecord(recordRaw: InputMaintenanceWithoutId) {
-    const result = maintenanceValidationWithoutId.safeParse(recordRaw)
+export async function addMaintenanceRecord(recordRaw: InputWithoutId) {
+    const result = validationWithoutId.safeParse(recordRaw)
     if(!result.success) {
         return { ok: false, error: result.error }
     }

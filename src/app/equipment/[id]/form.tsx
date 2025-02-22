@@ -1,9 +1,9 @@
 'use client'
-import { useRouter, useParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import * as R from 'react'
 import * as Z from 'zustand'
 
-import type { Equipment } from '@/data/recordDefs'
+import type { Equipment } from '@/data/equipmentDefs'
 import { createFormState } from '@/data/equipmentForm'
 import { FormDisplay } from '@/components/equipmentRecord'
 import { toISODate } from '@/util/date'

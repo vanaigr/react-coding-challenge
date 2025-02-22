@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 import { fromStr } from '@/util/date'
-import { maintenanceConstraintsWithoutId as c } from '@/data/recordDefs'
+import { constraintsWithoutId as c } from '@/data/maintenanceDefs'
 
 export const formValidation = z.object({
     // This should check if it is one of the id's we know, but the

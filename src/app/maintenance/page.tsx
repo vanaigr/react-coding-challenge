@@ -1,5 +1,5 @@
 import PageHeader from '@/components/header'
-import type { CompletionStatuses } from '@/data/recordDefs'
+import type { CompletionStatuses } from '@/data/maintenanceDefs'
 import { Table, type Entry } from './table'
 import { strDateToComponents } from '@/util/date'
 import { prisma } from '@/data/prisma'

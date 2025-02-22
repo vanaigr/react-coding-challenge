@@ -2,7 +2,7 @@
 import * as R from 'react'
 import * as RT from '@tanstack/react-table'
 
-import { type Equipment, departments, statuses, equipmentFieldNames } from '@/data/recordDefs'
+import { type Equipment, departments, statuses, fieldNames } from '@/data/equipmentDefs'
 import { componentsToString } from '@/util/date'
 import { updateStatuses } from './action'
 
@@ -37,44 +37,44 @@ const f = ' px-3 pt-2 pb-3'
 const helper = RT.createColumnHelper<Equipment>()
 const columns = [
     helper.accessor('id', {
-        header: v => <Header ctx={v} className={h}>{equipmentFieldNames.id}</Header>,
+        header: v => <Header ctx={v} className={h}>{fieldNames.id}</Header>,
         cell: v => <TextCell className={'break-all' + p} value={v.getValue()}/>,
         meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('name', {
-        header: v => <Header ctx={v} className={h}>{equipmentFieldNames.name}</Header>,
+        header: v => <Header ctx={v} className={h}>{fieldNames.name}</Header>,
         cell: v => <TextCell className={p} value={v.getValue()}/>,
         meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('location', {
-        header: v => <Header ctx={v} className={h}>{equipmentFieldNames.location}</Header>,
+        header: v => <Header ctx={v} className={h}>{fieldNames.location}</Header>,
         cell: v => <TextCell className={p} value={v.getValue()}/>,
         meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('department', {
-        header: v => <Header ctx={v} className={h}>{equipmentFieldNames.department}</Header>,
+        header: v => <Header ctx={v} className={h}>{fieldNames.department}</Header>,
         cell: v => <TextCell className={p} value={v.getValue()}/>,
         meta: { filter: v => <SelectFilter ctx={v} values={departments} className={f}/> },
     }),
     helper.accessor('model', {
-        header: v => <Header ctx={v} className={h}>{equipmentFieldNames.model}</Header>,
+        header: v => <Header ctx={v} className={h}>{fieldNames.model}</Header>,
         cell: v => <TextCell className={p} value={v.getValue()}/>,
         meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('serialNumber', {
-        header: v => <Header ctx={v} className={h}>{equipmentFieldNames.serialNumber}</Header>,
+        header: v => <Header ctx={v} className={h}>{fieldNames.serialNumber}</Header>,
         cell: v => <TextCell className={'break-all' + p} value={v.getValue()}/>,
         meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('installDate', {
-        header: v => <Header ctx={v} className={h}>{equipmentFieldNames.installDate}</Header>,
+        header: v => <Header ctx={v} className={h}>{fieldNames.installDate}</Header>,
         cell: v => <TextCell className={p} value={componentsToString(v.getValue())}/>,
         sortingFn: dateSortingFn,
         filterFn: dateFilterFn,
         meta: { filter: v => <DateFilter ctx={v} className={f}/> },
     }),
     helper.accessor('status', {
-        header: v => <Header ctx={v} className={h}>{equipmentFieldNames.status}</Header>,
+        header: v => <Header ctx={v} className={h}>{fieldNames.status}</Header>,
         cell: v => <TextCell className={p} value={v.getValue()}/>,
         meta: { filter: v => <SelectFilter ctx={v} values={statuses} className={f}/> },
     }),

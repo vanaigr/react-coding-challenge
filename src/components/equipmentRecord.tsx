@@ -1,7 +1,7 @@
 import * as R from 'react'
 import * as Z from 'zustand'
 
-import { equipmentFieldNames, statuses, departments } from '@/data/recordDefs'
+import { fieldNames, statuses, departments } from '@/data/equipmentDefs'
 import { type Raw, type FormState, createFormState } from '@/data/equipmentForm'
 import { Input, Select } from '@/components/inputs'
 import FormButtons from '@/components/formButtons'
@@ -34,7 +34,7 @@ export function FormDisplay({ store, submit, onSubmit }: Props) {
             >
                 <Input
                     type='text'
-                    title={equipmentFieldNames.name}
+                    title={fieldNames.name}
                     defaultValue={input.name}
                     onChange={it => update({ name: it.target.value })}
                     errors={error?.name?._errors}
@@ -43,7 +43,7 @@ export function FormDisplay({ store, submit, onSubmit }: Props) {
                 <Input
                     type='text'
                     autoComplete='street-address'
-                    title={equipmentFieldNames.location}
+                    title={fieldNames.location}
                     defaultValue={input.location}
                     onChange={it => update({ location: it.target.value })}
                     errors={error?.location?._errors}
@@ -51,7 +51,7 @@ export function FormDisplay({ store, submit, onSubmit }: Props) {
                 />
                 <Select
                     options={departments}
-                    title={equipmentFieldNames.department}
+                    title={fieldNames.department}
                     defaultValue={input.department}
                     onChange={it => update({ department: it })}
                     errors={error?.department?._errors}
@@ -59,7 +59,7 @@ export function FormDisplay({ store, submit, onSubmit }: Props) {
                 />
                 <Input
                     type='text'
-                    title={equipmentFieldNames.model}
+                    title={fieldNames.model}
                     defaultValue={input.model}
                     onChange={it => update({ model: it.target.value })}
                     errors={error?.model?._errors}
@@ -67,7 +67,7 @@ export function FormDisplay({ store, submit, onSubmit }: Props) {
                 />
                 <Input
                     type='text'
-                    title={equipmentFieldNames.serialNumber}
+                    title={fieldNames.serialNumber}
                     defaultValue={input.serialNumber}
                     onChange={it => update({ serialNumber: it.target.value })}
                     errors={error?.serialNumber?._errors}
@@ -75,7 +75,7 @@ export function FormDisplay({ store, submit, onSubmit }: Props) {
                 />
                 <Input
                     type='date'
-                    title={equipmentFieldNames.installDate}
+                    title={fieldNames.installDate}
                     defaultValue={input.installDate}
                     onChange={it => update({ installDate: it.target.value })}
                     errors={error?.installDate?._errors}
@@ -83,7 +83,7 @@ export function FormDisplay({ store, submit, onSubmit }: Props) {
                 />
                 <Select
                     options={statuses}
-                    title={equipmentFieldNames.status}
+                    title={fieldNames.status}
                     defaultValue={input.status}
                     onChange={it => update({ status: it })}
                     errors={error?.status?._errors}

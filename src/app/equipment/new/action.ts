@@ -1,15 +1,12 @@
 'use server'
 import Cache from 'next/cache'
 
-import {
-    equipmentValidationWithoutId,
-    type InputEquipmentWithoutId,
-} from '@/data/recordDefs'
+import { validationWithoutId, type InputWithoutId } from '@/data/equipmentDefs'
 import { toISODate } from '@/util/date'
 import { prisma } from '@/data/prisma'
 
-export async function addEquipment(recordRaw: InputEquipmentWithoutId) {
-    const result = equipmentValidationWithoutId.safeParse(recordRaw)
+export async function addEquipment(recordRaw: InputWithoutId) {
+    const result = validationWithoutId.safeParse(recordRaw)
     if(!result.success) {
         return { ok: false, error: result.error }
     }

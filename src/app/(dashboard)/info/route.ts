@@ -1,7 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server'
 
-import { statuses, departments } from '@/data/recordDefs'
-import type { Statuses, Types, Departments, CompletionStatuses } from '@/data/recordDefs'
+import { statuses, departments } from '@/data/equipmentDefs'
+import type { Statuses, Departments } from '@/data/equipmentDefs'
+import type { Types, CompletionStatuses } from '@/data/maintenanceDefs'
 import {
     fromStr,
     dateValidation,
@@ -65,10 +66,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
         ok: true,
         data: {
-            recentMaintenance: recent,
+            recentMaintenanceEntries: recent,
             statusBreakdown: statuses,
             departmentsMaintenance: maintenance,
-        },
+        } satisfies Data,
     })
 }
 
