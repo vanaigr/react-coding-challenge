@@ -39,7 +39,7 @@ export async function expectApiArr(resultP) {
     const result = await resultP
     expect(result.ok).withContext(JSON.stringify(result)).toBe(true)
     const d = result.data
-    expect(d instanceof Array).toBeTrue()
+    expect(Array.isArray(d)).toBeTrue()
     return d
 }
 
@@ -81,9 +81,9 @@ export const dateValidation = z.tuple([z.number(), z.number(), z.number()])
     .transform((it, ctx) => {
         const date = new Date(it[0], it[1] - 1, it[2])
         if(
-            date.getFullYear() != it[0]
-                || date.getMonth() != it[1] - 1
-                || date.getDate() != it[2]
+            date.getFullYear() !== it[0]
+                || date.getMonth() !== it[1] - 1
+                || date.getDate() !== it[2]
         ) {
             ctx.addIssue({ code: z.ZodIssueCode.invalid_date })
             return z.NEVER
@@ -98,7 +98,7 @@ export const dateValidation = z.tuple([z.number(), z.number(), z.number()])
 */
 export function cmp(a, b) {
     let diff = 0
-    for(let i = 0; diff == 0 && i < 3; i++) {
+    for(let i = 0; diff === 0 && i < 3; i++) {
         diff = a[i] - b[i]
     }
     return diff

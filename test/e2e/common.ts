@@ -30,7 +30,7 @@ export async function expectRow<T extends Record<string, string>>(
 
     await Promise.all(visibleP)
 
-    let ordersP = []
+    const ordersP = []
     for(let i = 0; i < elements.length - 1; i++) {
         ordersP.push(order(elements[i], elements[i + 1]))
     }
@@ -44,6 +44,6 @@ export async function expectRow<T extends Record<string, string>>(
 async function order(preceding: Locator, following: Locator) {
     return await preceding.evaluate((pre, fol) => {
         const res = pre.compareDocumentPosition(fol as any)
-        return (res & Node.DOCUMENT_POSITION_FOLLOWING) != 0
+        return (res & Node.DOCUMENT_POSITION_FOLLOWING) !== 0
     }, await following.elementHandle())
 }

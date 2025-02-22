@@ -86,8 +86,16 @@ pnpm test-api
 
 ### Linting
 
+Application code:
+
 ```
 pnpx @biomejs/biome check ./src
+```
+
+Tests:
+
+```
+pnpx @biomejs/biome check ./test
 ```
 
 ## Features Implementation
