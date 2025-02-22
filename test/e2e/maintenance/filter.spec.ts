@@ -7,8 +7,8 @@ async function setup(page: Page) {
     await page.goto('/maintenance')
 
     const showN = page.getByText("Showingall1050per page").getByRole('combobox')
-    await showN.selectOption('50');
-    await showN.selectOption('999999999');
+    await showN.selectOption('50')
+    await showN.selectOption('999999999')
     await expect(page.getByText('Page: 1 of 1', { exact: true })).toBeVisible()
 
     const texts = await page.getByText(/\d+\/\d+\/\d+/).allTextContents()
@@ -25,7 +25,7 @@ test.describe('Should filter maintenance records by date range', () => {
     test('By first date only', async({ page }) => {
         const initial = await setup(page)
         const filter = page.locator('span').filter({ hasText: 'FirstLast' })
-        await filter.getByPlaceholder('First').fill('2025-01-02');
+        await filter.getByPlaceholder('First').fill('2025-01-02')
 
         const texts = await page.getByText(/\d+\/\d+\/\d+/).allTextContents()
         const outsideRange = texts.map(parse).filter(it => cmp(it, [2025, 1, 2]) < 0)
@@ -36,7 +36,7 @@ test.describe('Should filter maintenance records by date range', () => {
     test('By last date only', async({ page }) => {
         const initial = await setup(page)
         const filter = page.locator('span').filter({ hasText: 'FirstLast' })
-        await filter.getByPlaceholder('Last').fill('2025-01-14');
+        await filter.getByPlaceholder('Last').fill('2025-01-14')
 
         const texts = await page.getByText(/\d+\/\d+\/\d+/).allTextContents()
         const outsideRange = texts.map(parse).filter(it => cmp(it, [2025, 1, 14]) > 0)
@@ -47,8 +47,8 @@ test.describe('Should filter maintenance records by date range', () => {
     test('By both dates', async({ page }) => {
         const initial = await setup(page)
         const filter = page.locator('span').filter({ hasText: 'FirstLast' })
-        await filter.getByPlaceholder('First').fill('2025-01-02');
-        await filter.getByPlaceholder('Last').fill('2025-01-14');
+        await filter.getByPlaceholder('First').fill('2025-01-02')
+        await filter.getByPlaceholder('Last').fill('2025-01-14')
 
         const texts = await page.getByText(/\d+\/\d+\/\d+/).allTextContents()
         const outsideRange = texts.map(parse)

@@ -137,7 +137,7 @@ export function TextFilter<D>(p: TextFilterProps<D>) {
 export type SelectFilterProps<D, V> = {
     ctx: RT.HeaderContext<D, V>,
     values: readonly string[],
-    className?: string;
+    className?: string
 }
 export function SelectFilter<D, V>(p: SelectFilterProps<D, V>) {
     const values = p.values

@@ -20,7 +20,7 @@ test('Should edit existing equipment', async({ page }) => {
         status: 'Maintenance',
     })
 
-    await page.getByRole('link', { name: 'open_in_new' }).click();
+    await page.getByRole('link', { name: 'open_in_new' }).click()
 
     const inputs = getInputs(page)
     const { name, loc, dep, model, serial, date, status } = inputs

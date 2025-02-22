@@ -8,7 +8,7 @@ import { eachResetDB } from '../common'
 eachResetDB()
 
 test('Should filter equipment table', async ({ page }) => {
-    await page.goto('http://localhost:3000/equipment');
+    await page.goto('http://localhost:3000/equipment')
 
     const hdr = `
 - button "Id ▲ ▼"
@@ -27,7 +27,7 @@ test('Should filter equipment table', async ({ page }) => {
     }
 
     await page.getByText("Showingall1050per page").getByRole('combobox')
-        .selectOption('999999999');
+        .selectOption('999999999')
 
     await chk(
         filtered.getAllSnapshot(),
@@ -57,7 +57,7 @@ test('Should filter equipment table', async ({ page }) => {
 `,
     )
 
-    await page.getByPlaceholder('Search').first().fill('66');
+    await page.getByPlaceholder('Search').first().fill('66')
     await chk(
         filtered.getFilteredSnapshot(filtered.filteredBy.id),
 `
@@ -84,10 +84,10 @@ test('Should filter equipment table', async ({ page }) => {
   - option "Maintenance"
   - option "Retired"
 `
-    );
-    await page.getByPlaceholder('Search').first().fill('');
+    )
+    await page.getByPlaceholder('Search').first().fill('')
 
-    await page.getByPlaceholder('Search').nth(1).fill('h');
+    await page.getByPlaceholder('Search').nth(1).fill('h')
     await chk(
         filtered.getFilteredSnapshot(filtered.filteredBy.name),
 `
@@ -114,10 +114,10 @@ test('Should filter equipment table', async ({ page }) => {
   - option "Maintenance"
   - option "Retired"
 `
-    );
-    await page.getByPlaceholder('Search').nth(1).fill('');
+    )
+    await page.getByPlaceholder('Search').nth(1).fill('')
 
-    await page.getByPlaceholder('Search').nth(2).fill('31');
+    await page.getByPlaceholder('Search').nth(2).fill('31')
     await chk(
         filtered.getFilteredSnapshot(filtered.filteredBy.location),
 `
@@ -144,10 +144,10 @@ test('Should filter equipment table', async ({ page }) => {
   - option "Maintenance"
   - option "Retired"
 `
-    );
-    await page.getByPlaceholder('Search').nth(2).fill('');
+    )
+    await page.getByPlaceholder('Search').nth(2).fill('')
 
-    await page.getByLabel('AllMachiningAssemblyPackagingShipping').selectOption('Packaging');
+    await page.getByLabel('AllMachiningAssemblyPackagingShipping').selectOption('Packaging')
     await chk(
         filtered.getFilteredSnapshot(filtered.filteredBy.department),
 `
@@ -174,10 +174,10 @@ test('Should filter equipment table', async ({ page }) => {
   - option "Maintenance"
   - option "Retired"
         `
-    );
-    await page.getByLabel('AllMachiningAssemblyPackagingShipping').selectOption('');
+    )
+    await page.getByLabel('AllMachiningAssemblyPackagingShipping').selectOption('')
 
-    await page.getByPlaceholder('Search').nth(3).fill('a');
+    await page.getByPlaceholder('Search').nth(3).fill('a')
     await chk(
         filtered.getFilteredSnapshot(filtered.filteredBy.model),
 `
@@ -204,10 +204,10 @@ test('Should filter equipment table', async ({ page }) => {
   - option "Maintenance"
   - option "Retired"
 `
-    );
-    await page.getByPlaceholder('Search').nth(3).fill('');
+    )
+    await page.getByPlaceholder('Search').nth(3).fill('')
 
-    await page.getByPlaceholder('Search').nth(4).fill('ag');
+    await page.getByPlaceholder('Search').nth(4).fill('ag')
     await chk(
         filtered.getFilteredSnapshot(filtered.filteredBy.serialNumber),
 `
@@ -234,10 +234,10 @@ test('Should filter equipment table', async ({ page }) => {
   - option "Maintenance"
   - option "Retired"
 `
-    );
-    await page.getByPlaceholder('Search').nth(4).fill('');
+    )
+    await page.getByPlaceholder('Search').nth(4).fill('')
 
-    await page.getByPlaceholder('First').fill('2025-01-01');
+    await page.getByPlaceholder('First').fill('2025-01-01')
     await chk(
         filtered.getFilteredSnapshot(filtered.filteredBy.dateFirst),
 `
@@ -263,9 +263,9 @@ test('Should filter equipment table', async ({ page }) => {
   - option "Maintenance"
   - option "Retired"
 `
-    );
+    )
 
-    await page.getByPlaceholder('Last').fill('2025-01-10');
+    await page.getByPlaceholder('Last').fill('2025-01-10')
     await chk(
         filtered.getFilteredSnapshot(filtered.filteredBy.dateBoth),
 `
@@ -290,11 +290,11 @@ test('Should filter equipment table', async ({ page }) => {
   - option "Maintenance"
   - option "Retired"
 `
-    );
-    await page.getByPlaceholder('First').fill('');
-    await page.getByPlaceholder('Last').fill('');
+    )
+    await page.getByPlaceholder('First').fill('')
+    await page.getByPlaceholder('Last').fill('')
 
-    await page.getByLabel('AllOperationalDownMaintenanceRetired').selectOption('Retired');
+    await page.getByLabel('AllOperationalDownMaintenanceRetired').selectOption('Retired')
     await chk(
         filtered.getFilteredSnapshot(filtered.filteredBy.status),
 `
@@ -319,5 +319,5 @@ test('Should filter equipment table', async ({ page }) => {
   - option "Maintenance"
   - option "Retired" [selected]
 `
-    );
-});
+    )
+})

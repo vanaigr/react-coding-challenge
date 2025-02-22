@@ -15,20 +15,20 @@ test('Should create new maintenance record', async({ page }) => {
 
     await page.getByRole('link', { name: 'Add maintenance record' }).click()
 
-    await page.getByLabel('Equipment').selectOption('ecda534c-bd94-41b8-b9ba-29c444af78f3');
-    await page.getByRole('textbox', { name: 'Date' }).fill('2020-02-10');
-    await page.getByLabel('Type').selectOption('Repair');
-    await page.getByRole('textbox', { name: 'Technician' }).fill('new item');
-    await page.getByRole('spinbutton', { name: 'Hours spent' }).fill('12');
-    await page.getByRole('textbox', { name: 'Description' }).fill('description');
-    await page.getByLabel('Priority').selectOption('Medium');
-    await page.getByLabel('Completion status').selectOption('Incomplete');
-    await page.getByRole('textbox', { name: 'Parts replaced' }).fill('part 1');
-    await page.getByRole('textbox', { name: 'Parts replaced' }).press('Enter');
-    await page.getByRole('textbox', { name: 'Parts replaced' }).fill('part 2');
-    await page.getByRole('button', { name: 'add', exact: true }).click();
+    await page.getByLabel('Equipment').selectOption('ecda534c-bd94-41b8-b9ba-29c444af78f3')
+    await page.getByRole('textbox', { name: 'Date' }).fill('2020-02-10')
+    await page.getByLabel('Type').selectOption('Repair')
+    await page.getByRole('textbox', { name: 'Technician' }).fill('new item')
+    await page.getByRole('spinbutton', { name: 'Hours spent' }).fill('12')
+    await page.getByRole('textbox', { name: 'Description' }).fill('description')
+    await page.getByLabel('Priority').selectOption('Medium')
+    await page.getByLabel('Completion status').selectOption('Incomplete')
+    await page.getByRole('textbox', { name: 'Parts replaced' }).fill('part 1')
+    await page.getByRole('textbox', { name: 'Parts replaced' }).press('Enter')
+    await page.getByRole('textbox', { name: 'Parts replaced' }).fill('part 2')
+    await page.getByRole('button', { name: 'add', exact: true }).click()
 
-    await page.getByRole('button', { name: 'Add', exact: true }).click();
+    await page.getByRole('button', { name: 'Add', exact: true }).click()
 
     await expect(page.locator("text=Results: 101")).toBeVisible()
 

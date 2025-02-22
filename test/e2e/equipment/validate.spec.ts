@@ -10,7 +10,7 @@ test.describe('Should show validation errors for invalid equipment data', () => 
         await page.goto('/equipment')
         await page.getByRole('link', { name: 'Add equipment record' }).click()
         const path = '/equipment/new'
-        await expect(page).toHaveURL(path);
+        await expect(page).toHaveURL(path)
         await testValidation(path, page)
     })
     test('When editing equipment', async({ page }) => {
@@ -22,7 +22,7 @@ test.describe('Should show validation errors for invalid equipment data', () => 
         await page.getByTestId('table').getByRole('link', { name: 'open_in_new' })
             .first().click()
 
-        await expect(page).toHaveURL(path);
+        await expect(page).toHaveURL(path)
         await testValidation(path, page)
     })
 })
@@ -55,8 +55,8 @@ async function testValidation(path: string, page: Page) {
         if(invalidInputs.length > 0) {
             await expect(button).toBeDisabled()
             // check that it doesn't let us add the equipment
-            await page.getByRole('textbox', { name: 'Name' }).press('Enter');
-            await expect(page).toHaveURL(path);
+            await page.getByRole('textbox', { name: 'Name' }).press('Enter')
+            await expect(page).toHaveURL(path)
         }
         else {
             await expect(button).toBeEnabled()

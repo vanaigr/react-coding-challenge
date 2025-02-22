@@ -7,7 +7,7 @@ import { prisma } from '@/data/prisma'
 export async function POST(req: NextRequest) {
     // This shouldn't even exist outside testing, but file-based routing...
     if (process.env.RCC_TESTING !== 'true') {
-        return NextResponse.json({ error: 'Not found' }, { status: 404 });
+        return NextResponse.json({ error: 'Not found' }, { status: 404 })
     }
 
     await prisma.$disconnect()

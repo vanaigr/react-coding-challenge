@@ -9,8 +9,8 @@ test.describe('Should show equipment name in maintenance table', () => {
         await page.goto('/maintenance')
 
         const showN = page.getByText("Showingall1050per page").getByRole('combobox')
-        await showN.selectOption('50');
-        await showN.selectOption('999999999');
+        await showN.selectOption('50')
+        await showN.selectOption('999999999')
         await expect(page.getByText('Page: 1 of 1', { exact: true })).toBeVisible()
 
         const ps: Array<Promise<void>> = []
@@ -43,11 +43,11 @@ test.describe('Should show equipment name in maintenance table', () => {
         await page.goto('/maintenance')
 
         const showN = page.getByText("Showingall1050per page").getByRole('combobox')
-        await showN.selectOption('50');
-        await showN.selectOption('999999999');
+        await showN.selectOption('50')
+        await showN.selectOption('999999999')
         await expect(page.getByText('Page: 1 of 1', { exact: true })).toBeVisible()
 
-        await page.getByRole('button', { name: 'Group' }).click();
+        await page.getByRole('button', { name: 'Group' }).click()
 
         const equipmentNames: Record<string, string> = {}
         for(const id in maintenanceEquipment) {
