@@ -29,12 +29,6 @@ Alternatively, you can build it as a [`Docker`](https://www.docker.com/) image (
 
 ### Prerequisites
 
-The project uses [`Prisma Schema`](https://www.prisma.io/docs/orm/prisma-schema), which generates type-checked client for database queries. Install `Prisma` with the following command:
-
-```shell
-pnpm i -g prisma
-```
-
 Testing requires [`Playwright`](https://playwright.dev/), which can be installed with these commands:
 
 ```shell
@@ -148,7 +142,7 @@ docker ps
 and use the "Container ID" result in the following command:
 
 ```shell
-sudo docker exec -it <container_id> /bin/bash
+docker exec -it <container_id> /bin/bash
 ```
 
 Use these commands and follow "How to run tests" in the regular "Setup Instructions".

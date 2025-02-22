@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package.json .
 COPY pnpm-lock.yaml .
 
-# NOTE: prisma is already in package.json, biome is not installed
+# NOTE: biome is not installed
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install playwright@1.50.1
 
 RUN echo DATABASE_URL='file:./dev.db' > .env
