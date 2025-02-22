@@ -4,7 +4,7 @@ import * as RC from 'recharts'
 import colors from 'tailwindcss/colors'
 import { OpenButton } from '@/components/grid'
 
-import { type Statuses } from '@/data/recordDefs'
+import type { Statuses } from '@/data/recordDefs'
 import {
     toISODate,
     componentsToString,
@@ -12,11 +12,11 @@ import {
     strDateToComponents,
 } from '@/util/date'
 import Header from '@/components/header'
-import {
-    type Data,
-    type RecentMaintenance,
-    type DepartmentMaintenance,
-    type StatusCount,
+import type {
+    Data,
+    RecentMaintenanceEntry,
+    DepartmentMaintenance,
+    StatusCount,
 } from './info/route'
 
 const statusColor: Record<Statuses, string> = {
@@ -95,11 +95,11 @@ function DataDisplay({ data }: { data: Data | null }) {
     return <>
         <EquipmentChart data={data.statusBreakdown}/>
         <DepartmentChart data={data.departmentsMaintenance}/>
-        <RecentMaintenance data={data.recentMaintenance}/>
+        <RecentMaintenance data={data.recentMaintenanceEntries}/>
     </>
 }
 
-function RecentMaintenance({ data }: { data: RecentMaintenance[] }) {
+function RecentMaintenance({ data }: { data: RecentMaintenanceEntry[] }) {
     const components = []
     for(let i = 0; i < data.length; i++) {
         const it = data[i]
@@ -134,7 +134,7 @@ function RecentMaintenance({ data }: { data: RecentMaintenance[] }) {
 
 function DepartmentChart({ data }: { data: DepartmentMaintenance[] }) {
     let total = 0
-    data.forEach(it => total += it.count)
+    for(const it of data) total += it.count
 
     const title = 'Maintenance hours by department - ' + total + ' total'
     return <div className='flex flex-col p-5 pt-4 bg-white rounded-md min-w-fit'>

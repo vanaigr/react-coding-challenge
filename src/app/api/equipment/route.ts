@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 
 import { toISODate, strDateToComponents } from '@/util/date'
-import { Equipment } from '@/data/recordDefs'
+import type { Equipment } from '@/data/recordDefs'
 import { prisma } from '@/data/prisma'
 import { equipmentValidationWithoutId as v } from '@/data/recordDefs'
 

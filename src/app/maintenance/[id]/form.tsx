@@ -7,7 +7,7 @@ import { type Validated, type FormState, createFormState } from '@/data/maintena
 import { toISODate } from '@/util/date'
 import { FormDisplay } from '@/components/maintenanceRecord'
 import { updateMaintenanceRecord } from './action'
-import { type EquipmentInfo } from '@/util/equipmentInfo'
+import type { EquipmentInfo } from '@/util/equipmentInfo'
 
 export type FormProps = {
     id: string

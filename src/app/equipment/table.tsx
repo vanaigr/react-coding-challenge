@@ -138,7 +138,7 @@ function Control({ data, selected, table }: ControlProps) {
     commonStatus = commonStatus ?? ''
 
     const [updateStatus, setUpdateStatus] = R.useState<'none' | 'sending'>('none')
-    const disabled = count == 0
+    const disabled = count === 0
     const ariaDisabled = updateStatus !== 'none'
 
     return <ControlsCont>

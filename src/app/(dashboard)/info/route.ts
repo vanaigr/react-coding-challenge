@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 
 import { statuses, departments } from '@/data/recordDefs'
 import type { Statuses, Types, Departments, CompletionStatuses } from '@/data/recordDefs'
@@ -11,7 +11,7 @@ import {
 } from '@/util/date'
 import { prisma } from '@/data/prisma'
 
-export type RecentMaintenance = {
+export type RecentMaintenanceEntry = {
     id: string
     date: DateComponents
     type: Types
@@ -31,15 +31,17 @@ export type DepartmentMaintenance = {
 }
 
 export type Data = {
-    recentMaintenance: RecentMaintenance[]
+    recentMaintenanceEntries: RecentMaintenanceEntry[]
     statusBreakdown: StatusCount[]
     departmentsMaintenance: DepartmentMaintenance[]
 }
 
 function wrap(msg: string) {
-    return (err: any) => {
-        // next.js bug. There's reddit post about it but I lost it
-        console.log(err?.stack)
+    return (err: unknown) => {
+        // https://www.reddit.com/r/nextjs/comments/1gkxdqe/comment/m19kxgn/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+        if(err instanceof Error) console.log(err.stack)
+        else console.log(err)
+
         throw new Error(msg)
     }
 }
@@ -87,7 +89,7 @@ async function recentMaintenance(cutoff?: DateComponents) {
         take: 10,
     })
 
-    const records: RecentMaintenance[] = Array(recordsDb.length)
+    const records: RecentMaintenanceEntry[] = Array(recordsDb.length)
     for(let i = 0; i < records.length; i++) {
         const itDb = recordsDb[i]
 
@@ -138,7 +140,7 @@ async function departmentsMaintenance(cutoff?: DateComponents) {
         lines.join(' '),
         // https://github.com/prisma/prisma/issues/26355
         ...(cutoff ? [toISODate(cutoff)] : []),
-    ) as Array<{ dep: string, sum: BigInt }>
+    ) as Array<{ dep: string, sum: bigint }>
 
     const results: DepartmentMaintenance[] = []
     for(let i = 0; i < departments.length; i++) {

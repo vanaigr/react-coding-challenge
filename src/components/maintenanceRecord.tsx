@@ -1,10 +1,9 @@
-import * as R from 'react'
 import * as Z from 'zustand'
 
 import { types, priorities, completionStatuses } from '@/data/recordDefs'
 import { type Raw, type FormState, createFormState } from '@/data/maintenanceForm'
 import { Input, Select, EditableList } from '@/components/inputs'
-import { type EquipmentInfo } from '@/util/equipmentInfo'
+import type { EquipmentInfo } from '@/util/equipmentInfo'
 import FormButtons from '@/components/formButtons'
 
 

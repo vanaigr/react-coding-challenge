@@ -98,7 +98,7 @@ const columns = [
         header: v => <Header ctx={v} className={h}>Equipment name</Header>,
         cell: v => <TextCell className={p} value={v.getValue()}/>,
         aggregatedCell: v => <TextCell className={p} value={v.getValue()}/>,
-        aggregationFn: (id, rows) => rows.length == 0 ? '' : rows[0].getValue(id),
+        aggregationFn: (id, rows) => rows.length === 0 ? '' : rows[0].getValue(id),
         meta: { filter: v => <TextFilter ctx={v} className={f}/> },
     }),
     helper.accessor('date', {
@@ -277,6 +277,7 @@ function Cell({ table, row, cell, visibleI }: CellProps) {
 
     if(cell.getIsAggregated()) {
         return <button
+            type='button'
             key={cell.id}
             className={style + ' flex items-center'}
             onClick={row.getToggleExpandedHandler()}

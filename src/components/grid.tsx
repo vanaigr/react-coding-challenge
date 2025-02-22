@@ -1,6 +1,6 @@
 import * as R from 'react'
 import Link from 'next/link'
-import * as RT from '@tanstack/react-table'
+import type * as RT from '@tanstack/react-table'
 
 import {
     type DateComponents,
@@ -277,7 +277,7 @@ export function NumberFilter<D>(p: NumberFilterProps<D>) {
                 defaultValue={firstV}
                 className={'w-10 grow ' + (firstV === '' ? 'text-gray-500' : '')}
                 onChange={it => {
-                    const cs = parseFloat(it.target.value)
+                    const cs = Number.parseFloat(it.target.value)
                     p.ctx.column.setFilterValue({ ...v, first: cs })
                 }}
                 placeholder='First'
@@ -290,7 +290,7 @@ export function NumberFilter<D>(p: NumberFilterProps<D>) {
                 className={'w-10 grow ' + (lastV === '' ? 'text-gray-500' : '')}
                 defaultValue={lastV}
                 onChange={it => {
-                    const cs = parseFloat(it.target.value)
+                    const cs = Number.parseFloat(it.target.value)
                     p.ctx.column.setFilterValue({ ...v, last: cs })
                 }}
             />
@@ -356,7 +356,7 @@ export function Controls<T>({ table }: ControlsProps<T>) {
                 value={perPageC === 10 || perPageC === 50 ? '' + perPageC : '999999999'}
                 onChange={it => {
                     console.warn(it.target.value)
-                    table.setPageSize(parseInt(it.target.value))
+                    table.setPageSize(Number.parseInt(it.target.value))
                 }}
             >
                 {/*
@@ -408,10 +408,11 @@ export function Controls<T>({ table }: ControlsProps<T>) {
                 defaultValue={1}
             />
             <button
+                type='button'
                 onClick={() => {
                     if(!gotoPageRef.current) return
-                    let page = parseInt(gotoPageRef.current.value)
-                    if(!isFinite(page)) return
+                    let page = Number.parseInt(gotoPageRef.current.value)
+                    if(!Number.isFinite(page)) return
                     page = Math.min(Math.max(1, page), pageC) - 1
                     table.setPageIndex(page)
                 }}
@@ -420,7 +421,7 @@ export function Controls<T>({ table }: ControlsProps<T>) {
     </>
 }
 
-export function ControlsCont<T>({ children }: R.PropsWithChildren<{}>) {
+export function ControlsCont({ children }: R.PropsWithChildren<unknown>) {
     return <div
         className='flex text-sm m-4 px-5 py-3 mt-10 max-w-[90rem] mx-auto rounded-full bg-indigo-100 items-center'
     >

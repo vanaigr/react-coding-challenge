@@ -1,7 +1,10 @@
 'use server'
 import Cache from 'next/cache'
 
-import { maintenanceValidationWithoutId, InputMaintenanceWithoutId } from '@/data/recordDefs'
+import {
+    maintenanceValidationWithoutId,
+    type InputMaintenanceWithoutId,
+} from '@/data/recordDefs'
 import { toISODate } from '@/util/date'
 import { prisma } from '@/data/prisma'
 

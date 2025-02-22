@@ -17,8 +17,8 @@ export type Raw = z.input<typeof formValidation>
 export type Validated = z.infer<typeof formValidation>
 
 export type FormState = {
-    input: Raw,
-    result: z.SafeParseReturnType<Raw, Validated>,
+    input: Raw
+    result: z.SafeParseReturnType<Raw, Validated>
 }
 
 export function createFormState(input: Raw): FormState {

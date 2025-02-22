@@ -1,7 +1,7 @@
 import PageHeader from '@/components/header'
-import { type CompletionStatuses } from '@/data/recordDefs'
+import type { CompletionStatuses } from '@/data/recordDefs'
 import { Table, type Entry } from './table'
-import { strDateToComponents, type DateComponents } from '@/util/date'
+import { strDateToComponents } from '@/util/date'
 import { prisma } from '@/data/prisma'
 
 export default async function() {

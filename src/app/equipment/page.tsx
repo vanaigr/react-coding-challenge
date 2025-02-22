@@ -1,6 +1,6 @@
 import PageHeader from '@/components/header'
-import { Table, Entry } from './table'
-import { strDateToComponents, type DateComponents } from '@/util/date'
+import { Table, type Entry } from './table'
+import { strDateToComponents } from '@/util/date'
 import { prisma } from '@/data/prisma'
 
 export default async function() {

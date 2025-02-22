@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 
-import { type MaintenanceRecord } from '@/data/recordDefs'
+import type { MaintenanceRecord } from '@/data/recordDefs'
 import { toISODate, strDateToComponents } from '@/util/date'
 import { prisma, Prisma } from '@/data/prisma'
 import { maintenanceValidationWithoutId as v } from '@/data/recordDefs'

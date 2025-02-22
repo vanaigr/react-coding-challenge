@@ -1,4 +1,4 @@
-import * as R from 'react'
+import type * as R from 'react'
 import Link from 'next/link'
 
 export type PathEntry = { name: string, url: string }

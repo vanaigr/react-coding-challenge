@@ -1,4 +1,4 @@
-import * as R from 'react'
+import type * as R from 'react'
 
 // HTML doesn't support date input with placeholder.
 // Some people change type='text' when the input isn't focused,

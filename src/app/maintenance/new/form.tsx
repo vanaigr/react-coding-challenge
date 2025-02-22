@@ -6,10 +6,10 @@ import { useRouter } from 'next/navigation'
 import { types, priorities, completionStatuses } from '@/data/recordDefs'
 import { type FormState, createFormState } from '@/data/maintenanceForm'
 import { FormDisplay } from '@/components/maintenanceRecord'
-import { type EquipmentInfo } from '@/util/equipmentInfo'
+import type { EquipmentInfo } from '@/util/equipmentInfo'
 import { addMaintenanceRecord } from './action'
 
-export { EquipmentInfo }
+export type { EquipmentInfo }
 export type FormProps = {
     equipment: EquipmentInfo[]
 }

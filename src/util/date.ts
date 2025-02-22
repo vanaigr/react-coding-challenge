@@ -11,10 +11,10 @@ const dateRegex = /^(\d\d\d\d)-(\d\d)-(\d\d)$/
 export function strDateToComponents(date: string): DateComponents | null {
     const res = date.match(dateRegex)
     if(res != null) {
-        const y = parseInt(res[1])
-        const m = parseInt(res[2])
-        const d = parseInt(res[3])
-        if(isFinite(y) && isFinite(m) && isFinite(d)) {
+        const y = Number.parseInt(res[1])
+        const m = Number.parseInt(res[2])
+        const d = Number.parseInt(res[3])
+        if(Number.isFinite(y) && Number.isFinite(m) && Number.isFinite(d)) {
             return [y, m, d]
         }
     }
@@ -34,7 +34,7 @@ export function dateUTCToComponents(date: Date): DateComponents | null {
 
 export function cmp(a: DateComponents, b: DateComponents) {
     let diff = 0
-    for(let i = 0; diff == 0 && i < 3; i++) {
+    for(let i = 0; diff === 0 && i < 3; i++) {
         diff = a[i] - b[i]
     }
     return diff
@@ -65,9 +65,9 @@ export const dateValidation = z.tuple([z.number(), z.number(), z.number()])
     .transform((it, ctx) => {
         const date = new Date(it[0], it[1] - 1, it[2])
         if(
-            date.getFullYear() != it[0]
-                || date.getMonth() != it[1] - 1
-                || date.getDate() != it[2]
+            date.getFullYear() !== it[0]
+                || date.getMonth() !== it[1] - 1
+                || date.getDate() !== it[2]
         ) {
             ctx.addIssue({ code: z.ZodIssueCode.invalid_date })
             return z.NEVER

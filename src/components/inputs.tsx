@@ -19,13 +19,13 @@ type InputProps = {
 function errProps(isError: boolean, error_id: string) {
     if(isError) {
         return {
-            ['aria-invalid']: true,
-            ['aria-errormessage']: error_id,
+            'aria-invalid': true,
+            'aria-errormessage': error_id,
         }
     }
 
     return {
-        ['aria-invalid']: false,
+        'aria-invalid': false,
     }
 }
 
@@ -141,7 +141,7 @@ export function EditableList(
     const errorProps = errProps(isError, error_id)
 
     const itemComponents = []
-    for(let i = items.length - 1; i != -1; i--) {
+    for(let i = items.length - 1; i !== -1; i--) {
         const it = items[i]
         itemComponents.push(<Item
             key={itemsMeta.ids[i]}

@@ -39,6 +39,12 @@ pnpm i -g playwright
 pnpm exec playwright install
 ```
 
+Linting requires [`Biome`](https://biomejs.dev):
+
+```shell
+pnpm i -g biome
+```
+
 ### Installation steps
 
 After cloning the repo, run the following commands in the root directory:
@@ -76,6 +82,12 @@ To run API endpoints tests, execute:
 
 ```shell
 pnpm test-api
+```
+
+### Linting
+
+```
+pnpx @biomejs/biome check ./src
 ```
 
 ## Features Implementation

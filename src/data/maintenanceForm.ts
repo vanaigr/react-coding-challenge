@@ -16,8 +16,8 @@ export const formValidation = z.object({
     technician: z.string().pipe(c.technician),
     hoursSpent: z.string().transform((it, ctx) => {
         // there's z.coerce.number(), but it parses '' as 0 which is wrong for our case
-        const v = parseFloat(it)
-        if(isFinite(v)) return v
+        const v = Number.parseFloat(it)
+        if(Number.isFinite(v)) return v
         ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Must be valid' })
         return z.NEVER
     }).pipe(c.hoursSpent),
