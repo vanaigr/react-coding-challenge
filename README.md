@@ -13,18 +13,21 @@ https://gist.github.com/TheCodingCanal/e991fcdcd2be75c3a2676fd425173c02
 ![image](https://github.com/user-attachments/assets/5bd77a14-f368-4983-a430-187c9cea90fa)
 ![image](https://github.com/user-attachments/assets/a89bdbf5-265a-4bb0-b44d-1d685b8f58e2)
 
-   
 </details>
 
-## Setup Instructions
-
-### Prerequisites
+## Project Setup Notes
 
 This project was developed on Linux using Node.js 20 and [`pnpm`](https://pnpm.io/) as the package manager,
 but I've confirmed it also works on Windows and with `npm` (with some changes to commands).
 
 For Windows, `dev`, etc., commands need to include `--shell-emulator` (after optional `run` and before the command).
 For `npm`, some commands require `npm run`, e.g. `npm run dev` instead of `npm dev`.
+
+Alternatively, you can build it as a [`Docker`](https://www.docker.com/) image (see "Setup Instructions (Docker)").
+
+## Setup Instructions
+
+### Prerequisites
 
 The project uses [`Prisma Schema`](https://www.prisma.io/docs/orm/prisma-schema), which generates type-checked client for database queries. Install `Prisma` with the following command:
 
@@ -34,7 +37,7 @@ pnpm i -g prisma
 
 Testing requires [`Playwright`](https://playwright.dev/), which can be installed with these commands:
 
-```sell
+```shell
 pnpm i -g playwright
 pnpm exec playwright install
 ```
@@ -103,6 +106,52 @@ pnpx @biomejs/biome check ./test
 ```
 pnpm exec tsc -b
 ```
+
+## Setup Instructions (Docker)
+
+### Prerequisites
+
+In the root of the repo, execute:
+
+```shell
+docker build -t <your_name> -f Dockerfile .
+```
+
+This will create an image with the repo, Prisma, and Playwright.
+
+### Installation steps
+
+None
+
+### How to run the application
+
+To start development server, execute:
+
+```shell
+docker run -p:3000:3000 --init <your_name>
+```
+
+The app is served at `http://localhost:3000/`
+
+### How to run tests
+
+To start the container, execute:
+```shell
+docker run -p:3000:3000 --init --rm -it <your_name> /bin/bash
+```
+
+To connect to the container and run other commands, first execute:
+```
+docker ps
+```
+
+and use the "Container ID" result in the following command:
+
+```shell
+sudo docker exec -it <container_id> /bin/bash
+```
+
+Use these commands and follow "How to run tests" in the regular "Setup Instructions".
 
 ## Features Implementation
 
@@ -210,6 +259,7 @@ Frontend has little state, and for simplicity it is stored as local component st
 
 * UTC is used as the timezone for checking validity of dates. Otherwise users in different timezones may disagree on whether a given record is valid, even when is from the DB.
 * No UI for deleting records.
+* Equipment table goes to page 1 after modifying equipment status.
 
 ### Future improvements
 

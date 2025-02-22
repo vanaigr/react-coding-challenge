@@ -1,0 +1,17 @@
+/.git/
+.gitignore
+
+Dockerfile
+
+/node_modules/
+/build/
+
+/.next/
+/out/
+
+/next-env.d.ts
+
+/.env
+/testResults/
+/prisma/test.db
+tsconfig.tsbuildinfo
