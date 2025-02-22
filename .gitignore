@@ -9,3 +9,4 @@
 /.env
 /testResults/
 /prisma/test.db
+tsconfig.tsbuildinfo
